@@ -1,0 +1,23 @@
+<odoo>
+  <data noupdate="1">
+    <!-- Ciclos formativos -->
+    <record model="atenea.course" id="atenea.course_AFI">
+      <field name="abbr">AFI</field>
+      <field name="name">Administración y Finanzas</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_ADI">
+      <field name="abbr">ADI</field>
+      <field name="name">Asistencia a Dirección</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_DAW">
+      <field name="abbr">DAW</field>
+      <field name="name">Desarrollo de Aplicaciones Web</field>
+    </record>
+
+  </data>
+</odoo>
+
+
+ <!-- noupdate="1" -->

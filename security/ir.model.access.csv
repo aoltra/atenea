@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_atenea_course,access_atenea_course,atenea.model_atenea_course,base.group_user,1,1,1,1
+access_atenea_subject,access_atenea_subject,atenea.model_atenea_subject,base.group_user,1,1,1,1

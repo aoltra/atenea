@@ -1,0 +1,89 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="atenea.course_tree">
+      <field name="name">Lista de Ciclos Formativos</field>
+      <field name="model">atenea.course</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="abbr"/>
+          <field name="subjects_ids"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="atenea.subject_tree">
+      <field name="name">Lista de Módulos</field>
+      <field name="model">atenea.subject</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="abbr"/>
+          <field name="code"/>
+          <field name="courses_ids"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="atenea.action_course">
+      <field name="name">Ciclo</field>
+      <field name="res_model">atenea.course</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <record model="ir.actions.act_window" id="atenea.action_subject">
+      <field name="name">Módulo</field>
+      <field name="res_model">atenea.subject</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="atenea.action_server">
+      <field name="name">atenea server</field>
+      <field name="model_id" ref="model_atenea_atenea"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+    <menuitem name="CEED" id="atenea.menu_root"/>
+
+    <!-- menu categories -->
+    <menuitem name="Centro" id="atenea.school" parent="atenea.menu_root"/>
+    <!-- <menuitem name="Menu 2" id="atenea.menu_2" parent="atenea.menu_root"/> -->
+
+    <!-- actions -->
+    <menuitem name="Ciclos" id="atenea.school_course" parent="atenea.school"
+              action="atenea.action_course"/>
+    <menuitem name="Módulos" id="atenea.school_subject" parent="atenea.school"
+              action="atenea.action_subject"/>
+    <menuitem name="Profesorado" id="atenea.school_profesorado" parent="atenea.school"
+              action="atenea.action_course"/>
+   <!--  <menuitem name="Cargos" id="atenea.centro_cargos" parent="atenea.centro"
+              action="atenea.action_window"/>  
+    <menuitem name="Centro" id="atenea.centro_ciclos" parent="atenea.centro"
+              action="atenea.action_window"/>
+    <menuitem name="Módulos" id="atenea.centro_modulos" parent="atenea.centro"
+              action="atenea.action_window"/> -->
+            <!--
+    <menuitem name="Server to list" id="atenea" parent="atenea.menu_2"
+              action="atenea.action_server"/>
+-->
+  </data>
+</odoo>
