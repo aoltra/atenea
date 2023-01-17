@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from odoo import models, fields
 
 class Course(models.Model):
@@ -12,3 +14,5 @@ class Course(models.Model):
     name = fields.Char('Ciclo', required = True, translate=True)
 
     subjects_ids = fields.Many2many('atenea.subject')
+
+    roles_ids = fields.One2many('atenea.rol', 'course_id')

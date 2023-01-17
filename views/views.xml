@@ -32,15 +32,21 @@
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="atenea.action_course">
-      <field name="name">Ciclo</field>
+      <field name="name">Ciclos</field>
       <field name="res_model">atenea.course</field>
       <field name="view_mode">tree,form</field>
     </record>
 
 
     <record model="ir.actions.act_window" id="atenea.action_subject">
-      <field name="name">Módulo</field>
+      <field name="name">Módulos</field>
       <field name="res_model">atenea.subject</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="atenea.action_rol">
+      <field name="name">Cargos</field>
+      <field name="res_model">atenea.rol</field>
       <field name="view_mode">tree,form</field>
     </record>
 
@@ -73,11 +79,12 @@
               action="atenea.action_course"/>
     <menuitem name="Módulos" id="atenea.school_subject" parent="atenea.school"
               action="atenea.action_subject"/>
-    <menuitem name="Profesorado" id="atenea.school_profesorado" parent="atenea.school"
+    <menuitem name="Cargos" id="atenea.school_rol" parent="atenea.school"
+              action="atenea.action_rol"/>  
+    <!--<menuitem name="Profesorado" id="atenea.school_profesorado" parent="atenea.school"
               action="atenea.action_course"/>
-   <!--  <menuitem name="Cargos" id="atenea.centro_cargos" parent="atenea.centro"
-              action="atenea.action_window"/>  
-    <menuitem name="Centro" id="atenea.centro_ciclos" parent="atenea.centro"
+    
+      <menuitem name="Centro" id="atenea.centro_ciclos" parent="atenea.centro"
               action="atenea.action_window"/>
     <menuitem name="Módulos" id="atenea.centro_modulos" parent="atenea.centro"
               action="atenea.action_window"/> -->

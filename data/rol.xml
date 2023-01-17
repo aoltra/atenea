@@ -1,0 +1,18 @@
+<odoo>
+  <data>
+    <!-- Roles -->
+    <record model="atenea.rol" id="atenea.rol_TUT1AFI">
+      <field name="rol">TUT1</field>
+      <field name="description">Tutor de primero de AFI</field>
+      <field name="course_id" ref="atenea.course_AFI" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT2AFI">
+      <field name="rol">TUT2</field>
+      <field name="description">Tutor de segundo de AFI</field>
+      <field name="course_id" ref="atenea.course_AFI" />
+    </record>
+
+
+  </data>
+</odoo>
