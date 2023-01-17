@@ -36,6 +36,7 @@
         'views/views.xml',
         'views/templates.xml',
         'data/course.xml',
+        'data/departament.xml',
         'data/rol.xml',
     ],
     # only loaded in demonstration mode

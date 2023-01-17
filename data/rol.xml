@@ -13,6 +13,11 @@
       <field name="course_id" ref="atenea.course_AFI" />
     </record>
 
+    <record model="atenea.rol" id="atenea.rol_JEFDAFI">
+      <field name="rol">JEFD</field>
+      <field name="description">Jefe de departamento de Administración</field>
+      <field name="departament_id" ref="atenea.departament_ADM" />
+    </record>
 
   </data>
 </odoo>

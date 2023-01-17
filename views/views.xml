@@ -37,7 +37,6 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
     <record model="ir.actions.act_window" id="atenea.action_subject">
       <field name="name">Módulos</field>
       <field name="res_model">atenea.subject</field>
@@ -47,6 +46,12 @@
     <record model="ir.actions.act_window" id="atenea.action_rol">
       <field name="name">Cargos</field>
       <field name="res_model">atenea.rol</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="atenea.action_departament">
+      <field name="name">Departamentos</field>
+      <field name="res_model">atenea.departament</field>
       <field name="view_mode">tree,form</field>
     </record>
 
@@ -81,13 +86,14 @@
               action="atenea.action_subject"/>
     <menuitem name="Cargos" id="atenea.school_rol" parent="atenea.school"
               action="atenea.action_rol"/>  
+    <menuitem name="Departamentos" id="atenea.school_departament" parent="atenea.school"
+              action="atenea.action_departament"/>
     <!--<menuitem name="Profesorado" id="atenea.school_profesorado" parent="atenea.school"
               action="atenea.action_course"/>
     
       <menuitem name="Centro" id="atenea.centro_ciclos" parent="atenea.centro"
               action="atenea.action_window"/>
-    <menuitem name="Módulos" id="atenea.centro_modulos" parent="atenea.centro"
-              action="atenea.action_window"/> -->
+     -->
             <!--
     <menuitem name="Server to list" id="atenea" parent="atenea.menu_2"
               action="atenea.action_server"/>

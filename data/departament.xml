@@ -1,0 +1,24 @@
+<odoo>
+  <data>
+    <!-- Departamentos -->
+    <record model="atenea.departament" id="atenea.departament_ADM">
+      <field name="name">Administración</field>
+    </record>
+
+    <record model="atenea.departament" id="atenea.departament_INF">
+      <field name="name">Informática</field>
+    </record>
+
+    <record model="atenea.departament" id="atenea.departament_TUR">
+      <field name="name">Turismo</field>
+    </record>
+
+    <record model="atenea.departament" id="atenea.departament_COM">
+      <field name="name">Comercio</field>
+    </record>
+
+    <record model="atenea.departament" id="atenea.departament_FCT">
+      <field name="name">Formación en Centros de Trabajo</field>
+    </record>
+  </data>
+</odoo>
