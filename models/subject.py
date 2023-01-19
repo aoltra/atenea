@@ -1,4 +1,5 @@
-from odoo import models, fields
+from odoo import api, models, fields
+from odoo.exceptions import ValidationError
 
 class Subject(models.Model):
     """
@@ -8,8 +9,11 @@ class Subject(models.Model):
     _name = 'atenea.subject'
     _description = 'Módulo de un ciclo formativo'
 
-    abbr = fields.Char(size = 4, required = True, translate = True)
-    code = fields.Char(size = 4, required = True)
-    name = fields.Char(required = True, translate = True)
+    abbr = fields.Char(size = 4, required = True, translate = True, string = "Abreviatura")
+    code = fields.Char(size = 4, required = True, string = "Código")
+    name = fields.Char(required = True, translate = True, string = "Nombre")
+    year = fields.Selection([('1', '1º'), ('2', '2º')], required = True, default = '1', string = 'Curso')
 
-    courses_ids = fields.Many2many('atenea.course')
+    courses_ids = fields.Many2many('atenea.course', string = 'Ciclos')
+
+    

@@ -23,7 +23,7 @@ class TestCreateModels(TransactionCase):
             'code': '0147',
             'name': 'Programación',
             'courses_ids': [(4, self.course.id)],    # enlaza con un registro existente de id course.id
-            'year': 1
+            'year': '1'
         })
 
         self.departament = self.env['atenea.departament'].create({
@@ -40,6 +40,8 @@ class TestCreateModels(TransactionCase):
         self.course.write({
           'roles_ids':  [(4, self.rol.id)]
         })
+
+        print(self.subject.year)
 
 
     # Los test se ejecutan en orden alfabético
@@ -64,7 +66,7 @@ class TestCreateModels(TransactionCase):
         self.assertEqual(self.subject.code, '0147')
         self.assertEqual(self.subject.name, 'Programación')
         self.assertEqual(self.subject.courses_ids[0].abbr, 'DAM')
-        self.assertEqual(self.subject.year, 1)
+        self.assertEqual(self.subject.year, '1')
 
     def test004_new_departament(self):
         'Creación de departamentos'
