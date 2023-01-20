@@ -3,3 +3,4 @@ access_atenea_course,access_atenea_course,atenea.model_atenea_course,base.group_
 access_atenea_subject,access_atenea_subject,atenea.model_atenea_subject,base.group_user,1,1,1,1
 access_atenea_rol,access_atenea_rol,atenea.model_atenea_rol,base.group_user,1,1,1,1
 access_atenea_departament,access_atenea_departament,atenea.model_atenea_departament,base.group_user,1,1,1,1
+access_atenea_employee,access_atenea_employee,atenea.model_atenea_employee,base.group_user,1,1,1,1
