@@ -35,6 +35,7 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'data/school.xml',
         'data/course.xml',
         'data/departament.xml',
         'data/rol.xml',

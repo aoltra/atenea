@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+    <!-- Centro  -->
+    <record id="base.main_company" model="res.company">
+      <field name="name">CEEDCV</field>
+      <field name="email">46025799@edu.gva.es</field>
+      <field name="street">Casa de la Misericòrdia, 34</field>
+      <field name="zip">46014</field>
+      <field name="city">València</field>
+      <field name="phone">96 120 69 90</field>
+      <field name="website">https://portal.edu.gva.es/ceedcv/es/inicio/</field>
+      <field name="currency_id" ref="base.EUR"/>
+    </record>
+  </data>
+</odoo>
