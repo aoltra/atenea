@@ -34,6 +34,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/config_settings_view.xml',
         'views/templates.xml',
         'data/school.xml',
         'data/course.xml',

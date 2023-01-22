@@ -61,6 +61,14 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="atenea.action_config_settings">
+      <field name="name">Configuración</field>
+      <field name="res_model">res.config.settings</field>
+      <field name="view_mode">form</field>
+      <field name="target">inline</field> <!-- new window: emergente, curret: en al misma, inline: sin botones editar/crear-->
+      <field name="context">{'module': 'atenea'}</field>
+    </record>
+
 
     <!-- server action to the one above -->
 <!--
@@ -83,9 +91,10 @@
 
     <!-- menu categories -->
     <menuitem name="Centro" id="atenea.school" parent="atenea.menu_root"/>
-    <!-- <menuitem name="Menu 2" id="atenea.menu_2" parent="atenea.menu_root"/> -->
+    <menuitem name="Configuración" id="atenea.configuration" parent="atenea.menu_root"/>
 
     <!-- actions -->
+    <!-- Menu Centro -->
     <menuitem name="Ciclos" id="atenea.school_course" parent="atenea.school"
               action="atenea.action_course"/>
     <menuitem name="Módulos" id="atenea.school_subject" parent="atenea.school"
@@ -96,7 +105,11 @@
               action="atenea.action_departament"/>
     <menuitem name="Empleados" id="atenea.school_employee" parent="atenea.school"
               action="atenea.action_employee"/>
-    
+
+    <!-- Menu Configuración -->
+    <menuitem name="General" id="atenea.settings" parent="atenea.configuration"
+              action="atenea.action_config_settings"/>
+
 <!--
     <menuitem name="Server to list" id="atenea" parent="atenea.menu_2"
               action="atenea.action_server"/>

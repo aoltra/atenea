@@ -1,0 +1,50 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="atenea.config_settings_view_form">
+      <field name="name">asasas Formativos</field>
+      <field name="model">res.config.settings</field>
+      <!-- hereda de la vista base de configuraciones --> 
+      <field name="inherit_id" ref="base.res_config_settings_view_form" /> 
+      <field name="arch" type="xml">
+      <!--  busca todos los nodos de tipo div con la clase settings 
+            inside (default): your values will be appended inside the tag
+            after: add the content after the tag
+            before: add the content before the tag
+            replace: replace the content of the tag. -->
+        <xpath expr="//div[hasclass('settings')]" position="inside">
+          <!-- string, el texto que aparecerá en el menu lateral-->
+          <div class="app_settings_block" data-string="Atenea" id="atenea" string="Atenea"
+          data-key="atenea.action_config_settings">
+            <h2>Aules</h2>
+            <div class="row mt16 o_settings_container" name="atenea_aules_setting_container">
+              <!-- contenedor nombre de usuario -->
+              <div class="col-12 col-lg-6 o_setting_box" title="Usuario Aules">
+                <div class="o_setting_left_pane"/>
+                <div class="o_setting_right_pane">
+                 <span class="o_form_label">Usuario</span>
+                 <div class="text-muted">Usuario de acceso a Aules</div>
+                 <div class="text-muted content-group mt8">
+                    <field name="aules_user" class="text-center oe_inline" />
+                  </div>
+                </div>
+              </div>
+              <!-- contenedor nombre de usuario -->
+              <div class="col-12 col-lg-6 o_setting_box" title="Password Aules">
+                <div class="o_setting_right_pane">
+                 <span class="o_form_label">Contraseña</span>
+                 <div class="text-muted">Contraseña del usuario de acceso a Aules</div>
+                 <div class="text-muted content-group mt8">
+                    <field name="password_user" class="text-center oe_inline" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </xpath>
+      </field>
+    </record>
+
+    
+  </data>
+</odoo>
