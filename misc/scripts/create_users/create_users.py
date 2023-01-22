@@ -38,6 +38,7 @@ with open(sys.argv[1]) as csv_file:
           'lang': row[3],
           'company_ids':[1],
           'company_id': 1,
+          'email': row[2]
           # 'new_password': el password no se inserta por motivos de seguridad
       })
       employees[row[2]] = { 'name': row[0],
@@ -56,6 +57,9 @@ departaments_output = models.execute_kw(db, uid, password, 'atenea.departament',
 departaments = {}
 for dep in departaments_output:
   departaments[dep['name']] = dep['id']
+
+
+print(departaments)
 
 """ 
 
