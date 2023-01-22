@@ -35,7 +35,7 @@
                  <span class="o_form_label">Contraseña</span>
                  <div class="text-muted">Contraseña del usuario de acceso a Aules</div>
                  <div class="text-muted content-group mt8">
-                    <field name="password_user" class="text-center oe_inline" />
+                    <field name="aules_password" class="text-center oe_inline" />
                   </div>
                 </div>
               </div>
