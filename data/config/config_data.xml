@@ -1,0 +1,10 @@
+<odoo>
+    <record id="atenea_config_settings" model="res.config.settings">
+        <field name="company_id" ref="base.main_company"/>    
+        <field name="external_email_server_default" eval="True" />
+    </record>
+    <function model="res.config.settings" name="execute">
+        <value model="res.config.settings"
+               search="[('id', '=', ref('atenea_config_settings'))]"/>
+    </function>
+</odoo>

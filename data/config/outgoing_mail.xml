@@ -1,0 +1,13 @@
+<!-- configuracion para enviar correos a través de gmail
+     Es necesario activar la autenticación en dos pasos en gmail -->
+<odoo>
+    <record id="gmail_outgoing_server_config_settings" model="ir.mail_server">
+        <field name="name">gmail</field>    
+        <field name="active" eval="True" />
+        <field name="smtp_host">smtp.gmail.com</field>
+        <field name="smtp_port">465</field>
+        <field name="smtp_user">myuser@gmail.com</field>    
+        <field name="smtp_pass">mypassword</field>
+        <field name="smtp_encryption">ssl</field>    
+    </record>
+</odoo>

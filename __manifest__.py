@@ -28,7 +28,7 @@
     'price': 0,
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'mail'],
 
     # always loaded
     'data': [
@@ -36,6 +36,8 @@
         'views/views.xml',
         'views/config_settings_view.xml',
         'views/templates.xml',
+        'data/config/config_data.xml',
+        'data/config/outgoing_mail.xml',
         'data/school.xml',
         'data/course.xml',
         'data/departament.xml',
