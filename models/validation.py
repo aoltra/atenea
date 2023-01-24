@@ -11,6 +11,7 @@ class Validation(models.Model):
   _name = 'atenea.validations'
   _description = 'Convalidaciones'
 
+  student_id = fields.Many2one('atenea.student')
   course_id = fields.Many2one('atenea.course', string = 'Ciclo', required = True)
   subject_id = fields.Many2one('atenea.subject', string = 'Módulo', required = True)
   teacher_id = fields.Many2one('atenea.employee', string = 'Resuelta por')

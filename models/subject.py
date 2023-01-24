@@ -1,5 +1,4 @@
 from odoo import api, models, fields
-from odoo.exceptions import ValidationError
 
 class Subject(models.Model):
     """
@@ -15,5 +14,5 @@ class Subject(models.Model):
     year = fields.Selection([('1', '1º'), ('2', '2º')], required = True, default = '1', string = 'Curso')
 
     courses_ids = fields.Many2many('atenea.course', string = 'Ciclos')
-
+    validations_ids = fields.One2many('atenea.validation', 'subject_id')
     
