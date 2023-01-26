@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import re
-from odoo import api, models, fields
+from odoo import models, fields
 from odoo.exceptions import ValidationError
 
 class Student(models.Model):
@@ -17,4 +16,4 @@ class Student(models.Model):
   surname = fields.Char(string = 'Apellidos', required = True)
   email = fields.Char(string = 'Email')
 
-  validations_ids = fields.One2many('atenea.validation','student_id')
+  validations_ids = fields.One2many('atenea.validation', 'student_id')

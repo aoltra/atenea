@@ -24,7 +24,7 @@ class Employee(models.Model):
         ('profesor', 'Profesor/a'),
         ('pas', 'PAS'),
         ], string ='Tipo de empleado', default = 'profesor', required = True,
-        help = "Tipo de empleado. Permite categorizar a los empleados en profesores o personal de administración.")
+        help = "Permite categorizar a los empleados en profesores o personal de administración.")
 
   
   # sustituciones. Simulo un One2one con dos many2one, un one2many y funciones calculadas
