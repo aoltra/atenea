@@ -28,6 +28,41 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="atenea.school_year_form">
+      <field name="name">school_year.form.view</field>
+      <field name="model">atenea.school_year</field>
+      <field name="arch" type="xml">
+        <form>
+          <group col='2'>
+            <group>
+              <field name="name"/>
+            </group>
+            <group>
+              <field name="date_init"/>
+            </group>
+          </group>
+          <notebook>
+            <page string = 'General'>
+              <group>
+                <field name="date_init_lective"/>
+              </group>
+            </page>
+            <page string = 'Primer curso'>
+            </page>
+            <page string = 'Segundo curso'>
+              <group>
+                <field name="date_1term2_end"/>
+                <field name="date_1term2_exam_ini"/>
+                <field name="date_1term2_exam_end"/>
+              </group>
+            </page>
+             <page string = 'PFC'>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+
 
     <!-- actions opening views on models -->
 
@@ -69,6 +104,13 @@
       <field name="context">{'module': 'atenea'}</field>
     </record>
 
+    <record model="ir.actions.act_window" id="atenea.action_school_year">
+      <field name="name">Curso escolar</field>
+      <field name="res_model">atenea.school_year</field>
+      <field name="view_mode">form</field>
+    </record>
+
+
 
     <!-- server action to the one above -->
 <!--
@@ -105,6 +147,8 @@
               action="atenea.action_departament"/>
     <menuitem name="Empleados" id="atenea.school_employee" parent="atenea.school"
               action="atenea.action_employee"/>
+    <menuitem name="Curso" id="atenea.school_year" parent="atenea.school"
+              action="atenea.action_school_year"/>
 
     <!-- Menu Configuración -->
     <menuitem name="General" id="atenea.settings" parent="atenea.configuration"

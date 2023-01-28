@@ -7,4 +7,5 @@ from . import departament
 from . import employee
 from . import student
 from . import validation
+from . import school_year
 from . import config_settings
