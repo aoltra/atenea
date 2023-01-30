@@ -20,6 +20,8 @@ class SchoolYear(models.Model):
 
   # inicio real de las clases
   date_init_lective = fields.Date(string = 'Fecha de inicio real', compute = '_compute_date_init_lective', readonly = False)
+  # jornadas de bienvenida
+  date_welcome_day = fields.Date(string = 'Jornadas de bienvenida', compute = '_compute_welcome_day')
   # fin de las clases de la primera evaluación de segundo
   date_1term2_end = fields.Date(string = 'Fin clases primera evaluación', compute = '_compute_1term2_end', readonly = False) 
   # inicio examenes 1 evaluación de segundo
@@ -74,6 +76,15 @@ class SchoolYear(models.Model):
         record.date_1term2_exam_end = ''
       else: 
         record.date_1term2_exam_end = record.date_1term2_exam_ini + datetime.timedelta(days=4)
+
+  @api.depends('date_init_lective')
+  def _compute_welcome_day(self):
+    for record in self:
+      if record.date_init_lective == False:
+        record.date_welcome_day = ''
+      else: 
+        record.date_welcome_day = record.date_init_lective - datetime.timedelta(days=4)
+
 
 """
 https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
@@ -151,3 +162,9 @@ def _update_dates(self):
     'desc': self.date_1term2_exam_end.string, 
     'type': 'S'
   }
+
+  self.dates['date_welcome_day'] = { 
+  'date': self.date_welcome_day, 
+  'desc': self.date_welcome_day.string,
+  'type': 'G'
+}

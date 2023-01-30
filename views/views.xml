@@ -45,6 +45,7 @@
             <page string = 'General'>
               <group>
                 <field name="date_init_lective"/>
+                <field name="date_welcome_day"/>
               </group>
             </page>
             <page string = 'Primer curso'>
@@ -107,7 +108,7 @@
     <record model="ir.actions.act_window" id="atenea.action_school_year">
       <field name="name">Curso escolar</field>
       <field name="res_model">atenea.school_year</field>
-      <field name="view_mode">form</field>
+      <field name="view_mode">tree,form</field>
     </record>
 
 
