@@ -28,7 +28,10 @@ class SchoolYear(models.Model):
   date_1term2_exam_ini = fields.Date(string = 'Inicio exámenes primera evaluación', compute = '_compute_1term2_exam_ini') 
   # fin exámenes 1 evaluación de segundo
   date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end') 
-  
+
+  # report  
+  school_calendar = fields.Binary(readonly = True)
+
 
   # la fecha de inicio no puede ser fin de semana
   @api.constrains('date_init')
@@ -136,6 +139,8 @@ def calc_dur(dateI, dateE):
       return (datetime.datetime(dateI.year, dateI.month, 31) - dateI).days + 1
     else:
       return (datetime.datetime(dateI.year, dateI.month, 1) - dateI).days - 1
+    
+
 
 def _update_dates(self):
   self.dates['init_lective'] = { 

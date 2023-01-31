@@ -1,0 +1,21 @@
+<odoo>
+  <report id="school_calendar_pdf_report" 
+    string="Calendario escolar" 
+    model="atenea.school_year" 
+    report_type="qweb-pdf" 
+    file="atenea.report_school_year"
+    name="atenea.report_school_year"/>
+  
+  <template id="report_school_year">
+    <t t-call="web.html_container">
+      <!-- por si se mandará a imprimir calendarios de varios cursos escolares -->
+      <t t-foreach="docs" t-as="record">  
+        <t t-call="web.external_layout"> <!-- añade el header y el footer -->
+          <div class="page">
+            <h2>Calendario escolar</h2>
+          </div>
+        </t>    
+      </t>
+    </t>
+  </template>
+</odoo>

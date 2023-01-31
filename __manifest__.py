@@ -35,13 +35,14 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/config_settings_view.xml',
-        'views/templates.xml',
         'data/config/config_data.xml',
         'data/config/outgoing_mail.xml',
         'data/school.xml',
         'data/course.xml',
         'data/departament.xml',
         'data/rol.xml',
+        'report/school_calendar.xml',
+        #'report/custom_footer.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
