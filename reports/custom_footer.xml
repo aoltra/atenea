@@ -1,0 +1,18 @@
+<odoo>
+  <template id="external_layout_standard_report_footer_custom" inherit_id="web.external_layout_standard">
+    <xpath expr="//div/div[hasclass('text-center')]" position="replace"> 
+      <div class="row" style="font-family: 'Trebuchet MS', sans-serif; border-top: 1px solid black;">
+        <div class="col-6 mb4 text-right">
+          <ul class="list-inline mb4 text-nowrap">
+            <li t-if="company.phone" class="list-inline-item d-inline"><span class="o_force_ltr" t-field="company.phone"/></li>
+            <li t-if="company.email" class="list-inline-item d-inline"><span t-field="company.email"/></li>
+            <li t-if="company.website" class="list-inline-item d-inline"><span t-field="company.website"/></li>
+          </ul>
+        </div>
+        <div class="col-6 mb4 text-right">
+          <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d-%m-%Y %H:%M')"/>
+        </div>
+      </div>
+    </xpath>
+  </template>
+</odoo>
