@@ -41,8 +41,8 @@
         'data/course.xml',
         'data/departament.xml',
         'data/rol.xml',
-        'report/school_calendar.xml',
-        #'report/custom_footer.xml',
+        'reports/custom_footer.xml',
+        'reports/school_calendar.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

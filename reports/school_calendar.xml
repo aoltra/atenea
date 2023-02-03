@@ -1,0 +1,36 @@
+<odoo>
+  <report id="school_calendar_pdf_report" 
+    string="Calendario escolar" 
+    model="atenea.school_year" 
+    report_type="qweb-pdf" 
+    file="atenea.report_school_calendar"
+    name="atenea.report_school_calendar"/>
+  
+  <template id="report_school_calendar">
+    <t t-call="web.html_container">
+      <!-- por si se mandará a imprimir calendarios de varios cursos escolares -->
+      <t t-foreach="docs" t-as="record">  
+        <t t-call="web.external_layout"> <!-- añade el header y el footer -->
+          <div class="page">
+            <h2>Calendario escolar</h2>
+            <span t-field="record.date_init"/>
+            <div class="calendar" style = "display: grid; grid-template-columns: [first] 6cm [line2] 6cm [line3] 6cm [end];
+        grid-template-rows: 7cm 7cm 7cm 7cm; justify-items: center;">
+              <t t-foreach="months_cal[record.id]" t-as="m">  
+                <div class="grid-month">
+                  <!-- Utilizo t-raw ya que voy a insertar directamente HTML a renderizar -->
+                  <!-- t-esc mostraría el HTML como texto, no como código -->
+                  <!-- t-field muestra un campo del record -->
+                  <span t-raw="m"/>
+                  <span> asd</span>
+                </div>        
+              </t>
+            </div> 
+          </div>
+        </t>    
+      </t>
+    </t>
+  </template>
+</odoo>
+
+  <!-- print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)" -->
