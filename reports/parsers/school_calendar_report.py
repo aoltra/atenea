@@ -2,6 +2,7 @@ from odoo import models
 import logging
 import datetime
 import calendar
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -43,13 +44,12 @@ class SchoolCalendarReport(models.AbstractModel):
       
         for dt in date_month:
           month_cal = self._include_dates_month(month_cal, dt)
-          """if 'dur' in dt:
+          if 'dur' in dt:
             dtT = copy.deepcopy(dt)
-            days = range(dt['dur'] - 1) if dt['dur'] >0 else range(dt['dur'], 0)
+            days = range(dt['dur'].days - 1) if dt['dur'].days > 0 else range(dt['dur'], 0)
             for day in days:
-              print(day)
-              dtT['date'] = dt['date'] + datetime.timedelta(days=day + 1)
-              month_cal = self._include_dates_month(month_cal, dtT) """
+              dtT['date'] = dt['date'] + datetime.timedelta(days = day + 1)
+              month_cal = self._include_dates_month(month_cal, dtT)
    
         months_calendar[doc.id].append(month_cal)
 
