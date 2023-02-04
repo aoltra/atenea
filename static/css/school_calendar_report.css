@@ -1,0 +1,65 @@
+/* wkthmltopdf no soporta grid :( 
+.calendar {
+  display: grid;
+  grid-template-columns: [first] 6cm [line2] 6cm [line3] 6cm [end];
+  grid-template-rows: 7cm 7cm 7cm 7cm;
+
+  justify-items: center;
+}*/
+
+/* wkhtmltopdf soporta flex pero tiene un bug con flex-wrap, bug
+   que también afecta a bootstrap 
+.calendar {
+  display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap
+} */
+
+/* debug */
+/* .calendar > div {
+  border: 2px solid red;
+} */
+
+.grid-month table {
+  margin: 0 auto;
+}
+
+.grid-month td {
+  padding: 0.04cm 0.2cm;
+}
+
+/* se opta por float que es soportado sin problemas */
+.grid-month {
+  width: 7.3cm;
+  height: 7.2cm;
+  
+  margin-top: 0.5cm;
+
+  text-align: center;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+  
+  float: left;
+  font-size: 10pt;
+}
+
+.G-type {
+  background-color: aqua;
+}
+
+.S-type {
+  background-color: brown;
+}
+
+.P-type {
+  background-color: rgb(220, 20, 183);
+}
+
+.H-type {
+  color: rgb(202, 74, 74);
+}
+
+.sun, .sat {
+  color: rgb(202, 74, 74);
+}

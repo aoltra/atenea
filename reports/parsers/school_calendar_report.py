@@ -54,9 +54,7 @@ class SchoolCalendarReport(models.AbstractModel):
         months_calendar[doc.id].append(month_cal)
 
     _logger.info(months_calendar)
-    # _logger.info(months_calendar[1][6])
-
-    _logger.info(docs)
+  
 
     # se devuelve lo que interese que aparezca en el template
     return {
