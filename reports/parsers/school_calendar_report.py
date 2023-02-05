@@ -6,10 +6,10 @@ import copy
 
 _logger = logging.getLogger(__name__)
 
-# parser para procesar la plantilla del calendario escolar
-# Antes de buscar los valores en los datos del modelo asociado (en este caso school_year)
-# el motor de informes busca si hay algun modelo que conicida con el nombre del report
-# (report + atributo name del elemento report)
+""" parser para procesar la plantilla del calendario escolar
+Antes de buscar los valores en los datos del modelo asociado (en este caso school_year)
+el motor de informes busca si hay algun modelo que conicida con el nombre del report
+(report + atributo name del elemento report) """
 class SchoolCalendarReport(models.AbstractModel):
   _name = 'report.atenea.report_school_calendar'
   _description = 'Parser report calendario escolar'
@@ -19,7 +19,16 @@ class SchoolCalendarReport(models.AbstractModel):
     end = month_cal[month_cal[:month_cal.find('>' + str(dt['date'].day) + '<')].rindex("class") + 7:]
 
     return prev +  dt['type'] + '-type ' + end
+  
+  """ Devuelve una lista HTML (sólo li) con las fechas del mes"""
+  def _generate_li_dates(self, date_month):
+    date_month.sort(key = lambda x: x['date'].day)
 
+    list_li = ''
+    for dt in date_month:
+      list_li += '<li><span>' + str(dt['date'].day) + '</span>:<span> ' + dt['desc'].lower() +  '</span></li>'
+   # return '<li>8: fieuasd</li><li>12: caram</li><li>8: fieuasd</li><li>12: caram</li><li>8: fieuasd</li>'
+    return list_li
 
   def _get_report_values(self, docids, data=None):
     _logger.info("Parser generación calendario escolar")
@@ -51,6 +60,8 @@ class SchoolCalendarReport(models.AbstractModel):
               dtT['date'] = dt['date'] + datetime.timedelta(days = day + 1)
               month_cal = self._include_dates_month(month_cal, dtT)
    
+
+        month_cal +='<ul>' + self._generate_li_dates(date_month)  + ' </ul>' 
         months_calendar[doc.id].append(month_cal)
 
     _logger.info(months_calendar)
@@ -60,6 +71,6 @@ class SchoolCalendarReport(models.AbstractModel):
     return {
       'doc_ids': docids,                                      # obligatorio
       'doc_model': 'atenea.school_year',                      # obligatorio
-      'docs': docs,      # self.env['atenea.school_year'].browse(docids),  # obligatorio
+      'docs': docs,                                           # obligatorio
       'months_cal': months_calendar
     }
