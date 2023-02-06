@@ -155,17 +155,20 @@ class SchoolYear(models.Model):
       'type': 'S'
     }
 
-    self.dates['date_1term2_exam_end'] = { 
-      'date': self.date_1term2_exam_end,
-      'desc': self._fields['date_1term2_exam_end'].string, 
-      'type': 'S'
-    }
-
     self.dates['date_1term2_exam_ini'] = { 
       'date': self.date_1term2_exam_ini,
       'desc': self._fields['date_1term2_exam_ini'].string, 
       'type': 'S',
-      'dur': self.date_1term2_exam_end - self.date_1term2_exam_ini + datetime.timedelta(days = 1)
+      # días que dura este evento, además del día indicado
+      'dur': self.date_1term2_exam_end - self.date_1term2_exam_ini
+    }
+
+    self.dates['date_1term2_exam_end'] = { 
+      'date': self.date_1term2_exam_end,
+      'desc': self._fields['date_1term2_exam_end'].string, 
+      'type': 'S',
+      'dur': self.date_1term2_exam_ini - self.date_1term2_exam_end,
+
     }
 
     self.dates['date_welcome_day'] = { 

@@ -20,15 +20,34 @@ class SchoolCalendarReport(models.AbstractModel):
 
     return prev +  dt['type'] + '-type ' + end
   
-  """ Devuelve una lista HTML (sólo li) con las fechas del mes"""
+  """ Devuelve una tabla HTML (sólo tr) con las fechas del mes"""
   def _generate_li_dates(self, date_month):
     date_month.sort(key = lambda x: x['date'].day)
 
-    list_li = ''
+    range_day =  []
+
+    table_tr = ''
     for dt in date_month:
-      list_li += '<li><span>' + str(dt['date'].day) + '</span>:<span> ' + dt['desc'].lower() +  '</span></li>'
-   # return '<li>8: fieuasd</li><li>12: caram</li><li>8: fieuasd</li><li>12: caram</li><li>8: fieuasd</li>'
-    return list_li
+      if 'dur' in dt:
+        if dt['date'] < dt['date'] + dt['dur']:
+          day = '%s-%s' % (dt['date'].day, str((dt['date'] + dt['dur']).day))
+        else:
+          day = '%s-%s' % (str((dt['date'] + dt['dur']).day), dt['date'].day)
+
+        # para que no aparezca la fecha dos veces en el mismo mes, por el inicio y fin de rango
+        if day not in range_day:
+          range_day.append(day)
+        else:
+          continue
+
+        description = dt['desc'].partition(' ')[2].lower()
+      else:
+        day = str(dt['date'].day)
+        description = dt['desc'].lower()
+
+      table_tr += '<tr><td>' + day + '</td><td>:</td><td>' + description + '</td></tr>'
+    
+    return table_tr
 
   def _get_report_values(self, docids, data=None):
     _logger.info("Parser generación calendario escolar")
@@ -55,17 +74,14 @@ class SchoolCalendarReport(models.AbstractModel):
           month_cal = self._include_dates_month(month_cal, dt)
           if 'dur' in dt:
             dtT = copy.deepcopy(dt)
-            days = range(dt['dur'].days - 1) if dt['dur'].days > 0 else range(dt['dur'], 0)
+            days = range(dt['dur'].days) if dt['dur'].days > 0 else range(dt['dur'].days, 0)
             for day in days:
               dtT['date'] = dt['date'] + datetime.timedelta(days = day + 1)
               month_cal = self._include_dates_month(month_cal, dtT)
    
-
-        month_cal +='<ul>' + self._generate_li_dates(date_month)  + ' </ul>' 
+        month_cal +='<table class="description">' + self._generate_li_dates(date_month)  + ' </table>' 
         months_calendar[doc.id].append(month_cal)
 
-    _logger.info(months_calendar)
-  
 
     # se devuelve lo que interese que aparezca en el template
     return {
