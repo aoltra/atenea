@@ -11,9 +11,9 @@ docker exec -it atenea_v0_db_1 psql -U odoo -W CEED
 ```
 2. Solicita el password (odoo)
 
-3. Para ver las tablas __/dt__
+3. Para ver las tablas __\dt__
 
-4. Para ver datos realzar un __select__
+4. Para ver datos realizar un __select__
 
 ## Cómo acceder a _odoo shell_
 
@@ -28,3 +28,15 @@ donde _nombre_contenedor_ es el nombre del contenedor en el que corre _odoo_. Co
 ```
 docker ps
 ```
+
+## Cómo acceder a los informes HTML desde el navegador
+
+Hay que acceder a la URL 
+
+http://localhost:8069/report/html/[modulo].[nombre informe]/[id]
+
+Por ejemplo
+
+http://localhost:8069/report/html/atenea.report_school_calendar/1
+
+__Nota__: Es necesario estar logueado en otra pestaña en Odoo
