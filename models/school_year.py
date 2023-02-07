@@ -3,6 +3,9 @@
 import datetime
 from odoo import api, models, fields
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class SchoolYear(models.Model):
   """
@@ -19,19 +22,36 @@ class SchoolYear(models.Model):
   dates = { 'init_lective': { 'date': '', 'desc': 'Inicio clases', 'type': 'G'}}
 
   # inicio real de las clases
-  date_init_lective = fields.Date(string = 'Fecha de inicio real', compute = '_compute_date_init_lective', readonly = False)
+  date_init_lective = fields.Date(string = 'Fecha de inicio real', compute = '_compute_date_init_lective', readonly = False, store = True)
   # jornadas de bienvenida
-  date_welcome_day = fields.Date(string = 'Jornadas de bienvenida', compute = '_compute_welcome_day')
+  date_welcome_day = fields.Date(string = 'Jornadas de bienvenida', compute = '_compute_welcome_day', store = True)
   # fin de las clases de la primera evaluación de segundo
-  date_1term2_end = fields.Date(string = 'Fin clases primera evaluación', compute = '_compute_1term2_end', readonly = False) 
-  # inicio examenes 1 evaluación de segundo
-  date_1term2_exam_ini = fields.Date(string = 'Inicio exámenes primera evaluación', compute = '_compute_1term2_exam_ini') 
+  date_1term2_end = fields.Date(string = 'Fin clases primera evaluación', compute = '_compute_1term2_end', readonly = False, store = True) 
+  # inicio examenes 1 evaluación de segundo. En caso de readonly True hay que forzar su grabación en el XML con force_save
+  date_1term2_exam_ini = fields.Date(string = 'Inicio exámenes primera evaluación', compute = '_compute_1term2_exam_ini', store = True) 
   # fin exámenes 1 evaluación de segundo
-  date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end') 
+  date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end', store = True) 
 
-  # report  
-  school_calendar = fields.Binary(readonly = True)
+  # report calendario escolar  
+  school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True)
+  _upgrade_school_calendar_version = False
 
+  """ Sobreescritura de la función create que es llamada cuando se crea un registro nuevo """
+  @api.model
+  def create(self, vals):
+    # la primera versión de los informes se crea al crear el registro
+    vals['school_calendar_version'] = 1
+    res_id = super(SchoolYear, self).create(vals)
+    return res_id
+
+  """ Sobreescritura de la función write que es llamada cuando se actualiza un registro """
+  def write(self, vals):
+    if self._upgrade_school_calendar_version == True:
+      vals['school_calendar_version'] = self.school_calendar_version + 1
+
+    super(SchoolYear, self).write(vals)
+
+    return True
 
   # la fecha de inicio no puede ser fin de semana
   @api.constrains('date_init')
@@ -42,6 +62,8 @@ class SchoolYear(models.Model):
 
   @api.depends('date_init')
   def _compute_name(self):
+    self._upgrade_school_calendar_version = True
+    
     for record in self:
       if record.date_init == False:
         record.name = ''
@@ -50,22 +72,36 @@ class SchoolYear(models.Model):
 
   @api.depends('date_init')
   def _compute_date_init_lective(self):
+    self._upgrade_school_calendar_version = True
+
     for record in self:
       if record.date_init == False:
         record.date_init_lective = ''
-      elif record.date_init.weekday() >= 2 or record.date_init.weekday() <= 4:
+      elif record.date_init.weekday() >= 2:
         record.date_init_lective = record.date_init + datetime.timedelta(days = 7 - record.date_init.weekday())
+      else:
+        record.date_init_lective = record.date_init
+
+  @api.constrains('date_init_lective')
+  def _check_date_init_lective(self):
+    for record in self:
+      if record.date_init_lective.weekday() >= 4:
+        raise ValidationError('La fecha de inicio lectiva no puede ser ni viernes ni fin de semana')
   
   @api.depends('date_init_lective')
   def _compute_1term2_end(self):
+    self._upgrade_school_calendar_version = True
+
     for record in self:
       if record.date_init_lective == False:
         record.date_1term2_end = ''
       else: 
-        record.date_1term2_end = record.date_init_lective + datetime.timedelta(weeks=9) + datetime.timedelta(days=4)
+        record.date_1term2_end = record.date_init_lective + datetime.timedelta(weeks=9) + datetime.timedelta(days = 4 - record.date_init_lective.weekday())
 
   @api.depends('date_1term2_end')
   def _compute_1term2_exam_ini(self):
+    self._upgrade_school_calendar_version = True
+
     for record in self:
       if record.date_1term2_end == False:
         record.date_1term2_exam_ini = ''
@@ -74,6 +110,8 @@ class SchoolYear(models.Model):
 
   @api.depends('date_1term2_exam_ini')
   def _compute_1term2_exam_end(self):
+    self._upgrade_school_calendar_version = True
+
     for record in self:
       if record.date_1term2_exam_ini == False:
         record.date_1term2_exam_end = ''
@@ -82,6 +120,8 @@ class SchoolYear(models.Model):
 
   @api.depends('date_init_lective')
   def _compute_welcome_day(self):
+    self._upgrade_school_calendar_version = True
+
     for record in self:
       if record.date_init_lective == False:
         record.date_welcome_day = ''
