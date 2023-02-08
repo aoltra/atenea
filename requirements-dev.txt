@@ -1,0 +1,8 @@
+ # Paquetes necesarios en desarrollo
+ # Se instalan con 
+ #    pip install -r requirements-dev.txt
+
+ gitlint
+
+ # se llama al fichero de requerimientos generales
+-r requirements.txt
