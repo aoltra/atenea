@@ -39,7 +39,6 @@
             </group>
             <group>
               <field name="date_init"/>
-              <field name="school_calendar_version"/>
             </group>
           </group>
           <notebook>
@@ -53,13 +52,20 @@
             </page>
             <page string = 'Segundo curso'>
               <group>
-                <!-- los campo readonly no se actualizan en la BBDD sal vo que se incluya force_save = "1"-->
+                <!-- los campos readonly no se actualizan en la BBDD salvo que se incluya force_save = "1"-->
                 <field name="date_1term2_end" force_save="1"/>
                 <field name="date_1term2_exam_ini" force_save="1"/>
                 <field name="date_1term2_exam_end" force_save="1"/>
               </group>
             </page>
              <page string = 'PFC'>
+            </page>
+            <page string = 'Festivos'>
+            </page>
+            <page string = 'Información'>
+              <group>
+                <field name="school_calendar_version"/>
+              </group>
             </page>
           </notebook>
         </form>
