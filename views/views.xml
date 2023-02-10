@@ -28,6 +28,28 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="atenea.holiday">
+      <field name="name">Festivos</field>
+      <field name="model">atenea.holiday</field>
+      <field name="arch" type="xml">
+        <form>
+          <group colspan="2">
+            <field name="description" /> 
+          </group>
+          <separator/> 
+          <group>
+            <group>
+              <field name="date"/>
+            </group>
+            <group>       
+              <field name="date_end"/>
+              <field name="duration"/>
+            </group>
+          </group> 
+        </form>
+      </field>
+    </record>
+
     <record model="ir.ui.view" id="atenea.school_year_form">
       <field name="name">school_year.form.view</field>
       <field name="model">atenea.school_year</field>
