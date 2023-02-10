@@ -5,3 +5,4 @@ access_atenea_rol,access_atenea_rol,atenea.model_atenea_rol,base.group_user,1,1,
 access_atenea_departament,access_atenea_departament,atenea.model_atenea_departament,base.group_user,1,1,1,1
 access_atenea_employee,access_atenea_employee,atenea.model_atenea_employee,base.group_user,1,1,1,1
 access_atenea_school_year,access_atenea_school_year,atenea.model_atenea_school_year,base.group_user,1,1,1,1
+access_atenea_holiday,access_atenea_holiday,atenea.model_atenea_holiday,base.group_user,1,1,1,1

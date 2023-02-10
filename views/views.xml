@@ -61,6 +61,14 @@
              <page string = 'PFC'>
             </page>
             <page string = 'Festivos'>
+              <field name="holidays_ids">
+                <tree>    
+                  <field name="description"/>
+                  <field name="date"/>
+                  <field name="date_end" attrs="{'invisible': [('duration','=',1)]}"/>
+                  <field name="duration" attrs="{'invisible': [('duration','=',1)]}"/>
+                </tree>
+              </field>
             </page>
             <page string = 'Información'>
               <group>

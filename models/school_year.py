@@ -32,10 +32,11 @@ class SchoolYear(models.Model):
   # fin exámenes 1 evaluación de segundo
   date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end', store = True) 
 
+  holidays_ids = fields.One2many('atenea.holiday', 'school_year_id', compute = '_compute_holidays')
+
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
   school_calendar_update_keys = ['init_lective', 'date_init_lective', 'date_welcome_day', 'date_1term2_end', 'date_1term2_exam_ini', 'date_1term2_exam_end']
-
 
   """ Sobreescritura de la función create que es llamada cuando se crea un registro nuevo """
   @api.model
@@ -123,6 +124,19 @@ class SchoolYear(models.Model):
         record.date_welcome_day = ''
       else: 
         record.date_welcome_day = record.date_init_lective - datetime.timedelta(days=4)
+
+  @api.depends('date_init')
+  def _compute_holidays(self):
+    holidays = []
+    model_holiday = self.env['atenea.holiday']
+
+    for record in self:
+      holidays.append((model_holiday.create({
+        'description': 'Constitución', 
+        'date': datetime.datetime(record.date_init.year, 12, 6), 
+        'date_end': datetime.datetime(record.date_init.year, 12, 6) })).id)
+
+      record.holidays_ids = holidays
 
 
   """
