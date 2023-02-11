@@ -132,6 +132,9 @@ class SchoolYear(models.Model):
       if self._origin.date_init.year == record.date_init.year:
         continue
 
+      # elimino todos los registros "en el aire", pero se recuperan en el caso de que se cancele la modificación
+      # del school_year
+      record.holidays_ids = [(5, 0 ,0)]
       # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year
       record.holidays_ids = [(0, 0, {
         'school_year_id': self._origin.id,
