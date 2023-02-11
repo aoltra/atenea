@@ -32,7 +32,7 @@ class SchoolYear(models.Model):
   # fin exámenes 1 evaluación de segundo
   date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end', store = True) 
 
-  holidays_ids = fields.One2many('atenea.holiday', 'school_year_id', compute = '_compute_holidays')
+  holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
 
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
@@ -96,7 +96,7 @@ class SchoolYear(models.Model):
         record.date_1term2_end = record.date_init_lective + datetime.timedelta(weeks=9) + datetime.timedelta(days = 4 - record.date_init_lective.weekday())
 
   @api.constrains('date_1term2_end')
-  def _check_date_init(self):
+  def _check_date_1term2_end(self):
     for record in self:
       if record.date_init.weekday() == 5 or record.date_init.weekday() == 6:
         raise ValidationError('La fecha de fin de evaluación no puede ser fin de semana')
@@ -125,18 +125,19 @@ class SchoolYear(models.Model):
       else: 
         record.date_welcome_day = record.date_init_lective - datetime.timedelta(days=4)
 
-  @api.depends('date_init')
-  def _compute_holidays(self):
-    holidays = []
-    model_holiday = self.env['atenea.holiday']
-
+  @api.onchange('date_init')
+  def _calculate_holidays(self):
     for record in self:
-      holidays.append((model_holiday.create({
+      # si el año anterior es igual al que se acaba de cambiar no se hace nada
+      if self._origin.date_init.year == record.date_init.year:
+        continue
+
+      # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year
+      record.holidays_ids = [(0, 0, {
+        'school_year_id': self._origin.id,
         'description': 'Constitución', 
         'date': datetime.datetime(record.date_init.year, 12, 6), 
-        'date_end': datetime.datetime(record.date_init.year, 12, 6) })).id)
-
-      record.holidays_ids = holidays
+        'date_end': datetime.datetime(record.date_init.year, 12, 6) })]  
 
 
   """
