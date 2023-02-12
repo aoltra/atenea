@@ -21,7 +21,7 @@ class SchoolCalendarReport(models.AbstractModel):
     return prev +  dt['type'] + '-type ' + end
   
   """ Devuelve una tabla HTML (sólo tr) con las fechas del mes"""
-  def _generate_li_dates(self, date_month):
+  def _generate_tr_dates(self, date_month):
     date_month.sort(key = lambda x: x['date'].day)
 
     range_day =  []
@@ -79,7 +79,7 @@ class SchoolCalendarReport(models.AbstractModel):
               dtT['date'] = dt['date'] + datetime.timedelta(days = day + 1)
               month_cal = self._include_dates_month(month_cal, dtT)
    
-        month_cal +='<table class="description">' + self._generate_li_dates(date_month)  + ' </table>' 
+        month_cal +='<table class="description">' + self._generate_tr_dates(date_month)  + ' </table>' 
         months_calendar[doc.id].append(month_cal)
 
 
