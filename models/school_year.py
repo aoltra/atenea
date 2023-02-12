@@ -132,20 +132,95 @@ class SchoolYear(models.Model):
       if self._origin.date_init.year == record.date_init.year:
         continue
 
+      # fiestas de navidad
+      date_christmas_holidayI = datetime.datetime(record.date_init.year, 12, 23) # de partida es el 23/12
+   
+      if date_christmas_holidayI.weekday() == 0: # cae lunes
+        date_christmas_holidayI = datetime.datetime(record.date_init.year, 12, 21)
+      elif date_christmas_holidayI.weekday() == 1:  # cae martes
+        date_christmas_holidayI = datetime.datetime(record.date_init.year, 12, 20)
+      elif date_christmas_holidayI.weekday() == 6: # cae domingo
+        date_christmas_holidayI = datetime.datetime(record.date_init.year, 12, 22)
+
+      date_christmas_holidayE = datetime.datetime(record.date_init.year + 1, 1, 6) # de partida es el 6/1
+      if date_christmas_holidayE.weekday() >= 3 and date_christmas_holidayE.weekday() <= 5:
+        date_christmas_holidayE = date_christmas_holidayE + datetime.timedelta(days = 6 - date_christmas_holidayE.weekday())
+
+      # fallas
+      date_fallas_holidayI = datetime.datetime(record.date_init.year + 1, 3, 15) # de partida es el 15/3
+      if date_fallas_holidayI.weekday() == 0: # cae lunes
+        date_fallas_holidayI = datetime.datetime(record.date_init.year, 3, 12)
+      elif date_fallas_holidayI.weekday() == 1:  # cae martes
+        date_fallas_holidayI = datetime.datetime(record.date_init.year + 1, 3, 20)
+      elif date_fallas_holidayI.weekday() == 6: # cae domingo
+        date_fallas_holidayI = datetime.datetime(record.date_init.year + 1, 3, 14)
+
+      date_fallas_holidayE = datetime.datetime(record.date_init.year + 1, 3, 19) # de partida es el 19/3
+      if date_fallas_holidayE.weekday() >= 3 and date_fallas_holidayE.weekday() <= 5:
+        date_fallas_holidayE = date_fallas_holidayE + datetime.timedelta(days = 6 - date_fallas_holidayE.weekday())
+
+
       # elimino todos los registros "en el aire", pero se recuperan en el caso de que se cancele la modificación
       # del school_year
       record.holidays_ids = [(5, 0 ,0)]
       # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year
       record.holidays_ids = [(0, 0, {
         'school_year_id': self._origin.id,
+        'description': 'Día Comunidad Valenciana', 
+        'date': datetime.datetime(record.date_init.year, 10, 9), 
+        'date_end': datetime.datetime(record.date_init.year, 10, 9) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Día Hispanidad', 
+        'date': datetime.datetime(record.date_init.year, 10, 12), 
+        'date_end': datetime.datetime(record.date_init.year, 10, 12) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Todos los santos', 
+        'date': datetime.datetime(record.date_init.year, 11, 1), 
+        'date_end': datetime.datetime(record.date_init.year, 11, 1) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
         'description': 'Constitución', 
         'date': datetime.datetime(record.date_init.year, 12, 6), 
-        'date_end': datetime.datetime(record.date_init.year, 12, 6) })]  
+        'date_end': datetime.datetime(record.date_init.year, 12, 6) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Inmaculada', 
+        'date': datetime.datetime(record.date_init.year, 12, 8), 
+        'date_end': datetime.datetime(record.date_init.year, 12, 8) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Navidades', 
+        'date': date_christmas_holidayI,
+        'date_end': date_christmas_holidayE }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'San Vicente Martir', 
+        'date': datetime.datetime(record.date_init.year + 1, 1, 22), 
+        'date_end': datetime.datetime(record.date_init.year + 1, 1, 22) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Fallas', 
+        'date': date_fallas_holidayI,
+        'date_end': date_fallas_holidayE }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': 'Pascuas', 
+        'date': self._calc_easter(record.date_init.year + 1) + datetime.timedelta(days = -3),
+        'date_end': self._calc_easter(record.date_init.year + 1) + datetime.timedelta(days = 8) }),
+        (0, 0, {
+        'school_year_id': self._origin.id,
+        'description': '1º Mayo', 
+        'date': datetime.datetime(record.date_init.year + 1, 5, 1), 
+        'date_end': datetime.datetime(record.date_init.year + 1, 5, 1) }),
+        ]  
 
 
   """
   https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
   """
+  @staticmethod
   def _calc_easter(year):
     '''
     Gauss algorithm to calculate the date of easter in a given year
