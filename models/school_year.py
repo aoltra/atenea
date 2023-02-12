@@ -28,7 +28,7 @@ class SchoolYear(models.Model):
   # fin de las clases de la primera evaluación de segundo
   date_1term2_end = fields.Date(string = 'Fin clases primera evaluación', compute = '_compute_1term2_end', readonly = False, store = True) 
   # inicio examenes 1 evaluación de segundo. En caso de readonly True hay que forzar su grabación en el XML con force_save
-  date_1term2_exam_ini = fields.Date(string = 'Inicio exámenes primera evaluación', compute = '_compute_1term2_exam_ini', store = True) 
+  date_1term2_exam_ini = fields.Date(string = 'Inicio exámenes primera evaluación', compute = '_compute_1term2_exam_ini', readonly = False, store = True) 
   # fin exámenes 1 evaluación de segundo
   date_1term2_exam_end = fields.Date(string = 'Fin exámenes primera evaluación', compute = '_compute_1term2_exam_end', store = True) 
 
@@ -101,7 +101,7 @@ class SchoolYear(models.Model):
       if record.date_init.weekday() == 5 or record.date_init.weekday() == 6:
         raise ValidationError('La fecha de fin de evaluación no puede ser fin de semana')
              
-  @api.depends('date_1term2_end')
+  @api.depends('date_1term2_end', 'holidays_ids.date')
   def _compute_1term2_exam_ini(self):
     for record in self:
       if record.date_1term2_end == False:
@@ -109,6 +109,24 @@ class SchoolYear(models.Model):
       else: 
         record.date_1term2_exam_ini = record.date_1term2_end + datetime.timedelta(days=3)
 
+      # obtener de los festivos el dia de la constitucion
+      constitucion_holiday = next((holiday for holiday in record.holidays_ids if holiday.key == 'constitucion'), None)
+      inma_holiday = next((holiday for holiday in record.holidays_ids if holiday.key == 'inmaculada'), None)
+   
+      if constitucion_holiday == None or inma_holiday == None:
+        record.date_1term2_exam_ini = ''
+      # si en la semana de examenes está el día 6/12 o el 8/12, retraso los examenes una semana
+      elif (constitucion_holiday.date >= record.date_1term2_exam_ini and constitucion_holiday.date < record.date_1term2_exam_end) or \
+        (inma_holiday.date >= record.date_1term2_exam_ini and inma_holiday.date < record.date_1term2_exam_end):
+        record.date_1term2_exam_ini = record.date_1term2_exam_ini + datetime.timedelta(weeks = 1)
+        record.date_1term2_exam_end = record.date_1term2_exam_end + datetime.timedelta(weeks = 1)
+
+  @api.constrains('date_1term2_exam_ini')
+  def _check_date_1term2_end(self):
+    for record in self:
+      if record.date_init.weekday() != 0:
+        raise ValidationError('La fecha de inicio de examenes tiene que ser un lunes')
+  
   @api.depends('date_1term2_exam_ini')
   def _compute_1term2_exam_end(self):
     for record in self:
@@ -183,12 +201,14 @@ class SchoolYear(models.Model):
         'school_year_id': self._origin.id,
         'description': 'Constitución', 
         'date': datetime.datetime(record.date_init.year, 12, 6), 
-        'date_end': datetime.datetime(record.date_init.year, 12, 6) }),
+        'date_end': datetime.datetime(record.date_init.year, 12, 6),
+        'key': 'constitucion' }),
         (0, 0, {
         'school_year_id': self._origin.id,
         'description': 'Inmaculada', 
         'date': datetime.datetime(record.date_init.year, 12, 8), 
-        'date_end': datetime.datetime(record.date_init.year, 12, 8) }),
+        'date_end': datetime.datetime(record.date_init.year, 12, 8),
+        'key': 'inmaculada' }),
         (0, 0, {
         'school_year_id': self._origin.id,
         'description': 'Navidades', 
@@ -213,7 +233,7 @@ class SchoolYear(models.Model):
         'school_year_id': self._origin.id,
         'description': '1º Mayo', 
         'date': datetime.datetime(record.date_init.year + 1, 5, 1), 
-        'date_end': datetime.datetime(record.date_init.year + 1, 5, 1) }),
+        'date_end': datetime.datetime(record.date_init.year + 1, 5, 1) })
         ]  
 
 

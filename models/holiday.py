@@ -17,6 +17,9 @@ class Holiday(models.Model):
   date = fields.Date(string = 'Dia', required = True) 
   date_end = fields.Date(string = 'Fin de fiesta', required = True, compute='_compute_date_end', store = True, readonly = False) 
   duration = fields.Integer(string = "Duración", compute = '_compute_duration')
+
+  # key para la selección del festivo
+  key = fields.Char()
   
   @api.depends('date', 'date_end')
   def _compute_duration(self):
