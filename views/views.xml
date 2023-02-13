@@ -74,10 +74,19 @@
             </page>
             <page string = 'Segundo curso'>
               <group>
-                <!-- los campos readonly no se actualizan en la BBDD salvo que se incluya force_save = "1"-->
-                <field name="date_1term2_end" force_save="1"/>
-                <field name="date_1term2_exam_ini" force_save="1"/>
-                <field name="date_1term2_exam_end" force_save="1"/>
+                <group>
+                  <separator string="Primera evaluación" style="padding-bottom:15px"/>
+                  <!-- los campos readonly no se actualizan en la BBDD salvo que se incluya force_save = "1"-->
+                  <field name="date_1term2_end" force_save="1"/>
+                  <field name="date_1term2_exam_ini" force_save="1"/>
+                  <field name="date_1term2_exam_end" force_save="1"/>
+                  <separator/>
+                  <field name="duration_1term2"/>
+                </group>
+                <group>
+                  <separator string="Segunda evaluación" style="padding-bottom:15px"/>
+                  <field name="date_2term2_ini" force_save="1"/>
+                </group>
               </group>
             </page>
              <page string = 'PFC'>
