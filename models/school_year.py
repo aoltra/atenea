@@ -137,6 +137,7 @@ class SchoolYear(models.Model):
         (inma_holiday.date >= record.date_1term2_exam_ini and inma_holiday.date < record.date_1term2_exam_end):
         record.date_1term2_exam_ini = record.date_1term2_exam_ini + datetime.timedelta(weeks = 1)
         record.date_1term2_exam_end = record.date_1term2_exam_end + datetime.timedelta(weeks = 1)
+        record.date_1term2_end = record.date_1term2_end + datetime.timedelta(weeks = 1)
 
   @api.constrains('date_1term2_exam_ini')
   def _check_date_1term2_exam_ini(self):
