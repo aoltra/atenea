@@ -86,6 +86,11 @@
                 <group>
                   <separator string="Segunda evaluación" style="padding-bottom:15px"/>
                   <field name="date_2term2_ini" force_save="1"/>
+                  <field name="date_2term2_end" force_save="1"/>
+                  <field name="date_2term2_exam_ini" force_save="1"/>
+                  <field name="date_2term2_exam_end" force_save="1"/>
+                  <separator/>
+                  <field name="duration_2term2"/>
                 </group>
               </group>
             </page>

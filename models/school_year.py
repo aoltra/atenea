@@ -36,14 +36,21 @@ class SchoolYear(models.Model):
   duration_1term2 = fields.Integer(string = 'Duración (semanas)', compute = '_compute_duration_1term2')
   # inicio segunda evaluación
   date_2term2_ini = fields.Date(string = 'Inicio segunda evaluación', compute = '_compute_2term2_ini', store = True) 
-
+  # fin de las clases de la segunda evaluación de segundo
+  date_2term2_end = fields.Date(string = 'Fin clases segunda evaluación', compute = '_compute_2term2_end', readonly = False, store = True) 
+  # inicio examenes 2 evaluación de segundo
+  date_2term2_exam_ini = fields.Date(string = 'Inicio exámenes segunda evaluación', compute = '_compute_2term2_exam_ini', readonly = False, store = True) 
+  # fin exámenes 2 evaluación de segundo
+  date_2term2_exam_end = fields.Date(string = 'Fin exámenes segunda evaluación', compute = '_compute_2term2_exam_end', store = True) 
+  # duración segunda evaluación segundo
+  duration_2term2 = fields.Integer(string = 'Duración (semanas)', compute = '_compute_duration_2term2')
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
 
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
   school_calendar_update_keys = ['init_lective', 'date_init_lective', 'date_welcome_day', 'date_1term2_end', 
-    'date_1term2_exam_ini', 'date_1term2_exam_end', 'date_2term2_ini']
+    'date_1term2_exam_ini', 'date_1term2_exam_end', 'date_2term2_ini', 'date_2term2_end']
 
   # TODO: constraints para que se mantenga el orden cronológico de las fechas
 
@@ -126,13 +133,13 @@ class SchoolYear(models.Model):
       else: 
         record.date_1term2_exam_ini = record.date_1term2_end + datetime.timedelta(days=3)
 
-      # obtener de los festivos el dia de la constitucion
+      # obtener los festivos del día de la constitucion e inmaculada
       constitucion_holiday = next((holiday for holiday in record.holidays_ids if holiday.key == 'constitucion'), None)
       inma_holiday = next((holiday for holiday in record.holidays_ids if holiday.key == 'inmaculada'), None)
    
       if constitucion_holiday == None or inma_holiday == None:
         continue
-      # si en la semana de examenes está el día 6/12 o el 8/12, retraso los examenes una semana
+      # si en la semana de exámenes está el día 6/12 o el 8/12, retraso los exámenes una semana
       elif (constitucion_holiday.date >= record.date_1term2_exam_ini and constitucion_holiday.date < record.date_1term2_exam_end) or \
         (inma_holiday.date >= record.date_1term2_exam_ini and inma_holiday.date < record.date_1term2_exam_end):
         record.date_1term2_exam_ini = record.date_1term2_exam_ini + datetime.timedelta(weeks = 1)
@@ -168,6 +175,53 @@ class SchoolYear(models.Model):
         record.date_2term2_ini = ''
       else: 
         record.date_2term2_ini = record.date_1term2_exam_end + datetime.timedelta(days = 3)
+
+  @api.depends('date_2term2_ini', 'duration_1term2')
+  def _compute_2term2_end(self):
+    for record in self:
+      if record.date_2term2_ini == False:
+        record.date_2term2_end = ''
+      else:
+        # 20 + 2 (ya que Navidad al final son siempre dos semanas no lectivas). 
+        # Eso lo ubica al principio de la semana 21, asi que -1 y sumanos para alcanzar el viernes 
+        record.date_2term2_end = record.date_2term2_ini + datetime.timedelta(weeks = 21 - record.duration_1term2) + datetime.timedelta(days = 4)
+      
+  @api.constrains('date_2term2_end')
+  def _check_date_2term2_end(self):
+    for record in self:
+      if record.date_2term2_end.weekday() == 5 or record.date_2term2_end.weekday() == 6:
+        raise ValidationError('La fecha de fin de evaluación no puede ser fin de semana')
+
+  @api.depends('date_2term2_end','date_2term2_ini')    
+  def _compute_duration_2term2(self):
+    for record in self:
+      if record.date_2term2_end != False and record.date_2term2_ini != False:
+        record.duration_2term2 = (record.date_2term2_end - record.date_2term2_ini).days // 7 + 1 - 2 # - 2 por la dos de navidad 
+      else:
+        record.duration_2term2 = 0
+             
+  @api.depends('date_2term2_end')
+  def _compute_2term2_exam_ini(self):
+    for record in self:
+      if record.date_2term2_end == False:
+        record.date_2term2_exam_ini = ''
+      else: 
+        record.date_2term2_exam_ini = record.date_2term2_end + datetime.timedelta(days=3)
+
+  @api.constrains('date_2term2_exam_ini')
+  def _check_date_2term2_exam_ini(self):
+    for record in self:
+      if record.date_2term2_exam_ini != False: 
+        if record.date_2term2_exam_ini.weekday() != 0:
+          raise ValidationError('La fecha de inicio de exámenes tiene que ser un lunes')
+  
+  @api.depends('date_2term2_exam_ini')
+  def _compute_2term2_exam_end(self):
+    for record in self:
+      if record.date_2term2_exam_ini == False:
+        record.date_2term2_exam_end = ''
+      else: 
+        record.date_2term2_exam_end = record.date_2term2_exam_ini + datetime.timedelta(days=4)
     
   @api.onchange('date_init')
   def _calculate_holidays(self):
@@ -241,7 +295,8 @@ class SchoolYear(models.Model):
         'school_year_id': self._origin.id,
         'description': 'Navidades', 
         'date': date_christmas_holidayI,
-        'date_end': date_christmas_holidayE }),
+        'date_end': date_christmas_holidayE,
+        'key': 'navidad' }),
         (0, 0, {
         'school_year_id': self._origin.id,
         'description': 'San Vicente Martir', 
@@ -263,7 +318,6 @@ class SchoolYear(models.Model):
         'date': datetime.datetime(record.date_init.year + 1, 5, 1), 
         'date_end': datetime.datetime(record.date_init.year + 1, 5, 1) })
         ]  
-
 
   """
   https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
@@ -357,4 +411,24 @@ class SchoolYear(models.Model):
       'date': self.date_2term2_ini,
       'desc': self._fields['date_2term2_ini'].string, 
       'type': 'S',
+    }
+
+    self.dates['date_2term2_end'] = { 
+      'date': self.date_2term2_end,
+      'desc': self._fields['date_2term2_end'].string, 
+      'type': 'S',
+    }
+
+    self.dates['date_2term2_exam_ini'] = { 
+      'date': self.date_2term2_exam_ini,
+      'desc': self._fields['date_2term2_exam_ini'].string, 
+      'type': 'S',
+      'dur': self.date_2term2_exam_end - self.date_2term2_exam_ini
+    }
+
+    self.dates['date_2term2_exam_end'] = { 
+      'date': self.date_2term2_exam_end,
+      'desc': self._fields['date_2term2_exam_end'].string, 
+      'type': 'S',
+      'dur': self.date_2term2_exam_ini - self.date_2term2_exam_end,
     }
