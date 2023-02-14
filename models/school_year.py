@@ -50,6 +50,16 @@ class SchoolYear(models.Model):
   date_2term2_exam_end = fields.Date(string = 'Fin exámenes segunda evaluación', compute = '_compute_2term2_exam_end', store = True) 
   # duración segunda evaluación segundo
   duration_2term2 = fields.Integer(string = 'Duración (semanas)', compute = '_compute_duration_2term2')
+  # inicio examenes ordinaria de segundo
+  date_ord2_exam_ini = fields.Date(string = 'Inicio exámenes ordinaria', compute = '_compute_ord2_exam_ini', readonly = False, store = True) 
+  # fin exámenes ordinaria de segundo
+  date_ord2_exam_end = fields.Date(string = 'Fin exámenes ordinaria', compute = '_compute_ord2_exam_end', store = True) 
+  # inicio examenes ordinaria de segundo
+  date_extraord2_exam_ini = fields.Date(string = 'Inicio exámenes extraordinaria') #, compute = '_compute_extraord2_exam_ini', readonly = False, store = True) 
+  # fin exámenes ordinaria de segundo
+  date_extraord2_exam_end = fields.Date(string = 'Fin exámenes extraordinaria') #, compute = '_compute_extraord2_exam_end', store = True) 
+
+
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
 
@@ -228,6 +238,29 @@ class SchoolYear(models.Model):
         record.date_2term2_exam_end = ''
       else: 
         record.date_2term2_exam_end = record.date_2term2_exam_ini + datetime.timedelta(days=4)
+
+  @api.depends('date_2term2_exam_ini')
+  def _compute_ord2_exam_ini(self):
+    for record in self:
+      if record.date_2term2_ini == False:
+        record.date_ord2_exam_ini = ''
+      else: 
+        record.date_ord2_exam_ini = record.date_2term2_exam_ini + datetime.timedelta(weeks = 2)
+
+  @api.constrains('date_ord2_exam_ini')
+  def _check_date_ord2_exam_ini(self):
+    for record in self:
+      if record.date_ord2_exam_ini != False: 
+        if record.date_ord2_exam_ini.weekday() != 0:
+          raise ValidationError('La fecha de inicio de exámenes tiene que ser un lunes')
+  
+  @api.depends('date_2term2_exam_ini')
+  def _compute_ord2_exam_end(self):
+    for record in self:
+      if record.date_ord2_exam_ini == False:
+        record.date_ord2_exam_end = ''
+      else: 
+        record.date_ord2_exam_end = record.date_ord2_exam_ini + datetime.timedelta(days=4)
     
   @api.onchange('date_init')
   def _calculate_holidays(self):
