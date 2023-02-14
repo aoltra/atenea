@@ -16,6 +16,12 @@ class SchoolYear(models.Model):
   _description = 'Curso escolar'
 
   name = fields.Char(readonly = True, compute = '_compute_name', string = 'Curso')
+  state = fields.Selection([
+      ('0', 'Borrador'),
+      ('1', 'En curso'),
+      ('2', 'Finalizado')
+      ], string ='Estado del curso', default = '0')
+  
   date_init = fields.Date(string='Fecha de incio oficial')
 
   # estructura de datos con las fechas 
