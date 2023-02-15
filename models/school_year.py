@@ -58,7 +58,12 @@ class SchoolYear(models.Model):
   date_extraord2_exam_ini = fields.Date(string = 'Inicio exámenes extraordinaria') #, compute = '_compute_extraord2_exam_ini', readonly = False, store = True) 
   # fin exámenes ordinaria de segundo
   date_extraord2_exam_end = fields.Date(string = 'Fin exámenes extraordinaria') #, compute = '_compute_extraord2_exam_end', store = True) 
-
+  # anulación de matrícula
+  date_cancellation2 = fields.Date(string = 'Fin anulación de matrícula', compute = '_compute_cancellation2') 
+  # renuncia convocatoria ordinaria
+  date_waiver_ord2 = fields.Date(string = 'Fin renuncia convocatoria ordinaria', compute = '_compute_waiver_ord2') 
+  # renuncia convocatoria extraordinaria
+  date_waiver_extraord2 = fields.Date(string = 'Fin renuncia convocatoria extraordinaria', compute = '_compute_waiver_extraord2') 
 
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
@@ -66,7 +71,8 @@ class SchoolYear(models.Model):
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
   school_calendar_update_keys = ['init_lective', 'date_init_lective', 'date_welcome_day', 'date_1term2_end', 
-    'date_1term2_exam_ini', 'date_1term2_exam_end', 'date_2term2_ini', 'date_2term2_end']
+    'date_1term2_exam_ini', 'date_1term2_exam_end', 'date_2term2_ini', 'date_2term2_end', 'date_ord2_exam_ini',
+    'date_ord2_exam_end','date_extraord2_exam_ini', 'date_extraord2_exam_end']
 
   # TODO: constraints para que se mantenga el orden cronológico de las fechas
 
@@ -261,7 +267,43 @@ class SchoolYear(models.Model):
         record.date_ord2_exam_end = ''
       else: 
         record.date_ord2_exam_end = record.date_ord2_exam_ini + datetime.timedelta(days=4)
-    
+  
+  @api.depends('date_ord2_exam_ini')
+  def _compute_cancellation2(self):
+    for record in self:
+      christmas_holiday = next((holiday for holiday in record.holidays_ids if holiday.key == 'navidad'), None)
+
+      _logger.info(christmas_holiday)
+      
+      if record.date_ord2_exam_ini == False:
+        record.date_cancellation2 = ''
+      else: 
+        record.date_cancellation2 = datetime.datetime(record.date_ord2_exam_ini.year, 1, record.date_ord2_exam_ini.day)
+        if christmas_holiday == None:
+          continue
+        elif (record.date_cancellation2 >= christmas_holiday.date and record.date_cancellation2 <= christmas_holiday.date_end):
+          record.date_cancellation2 = christmas_holiday.date_end + datetime.timedelta(days = 1)
+        
+
+  @api.depends('date_ord2_exam_ini')
+  def _compute_waiver_ord2(self):
+    for record in self:
+      if record.date_ord2_exam_ini == False:
+        record.date_waiver_ord2 = ''      
+      else:
+        record.date_waiver_ord2 = datetime.datetime(record.date_ord2_exam_ini.year, record.date_ord2_exam_ini.month - 1, record.date_ord2_exam_ini.day)
+
+  @api.depends('date_extraord2_exam_ini')
+  def _compute_waiver_extraord2(self):
+    for record in self:
+      record.date_waiver_extraord2 = ''
+    pass
+    """  for record in self:
+      if record.date_ord2_exam_ini == False:
+        record.date_waiver_extraord2 = ''      
+      else:
+        record.date_waiver_extraord2 = datetime.datetime(record.date_extraord2_exam_ini.year, record.date_extraord2_exam_ini.month - 1, record.date_extraord2_exam_ini.day) """
+
   @api.onchange('date_init')
   def _calculate_holidays(self):
     if self._origin.date_init == False:
@@ -470,4 +512,50 @@ class SchoolYear(models.Model):
       'desc': self._fields['date_2term2_exam_end'].string, 
       'type': 'S',
       'dur': self.date_2term2_exam_ini - self.date_2term2_exam_end,
+    }
+
+    self.dates['date_ord2_exam_ini'] = { 
+      'date': self.date_ord2_exam_ini,
+      'desc': self._fields['date_ord2_exam_ini'].string, 
+      'type': 'S',
+      'dur': self.date_ord2_exam_end - self.date_ord2_exam_ini,
+    }
+
+    self.dates['date_ord2_exam_end'] = { 
+      'date': self.date_ord2_exam_end,
+      'desc': self._fields['date_ord2_exam_end'].string, 
+      'type': 'S',
+      'dur': self.date_ord2_exam_ini - self.date_ord2_exam_end,
+    }
+
+    self.dates['date_extraord2_exam_ini'] = { 
+      'date': self.date_extraord2_exam_ini,
+      'desc': self._fields['date_extraord2_exam_ini'].string, 
+      'type': 'S',
+      'dur': self.date_extraord2_exam_end - self.date_extraord2_exam_ini,
+    }
+
+    self.dates['date_extraord2_exam_end'] = { 
+      'date': self.date_extraord2_exam_end,
+      'desc': self._fields['date_extraord2_exam_end'].string, 
+      'type': 'S',
+      'dur': self.date_extraord2_exam_ini - self.date_extraord2_exam_end,
+    }
+    
+    self.dates['date_cancellation2'] = { 
+      'date': self.date_cancellation2,
+      'desc': self._fields['date_cancellation2'].string, 
+      'type': 'S',
+    }
+  
+    self.dates['date_waiver_ord2'] = { 
+      'date': self.date_waiver_ord2,
+      'desc': self._fields['date_waiver_ord2'].string, 
+      'type': 'S',
+    }
+  
+    self.dates['date_waiver_extraord2'] = { 
+      'date': self.date_waiver_extraord2,
+      'desc': self._fields['date_waiver_extraord2'].string, 
+      'type': 'S',
     }

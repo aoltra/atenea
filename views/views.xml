@@ -97,9 +97,21 @@
                   <separator string="Ordinaria" style="padding-bottom:15px"/>
                   <field name="date_ord2_exam_ini" force_save="1"/>
                   <field name="date_ord2_exam_end" force_save="1"/>
-                  <separator string="Extraordinaria" style="padding-top:30px ; padding-bottom:15px"/>
+                  <separator string="Extraordinaria" style="padding-top:30px; padding-bottom:15px"/>
                   <field name="date_extraord2_exam_ini" force_save="1"/>
                   <field name="date_extraord2_exam_end" force_save="1"/>
+                </group>
+              </group>
+              <separator string="Anulaciones y renuncias" style="padding-top:30px"/> 
+              <group col="3">
+                <group>
+                  <field name="date_cancellation2"/>
+                </group>
+                <group>
+                  <field name="date_waiver_ord2"/>
+                </group>
+                <group>
+                  <field name="date_waiver_extraord2"/>
                 </group>
               </group>
             </page>
