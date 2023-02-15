@@ -306,12 +306,13 @@ class SchoolYear(models.Model):
 
   @api.onchange('date_init')
   def _calculate_holidays(self):
-    if self._origin.date_init == False:
-      return
-    
     for record in self:
-      # si el año anterior es igual al que se acaba de cambiar no se hace nada
-      if self._origin.date_init.year == record.date_init.year:
+      if self._origin.date_init != False:
+        # si el año anterior es igual al que se acaba de cambiar no se hace nada
+        if self._origin.date_init.year == record.date_init.year:
+          continue
+
+      if record.date_init == False:
         continue
 
       # fiestas de navidad
