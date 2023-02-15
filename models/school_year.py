@@ -32,6 +32,8 @@ class SchoolYear(models.Model):
   # jornadas de bienvenida
   date_welcome_day = fields.Date(string = 'Jornadas de bienvenida', compute = '_compute_welcome_day', store = True)
   # SEGUNDO
+  # inicio primera evaluación
+  date_1term2_ini = fields.Date(string = 'Inicio primera evaluación', compute = '_compute_1term2_ini') 
   # fin de las clases de la primera evaluación de segundo
   date_1term2_end = fields.Date(string = 'Fin clases primera evaluación', compute = '_compute_1term2_end', readonly = False, store = True) 
   # inicio examenes 1 evaluación de segundo. En caso de readonly True hay que forzar su grabación en el XML con force_save
@@ -125,6 +127,15 @@ class SchoolYear(models.Model):
       if record.date_init_lective.weekday() >= 4:
         raise ValidationError('La fecha de inicio lectiva no puede ser ni viernes ni fin de semana')
   
+
+  @api.depends('date_init_lective')
+  def _compute_1term2_ini(self):
+    for record in self:
+      if record.date_init_lective == False:
+        record.date_1term2_ini = ''
+      else: 
+        record.date_1term2_ini = record.date_init_lective
+
   @api.depends('date_init_lective')
   def _compute_1term2_end(self):
     for record in self:
@@ -529,7 +540,7 @@ class SchoolYear(models.Model):
       'dur': self.date_ord2_exam_ini - self.date_ord2_exam_end,
     }
 
-    self.dates['date_extraord2_exam_ini'] = { 
+    """ self.dates['date_extraord2_exam_ini'] = { 
       'date': self.date_extraord2_exam_ini,
       'desc': self._fields['date_extraord2_exam_ini'].string, 
       'type': 'S',
@@ -541,7 +552,7 @@ class SchoolYear(models.Model):
       'desc': self._fields['date_extraord2_exam_end'].string, 
       'type': 'S',
       'dur': self.date_extraord2_exam_ini - self.date_extraord2_exam_end,
-    }
+    } """
     
     self.dates['date_cancellation2'] = { 
       'date': self.date_cancellation2,
@@ -555,8 +566,8 @@ class SchoolYear(models.Model):
       'type': 'S',
     }
   
-    self.dates['date_waiver_extraord2'] = { 
+    """ self.dates['date_waiver_extraord2'] = { 
       'date': self.date_waiver_extraord2,
       'desc': self._fields['date_waiver_extraord2'].string, 
       'type': 'S',
-    }
+    } """
