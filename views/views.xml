@@ -121,6 +121,8 @@
               <field name="holidays_ids">
                 <tree>    
                   <field name="description"/>
+                  <!-- hay que añadir el campo para poder trabajar con él en el código, pero queremos verlo -->
+                  <field name="key" attrs="{'column_invisible': [True]}"/>
                   <field name="date"/>
                   <field name="date_end" attrs="{'invisible': [('duration','=',1)]}"/>
                   <field name="duration" attrs="{'invisible': [('duration','=',1)]}"/>
