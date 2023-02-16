@@ -77,8 +77,10 @@ class SchoolCalendarReport(models.AbstractModel):
             days = range(dt['dur'].days) if dt['dur'].days > 0 else range(dt['dur'].days, 0)
             for day in days:
               dtT['date'] = dt['date'] + datetime.timedelta(days = day + 1)
-              month_cal = self._include_dates_month(month_cal, dtT)
-   
+              # por si la creación del rango ha incluido fechas del mes anterior o previo
+              if dtT['date'].month == month:
+                month_cal = self._include_dates_month(month_cal, dtT)
+
         month_cal +='<table class="description">' + self._generate_tr_dates(date_month)  + ' </table>' 
         months_calendar[doc.id].append(month_cal)
 
