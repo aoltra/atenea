@@ -75,7 +75,7 @@
               <group col="3">
                 <group>
                   <separator string="Primera evaluación" style="padding-bottom:15px"/>
-                  <!-- empieza igual que en segundo -->
+                  <!-- empieza el mismo dia que en segundo -->
                   <field name="date_1term2_ini"/>
                   <field name="date_1term1_end" force_save="1"/>
                   <field name="date_1term1_exam_ini" force_save="1"/>
@@ -97,20 +97,20 @@
                   <field name="date_ord1_exam_ini" force_save="1"/>
                   <field name="date_ord1_exam_end" force_save="1"/>
                   <separator string="Extraordinaria" style="padding-top:30px; padding-bottom:15px"/>
-                  <field name="date_extraord2_exam_ini" force_save="1"/>
-                  <field name="date_extraord2_exam_end" force_save="1"/>
+                  <field name="date_extraord1_exam_ini" force_save="1"/>
+                  <field name="date_extraord1_exam_end" force_save="1"/>
                 </group>
               </group>
               <separator string="Anulaciones y renuncias" style="padding-top:30px"/> 
               <group col="3">
                 <group>
-                  <field name="date_cancellation2"/>
+                  <field name="date_cancellation1"/>
                 </group>
                 <group>
-                  <field name="date_waiver_ord2"/>
+                  <field name="date_waiver_ord1"/>
                 </group>
                 <group>
-                  <field name="date_waiver_extraord2"/>
+                  <field name="date_waiver_extraord1"/>
                 </group>
               </group>
             </page>
