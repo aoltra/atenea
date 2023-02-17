@@ -52,7 +52,7 @@ class SchoolCalendarReport(models.AbstractModel):
   def _get_report_values(self, docids, data=None):
     _logger.info("Parser generación calendario escolar")
 
-    months = [ 9, 10, 11, 12, 1, 2, 3, 4, 5, 6]
+    months = [ 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7]
     html_cal = calendar.HTMLCalendar(firstweekday = 0)
 
     months_calendar = {}
