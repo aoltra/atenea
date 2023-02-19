@@ -51,3 +51,7 @@ gitlint install-hook
 > Nota 1: _gitlint_ no puede trabajar con otros _commit-msg_ hook.
 
 > Nota 2: VScode Error. Es posible que desde VSCode no encuentre _gitlint_ ya que los hoooks no se ejecutan teniendo en cuenta el entono virtual creado. Para salucionarlo se puede sustituir el hook instalado por gitlint por [este](https://gist.github.com/aoltra/5a929a18a09a01df6da48aa33bbd48bd) otro.
+
+## Cómo colaborar en el proyecto
+
+La información sobre cómo colaborar en el proyecto se encuentra en el documento [how_to_collaborate.md](./doc/how_to_collaborate.md)
