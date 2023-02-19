@@ -36,5 +36,7 @@ Definen el ámbito en el que se ha realizado el commit
 | Nombre | tipo |  descripción |
 | :-- | :-------:  |  :--------- | 
 | core | (_core_)  | Núcleo de la aplicación |
+| informes | (_rpt_)  | Informes |
 | proyecto fin de ciclo | (_pfc_)  | Desarrollo del PFC |
 | convalidaciones | (_valid_)  | Proceso de convalidaciones  |
+| anulación y renuncias | (_cncl_)  | Anulaciones de matrícula y renuncia de convocatorias  |
