@@ -125,7 +125,8 @@ class SchoolYear(models.Model):
   """ Sobreescritura de la función write que es llamada cuando se actualiza un registro """
   def write(self, vals):
     # Si alguno de los valores que se han cambiado están en la lista de cambios que afectan al calendario
-    if any([i in vals for i in self.school_calendar_update_keys]):
+    # y el curso está 'en curso'
+    if any([i in vals for i in self.school_calendar_update_keys]) and (self.state == '1' or vals['state'] == '1'):
       vals['school_calendar_version'] = self.school_calendar_version + 1
 
     super(SchoolYear, self).write(vals)
