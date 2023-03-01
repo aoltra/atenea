@@ -10,4 +10,5 @@ from . import validation
 from . import school_year
 from . import holiday
 from . import config_settings
+from . import classroom
 from . import cron
