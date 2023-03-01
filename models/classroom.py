@@ -19,4 +19,7 @@ class Classroom(models.Model):
 
   subjects_ids = fields.One2many('atenea.subject', 'classroom_id', string = 'Módulos')
 
- 
+  @api.model
+  def _cron_example(self):
+    _logger.info("CRON ATENEA-CEED")
+    return

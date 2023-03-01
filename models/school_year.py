@@ -22,7 +22,7 @@ class SchoolYear(models.Model):
       ('2', 'Finalizado')
       ], string ='Estado del curso', default = '0')
   
-  date_init = fields.Date(string='Fecha de incio oficial')
+  date_init = fields.Date(string='Fecha de inicio oficial')
 
   # estructura de datos con las fechas 
   dates = { 'init_lective': { 'date': '', 'desc': 'Inicio clases', 'type': 'G'}}
@@ -103,6 +103,7 @@ class SchoolYear(models.Model):
 
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
+  cron_ids = fields.One2many('ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
 
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
@@ -110,7 +111,7 @@ class SchoolYear(models.Model):
     'date_1term2_exam_ini', 'date_1term2_exam_end', 'date_2term2_ini', 'date_2term2_end', 'date_ord2_exam_ini',
     'date_ord2_exam_end','date_extraord2_exam_ini', 'date_extraord2_exam_end', 
     'date_1term1_end', 'date_1term1_exam_ini', 'date_1term1_exam_end', 'date_2term1_ini', 'date_2term1_end', 
-    'date_ord1_exam_ini', 'date_ord1_exam_end','date_extraord1_exam_ini', 'date_extraord1_exam_end']
+    'date_ord1_exam_ini', 'date_ord1_exam_end','date_extraord1_exam_ini', 'date_extraord1_exam_end', 'state']
 
   # TODO: constraints para que se mantenga el orden cronológico de las fechas
 
@@ -124,15 +125,27 @@ class SchoolYear(models.Model):
 
   """ Sobreescritura de la función write que es llamada cuando se actualiza un registro """
   def write(self, vals):
+    ref = self.env.ref
     # Si alguno de los valores que se han cambiado están en la lista de cambios que afectan al calendario
     # y el curso está 'en curso'
-    if any([i in vals for i in self.school_calendar_update_keys]) and (self.state == '1' or vals['state'] == '1'):
+    if any([i in vals for i in self.school_calendar_update_keys]) and \
+      (self.state == '1' or ('state' in vals and vals['state'] == '1')):
       vals['school_calendar_version'] = self.school_calendar_version + 1
+
+    """ self.env['ir.cron'].create({
+      'name': 'demo',  
+      'interval_number': 1,
+      'interval_type': 'days',
+      'numbercall': -1,     # número de veces que será ejecutada la tarea
+      'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+      'model_id': ref('atenea.model_atenea_validation').id,
+      'code': '_cron_example'
+    }) """
 
     super(SchoolYear, self).write(vals)
 
     return True
-
+  
   # ###########
   # GENERALES
   # ###########
@@ -683,6 +696,54 @@ class SchoolYear(models.Model):
         'date': datetime.datetime(record.date_init.year + 1, 5, 1), 
         'date_end': datetime.datetime(record.date_init.year + 1, 5, 1) })
         ]  
+
+
+  @api.onchange('date_init')
+  def _calculate_task(self):
+    for record in self:
+      if record.date_init == False:
+        continue
+
+      courses_id = [x.id for x in self.env['atenea.course'].search([])]
+      courses = self.env['atenea.course'].browse(courses_id)  
+      cron_ids = []
+
+      for course in courses:
+        # descarga desde Aules
+        task = (0, 0, {
+          'model_id': record.env.ref('atenea.model_atenea_classroom'),
+          'name': 'Descarga datos convalidaciones {} desde Aules'.format(course.abbr),
+          'active': True,
+          'interval_number': 1,
+          'interval_type': 'days',
+          # 'type': 'ir.action.server',
+          # 'model_id': self.env.ref('atenea.model_atenea_validation').id,
+          'numbercall': 60,     # número de veces que será ejecutada la tarea
+          'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+          # 'usage': 'ir_cron',
+          #'school_year_id': '{}_{}'.format(model_id, record.id),
+          'nextcall': '2023-03-01 00:17:59',
+          'state': 'code',
+          'code': 'model._cron_example()',
+          # 'model_id': self.env.ref('atenea.school_year').id,
+          # 'ir_actions_server_id': (0, 
+          # { 'model_id': self.env.ref('atenea.model_atenea_validation').id, 
+          #   'usage': 'ir.cron',
+          #   'code': 'model._cron_example()' }),
+          #'ir_actions_server_id.model_id': self.env.ref('atenea.model_atenea_validation').id,
+          # 'inactivity_period_ids': (0, 0, { 
+          #   'type': 'day', 
+          #   'inactivity_day_begin': record.date_init_lective, 
+          #   'inactivity_day_end':  datetime.date(record.date_init_lective.year, 
+          #     record.date_init_lective.month + 1, 
+          #     record.date_init_lective.day) })
+        }) 
+      
+        cron_ids.append(task)
+
+      _logger.info(cron_ids)
+      record.cron_ids = cron_ids
+
 
   """
   https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python

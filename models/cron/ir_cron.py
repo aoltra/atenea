@@ -10,15 +10,28 @@ from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
-""" Clase hija de cron que añade diferentes periodos de inactividad"""
+""" Clase hija de cron que añade enlaces many2one a:
+    1. school_year. Tareas que afecten a toda la FP. Por ejemplo para convalidaciones o renuncias
+    2. departament. Tareas que afecten a un departamento: mensajes de bienvenida, explicación de procedimientos, etc
+    3. course (tutoria). Tareas que afecten a un ciclo: mensaje de bienvenida, convocatoria de reuniones, apertura o fin de plazos
+    4. subject. Tareas que afecten a módulo: mensaje de bienvenida, mensajes de encuestas de examenes, mensajes de apertura de temas, etc
+    5. employee. Tareas a nivel de empleado (experimental)
+     
+    4 y 5 se separan a efectos de usabilidad por parte del usuario, para separarlas conceptualmente en las diferentes partes de 
+    la aplicación, pero en el fondo es lo mismo
+    """
 class IrCron(models.Model):
   _inherit = 'ir.cron'
 
-  inactivity_period_ids = fields.One2many('ir.cron.inactivity.period', 
+  # Objectoid al que va asociado el cron, 
+  # no confundir con el modelo que tiene el código a ejecutar.
+  school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar', ondelete = 'cascade')
+ 
+  """ inactivity_period_ids = fields.One2many('ir.cron.inactivity.period', 
     string = 'Periodos de inactividad',
-    inverse_name = 'cron_id')
+    inverse_name = 'cron_id') """
 
-  @api.model
+  """ @api.model
   def _callback(self, model_name, method_name, args, job_id):
     job = self.browse(job_id)
     # se comprueba si es periodo de inactividad, 
@@ -30,4 +43,4 @@ class IrCron(models.Model):
         return
     
     return super(IrCron, self)._callback(
-      model_name, method_name, args, job_id)
+      model_name, method_name, args, job_id) """

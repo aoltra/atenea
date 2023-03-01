@@ -176,11 +176,41 @@
                 <field name="school_calendar_version"/>
               </group>
             </page>
+            <page string = 'Tareas'>
+              <field name = 'cron_ids'>
+                <tree>
+                  <field name = 'name'/>
+                  <field name = "interval_number"/>
+                  <field name = "interval_type"/>
+                  <field name = "nextcall"/>
+                  <field name = "active"/> 
+                  <field name = 'model_id'/>
+                  <field name = 'code'/>
+                </tree>
+              </field>
+            </page>
           </notebook>
         </form>
       </field>
-    </record>
+    </record> 
 
+  <!--   <record model="ir.ui.view" id="atenea.cron_form">
+      <field name="name">atenea.cron.form</field>
+      <field name="model">atenea.cron</field>
+      <field name="mode">primary</field>
+       <field name="inherit_id" ref="base.view_server_action_form"/> 
+      <field name="arch" type="xml">
+        <form>
+          <field name="name" string="Nombre"/>
+          
+          <field name="active" widget="boolean_toggle"/> 
+          <field name="nextcall"/>
+          <field name="numbercall"/>
+          <field name="priority"/>
+          <field name="doall"/>
+        </form>
+      </field>
+    </record> -->
 
     <!-- actions opening views on models -->
 
@@ -245,6 +275,17 @@
       </field>
     </record>
 -->
+
+    <record model="ir.actions.server" id="atenea.action_server">
+      <field name="name">atenea server</field>
+      <field name="model_id" ref="atenea.model_atenea_validation"/>
+      <field name="model_name">atenea_validation</field>
+      <field name="usage">ir_cron</field>
+      <field name="state">code</field>
+      <field name="code">
+        _cron_example
+      </field>
+    </record>
 
     <!-- Top menu item -->
     <menuitem name="CEED" id="atenea.menu_root"/>

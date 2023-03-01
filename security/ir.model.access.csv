@@ -7,3 +7,5 @@ access_atenea_employee,access_atenea_employee,atenea.model_atenea_employee,base.
 access_atenea_school_year,access_atenea_school_year,atenea.model_atenea_school_year,base.group_user,1,1,1,1
 access_atenea_holiday,access_atenea_holiday,atenea.model_atenea_holiday,base.group_user,1,1,1,1
 access_atenea_classroom,access_atenea_classroom,atenea.model_atenea_classroom,base.group_user,1,1,1,1
+access_atenea_cron,access_atenea_cron,atenea.model_ir_cron,base.group_user,1,1,1,1
+access_atenea_cron_inactivity_period,access_atenea_cron_inactivity_period,atenea.model_ir_cron_inactivity_period,base.group_user,1,1,1,1

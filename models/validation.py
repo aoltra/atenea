@@ -5,11 +5,12 @@ from odoo.exceptions import ValidationError
 import logging
 import os
 
+_logger = logging.getLogger(__name__)
+
 class Validation(models.Model):
   """
   Define las convalidaciones
   """
-      
   _name = 'atenea.validation'
   _description = 'Convalidaciones'
 
@@ -44,7 +45,6 @@ class Validation(models.Model):
       ], string ='Razón de la convalidación', 
       help = "Permite indicar el motivo por el que acepta o deniega la convalidación")
 
-  _logger = logging.getLogger(__name__)
   correction_reason = fields.Selection([
       ('SNF', 'Documento no firmado digitalmente'),
       ('RL', 'No se aporta curso de riesgo laborales > 30h'),
@@ -52,7 +52,6 @@ class Validation(models.Model):
       ], string ='Razón de la subsanación', default = 'SNF',
       help = "Permite indicar el motivo por el que se solicita la subsanación")
   
- 
 
   # la nota tiene que estar entre 5 (tiene que esta aprobado) y 11
   @api.constrains('mark')
@@ -86,5 +85,3 @@ class Validation(models.Model):
       for file_path in os.listdir(validations_path_course):
         if os.path.isfile(os.path.join(validations_path_course, file_path)):
           files.append(file_path) # aunque mejor hacer ya la descompresion, no?
-
-     
