@@ -30,6 +30,11 @@
     # any module necessary for this one to work correctly
     'depends': ['base', 'mail'],
 
+    # external dependencies that have to be installed. Can be python or bin dependencies
+    # Only checks whether the dependency is installed. Not automatically install the dependency!!
+    'external_dependencies': {
+       'python': ['moodleteacher'],
+    },
     # always loaded
     'data': [
         'security/ir.model.access.csv',
