@@ -31,7 +31,7 @@
     'depends': ['base', 'mail'],
 
     # external dependencies that have to be installed. Can be python or bin dependencies
-    # Only checks whether the dependency is installed. Not automatically install the dependency!!
+    # Only checks whether the dependency is installed. Not install the dependency!!
     'external_dependencies': {
        'python': ['moodleteacher'],
     },
@@ -46,6 +46,8 @@
         'data/course.xml',
         'data/departament.xml',
         'data/rol.xml',
+        'data/classroom.xml',
+        'data/task_moodle.xml',
         # reports
         'reports/custom_footer.xml',
         'reports/school_calendar.xml',

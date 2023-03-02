@@ -2,9 +2,9 @@
   <data>
     <!-- Aulas virtuales -->
     <record model="atenea.classroom" id="atenea.classroom_DAW_TUT12">
-      <field name="code">2088</field>
-      <field name="moodle_id"></field>
-      <field name="description">SEG9_CEE_46025799_2022_845104_TU01CF</field>
+      <field name="code">SEG9_CEE_46025799_2022_845104_TU01CF</field>
+      <field name="moodle_id">2088</field>
+      <field name="description">Aula de tutoria de DAW</field>
     </record>
   </data>
 </odoo>
