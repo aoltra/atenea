@@ -20,6 +20,9 @@
    git clone https://github.com/aoltra/atenea.git atenea_dev
    ```
 
+3. Seguirlos pasos indicados en README.md
+
+
 ## Desarrollo
 
 1. Tener el local (carpeta _atenea_dev_) al día
@@ -28,7 +31,7 @@
    git pull main
    ```
 
-2. Crear una rama y posicionarse en ella para el desarrollo del código. La rama trendrá como nomenclatura:
+2. Crear una rama y posicionarse en ella para el desarrollo del código. La rama tendrá como nomenclatura:
 
    _tipo_módulo_descripción_
  
@@ -48,13 +51,14 @@
 
   ## Pull Request
 
-  Una vez finalizado la tarea hay que solcitar un pull request para que el código se incluya en la rama main del repo.
+  Una vez finalizado la tarea hay que solicitar un pull request para que el código se incluya en la rama main del repo.
 
   1. Hacer un _push_ de la rama a _origin_
 
      ```
      git push fix_core_34
      ```
+
   2. Cuando la tarea esté acabada, desde Github, hacer un _pull request_, documentándolo correctamente para que el revisor tenga toda la información. Hay que rellenar los datos sobre revisor, a quién está asignado y si está vinculadao a una tarea del proyecto o issue.
 
   3. El revisor aprueba, comenta o requerirá cambios.
