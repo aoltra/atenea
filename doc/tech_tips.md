@@ -40,3 +40,11 @@ Por ejemplo
 http://localhost:8069/report/html/atenea.report_school_calendar/1
 
 __Nota__: Es necesario estar logueado en otra pestaña en Odoo
+
+## Cómo obtener el token de acceso a Moodle
+
+Para poder conectar con Moodle desde Atenea es necesario un token de autenticación. El token se consigue haciendo una petición al _servicio moodle_mobile_app_
+
+```
+curl -d username="USERNAME" -d password="PASSWORD" 'https://aules.edu.gva.es/ed/login/token.php?service=moodle_mobile_app'
+```
