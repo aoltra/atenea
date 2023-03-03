@@ -1,0 +1,14 @@
+<odoo>
+  <data>
+    <!-- Módulos -->
+    <record model="atenea.subject" id="atenea.subject_DAW_TUT">
+      <field name="abbr">TUT</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 1º</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_TUT12"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>
+                                      
+    </record>
+  </data>
+</odoo>

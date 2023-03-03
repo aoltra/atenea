@@ -33,7 +33,7 @@
     # external dependencies that have to be installed. Can be python or bin dependencies
     # Only checks whether the dependency is installed. Not install the dependency!!
     'external_dependencies': {
-       'python': ['moodleteacher'],
+       'python': ['moodleteacher', 'toolz'],
     },
     # always loaded
     'data': [
@@ -43,11 +43,12 @@
         'data/config/config_data.xml',
         'data/config/outgoing_mail.xml',
         'data/school.xml',
-        'data/course.xml',
         'data/departament.xml',
-        'data/rol.xml',
         'data/classroom.xml',
+        'data/course.xml',
+        'data/subject.xml',
         'data/task_moodle.xml',
+        'data/rol.xml',
         # reports
         'reports/custom_footer.xml',
         'reports/school_calendar.xml',

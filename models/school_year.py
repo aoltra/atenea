@@ -3,6 +3,7 @@
 import datetime
 from odoo import api, models, fields
 from odoo.exceptions import ValidationError
+import toolz
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -710,36 +711,35 @@ class SchoolYear(models.Model):
 
       for course in courses:
         # descarga desde Aules
-        task = (0, 0, {
-          'model_id': record.env.ref('atenea.model_atenea_classroom'),
-          'name': 'Descarga datos convalidaciones {} desde Aules'.format(course.abbr),
-          'active': True,
-          'interval_number': 1,
-          'interval_type': 'days',
-          # 'type': 'ir.action.server',
-          # 'model_id': self.env.ref('atenea.model_atenea_validation').id,
-          'numbercall': 60,     # número de veces que será ejecutada la tarea
-          'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
-          # 'usage': 'ir_cron',
-          #'school_year_id': '{}_{}'.format(model_id, record.id),
-          'nextcall': '2023-03-01 00:17:59',
-          'state': 'code',
-          'code': 'model._cron_example()',
-          # 'model_id': self.env.ref('atenea.school_year').id,
-          # 'ir_actions_server_id': (0, 
-          # { 'model_id': self.env.ref('atenea.model_atenea_validation').id, 
-          #   'usage': 'ir.cron',
-          #   'code': 'model._cron_example()' }),
-          #'ir_actions_server_id.model_id': self.env.ref('atenea.model_atenea_validation').id,
-          # 'inactivity_period_ids': (0, 0, { 
-          #   'type': 'day', 
-          #   'inactivity_day_begin': record.date_init_lective, 
-          #   'inactivity_day_end':  datetime.date(record.date_init_lective.year, 
-          #     record.date_init_lective.month + 1, 
-          #     record.date_init_lective.day) })
-        }) 
+
+        # módulos de tutoria
+        _logger.info(course.subjects_ids)
+        tut_subjects = [ subject for subject in course.subjects_ids if subject['code'] == '0000']
+
+        if not tut_subjects:
+          _logger.error('No hay módulos de tutoria asignados en {}'.format(course.abbr))
+          continue
+
+        distinct_classroom_tut = toolz.unique(tut_subjects, key=lambda x: x.classroom_id)
+        # [ subject for subject in tut_subjects if subject['classroom_id'] not in distinct_classroom_tut]
+
+        for classroom in distinct_classroom_tut:
+          task = (0, 0, {
+            'model_id': record.env.ref('atenea.model_atenea_classroom'),
+            'name': 'Descarga datos convalidaciones {} desde Aules'.format(course.abbr),
+            'active': True,
+            'interval_number': 1,
+            'interval_type': 'days',
+            # 'type': 'ir.action.server',
+            # 'model_id': self.env.ref('atenea.model_atenea_validation').id,
+            'numbercall': 60,     # número de veces que será ejecutada la tarea
+            'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+            'nextcall': '2023-03-02 00:27:59',
+            'state': 'code',
+            'code': 'model._cron_download_validations(183989)',
+          }) 
       
-        cron_ids.append(task)
+          cron_ids.append(task)
 
       _logger.info(cron_ids)
       record.cron_ids = cron_ids

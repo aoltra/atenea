@@ -1,4 +1,5 @@
 # Paquetes necesarios en común (desarrollo y producción)
 # Es llamado desde requirements-dev.txt o requirements-prod.txt 
  
-moodleteacher 
+toolz
+moodleteacher
