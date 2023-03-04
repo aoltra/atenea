@@ -21,25 +21,32 @@ class Classroom(models.Model):
   description = fields.Char('Descripción')
 
   subjects_ids = fields.One2many('atenea.subject', 'classroom_id', string = 'Módulos')
-  tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que estám conectadas con Atenea')
+  tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que están conectadas con Atenea')
+
+  """ Devuelve la tarea encargada de las convalidaciones """
+  def get_task_id_by_key(self, key):
+    
+    tasks = list(filter(lambda item: item['key'] == key, self.tasks_moodle_ids))
+    if not tasks:
+      _logger.error("No hay tarea de convalidaciones en el aula")
+      return None
+
+    return tasks[0].moodle_id
 
   @api.model
-  def _cron_example(self):
-    _logger.info("CRON ATENEA-CEED")
-
-    return
-  
-  @api.model
-  def _cron_download_validations(self, validation_task_id):
+  def _cron_download_validations(self, validation_classroom_id, validation_task_id):
+    if validation_classroom_id == None:
+      _logger.error("CRON: validation_classroom_id no definido")
+    
     if validation_task_id == None:
-      _logger.info("CRON: validation_task_id no definido")
+      _logger.error("CRON: validation_task_id no definido")
 
     _logger.info("CRRROOON id {}".format(validation_task_id))
 
     
     conn = MoodleConnection(interactive=True, 
-      token = "ad342bca211c70e18c6b28ae6b35c26", 
-      moodle_host = "https://aules.edu.gva.es/ed/")
+      token = "TOKEN", 
+      moodle_host = "HOST")
 
 
     _logger.info("CRRROOON con {}".format(conn))

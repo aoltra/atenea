@@ -716,27 +716,28 @@ class SchoolYear(models.Model):
         _logger.info(course.subjects_ids)
         tut_subjects = [ subject for subject in course.subjects_ids if subject['code'] == '0000']
 
+        _logger.info(tut_subjects)
         if not tut_subjects:
           _logger.error('No hay módulos de tutoria asignados en {}'.format(course.abbr))
           continue
 
-        distinct_classroom_tut = toolz.unique(tut_subjects, key=lambda x: x.classroom_id)
-        # [ subject for subject in tut_subjects if subject['classroom_id'] not in distinct_classroom_tut]
-
-        for classroom in distinct_classroom_tut:
+        # únicamente módulos de tutoria que tengan aulas distintas
+        distinct_subject_tut = [subject for subject in list(toolz.unique(tut_subjects, key=lambda x: x.classroom_id))]
+    
+        for subject in distinct_subject_tut:        
           task = (0, 0, {
             'model_id': record.env.ref('atenea.model_atenea_classroom'),
-            'name': 'Descarga datos convalidaciones {} desde Aules'.format(course.abbr),
+            'name': 'Descarga datos convalidaciones {} desde Aules {}'.format(course.abbr, 
+              '/{}'.format(subject.year) if len(list(distinct_subject_tut)) > 1 else ''),
             'active': True,
             'interval_number': 1,
             'interval_type': 'days',
-            # 'type': 'ir.action.server',
-            # 'model_id': self.env.ref('atenea.model_atenea_validation').id,
             'numbercall': 60,     # número de veces que será ejecutada la tarea
             'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
-            'code': 'model._cron_download_validations(183989)',
+            'code': 'model._cron_download_validations({},{})'.format(subject.classroom_id.moodle_id,
+              subject.classroom_id.get_task_id_by_key('validation')),
           }) 
       
           cron_ids.append(task)

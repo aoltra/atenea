@@ -18,4 +18,6 @@ class TaskMoodle(models.Model):
   classroom_id = fields.Many2one('atenea.classroom') 
   description = fields.Char('Descripción de la tarea')
   
- 
+  _sql_constraints = [ 
+    ('unique_key', 'unique(key, classroom_id)', 'La clave de búsqueda tiene que ser única para cada tarea y aula')	
+  ]

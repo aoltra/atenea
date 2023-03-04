@@ -1,14 +1,32 @@
 <odoo>
   <data>
     <!-- Módulos -->
-    <record model="atenea.subject" id="atenea.subject_DAW_TUT">
-      <field name="abbr">TUT</field>
+    <record model="atenea.subject" id="atenea.subject_DAW_TUT1">
+      <field name="abbr">TUT1</field>
       <field name="code">0000</field>
       <field name="name">Tutoría 1º</field>
       <field name="year">1</field>
       <field name="classroom_id" ref="atenea.classroom_DAW_TUT12"/>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>
-                                      
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
     </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_TUT2">
+      <field name="abbr">TUT2</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 2º</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_TUT12"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_SIN">
+      <field name="abbr">SIN</field>
+      <field name="code">00483</field>
+      <field name="name">Sistemas Informáticos</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_SIN"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
   </data>
 </odoo>
