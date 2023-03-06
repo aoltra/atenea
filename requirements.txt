@@ -2,4 +2,5 @@
 # Es llamado desde requirements-dev.txt o requirements-prod.txt 
  
 toolz
+pycurl
 moodleteacher
