@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 
-from moodleteacher.connection import MoodleConnection  
+from ..support.atenea_moodle_connection import AteneaMoodleConnection  
 
 import logging
 
@@ -37,17 +37,17 @@ class Classroom(models.Model):
   def _cron_download_validations(self, validation_classroom_id, validation_task_id):
     if validation_classroom_id == None:
       _logger.error("CRON: validation_classroom_id no definido")
+      return
     
     if validation_task_id == None:
       _logger.error("CRON: validation_task_id no definido")
+      return
 
     _logger.info("CRRROOON id {}".format(validation_task_id))
-
     
-    conn = MoodleConnection(interactive=True, 
-      token = "TOKEN", 
+    conn = AteneaMoodleConnection( 
+      moodle_user = "USER", 
       moodle_host = "HOST")
-
 
     _logger.info("CRRROOON con {}".format(conn))
     return
