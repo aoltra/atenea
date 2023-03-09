@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api
 
-from ..support.atenea_moodle_connection import AteneaMoodleConnection  
+from ..support.atenea_moodle_connection import AteneaMoodleConnection
+from moodleteacher.assignments import MoodleAssignments    # NOQA  
 
 import logging
 
@@ -46,8 +47,10 @@ class Classroom(models.Model):
     _logger.info("CRRROOON id {}".format(validation_task_id))
     
     conn = AteneaMoodleConnection( 
-      moodle_user = "USER", 
-      moodle_host = "HOST")
+      moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
+      moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url'))
 
-    _logger.info("CRRROOON con {}".format(conn))
+ 
+
+
     return
