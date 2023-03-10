@@ -23,18 +23,15 @@ class AteneaMoodleConnection(MoodleConnection):
 
     if not moodle_host or not moodle_user:
       raise AttributeError('No se ha proporcionado usuario o url.')
-      return
     
     try:
       with open(os.path.expanduser("~/.atenea_moodleteacher"), "rb") as f:
         users_tokens = pickle.load(f)
     except Exception:
-      _logger.error('No se encuentra el fichero .atena_moodleteacher. Utiliza el script save_token_moodle para generarlo.')
-      return
+      raise Exception('No se encuentra el fichero .atena_moodleteacher. Utiliza el script save_token_moodle para generarlo.')
   
     if moodle_user not in users_tokens:
-      _logger.error('El usuario {} no se encuentra en el fichero .atena_moodleteacher. Utiliza el script save_token_moodle para añadirlo.'.format(user))
+      raise Exception('El usuario {} no se encuentra en el fichero .atena_moodleteacher. Utiliza el script save_token_moodle para añadirlo.'.format(moodle_user))
 
-
-    super().__init__(moodle_host,  users_tokens[moodle_user])
+    super().__init__(moodle_host,  users_tokens[moodle_user], is_fake = False)
     

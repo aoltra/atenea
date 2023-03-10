@@ -44,13 +44,23 @@ class Classroom(models.Model):
       _logger.error("CRON: validation_task_id no definido")
       return
 
-    _logger.info("CRRROOON id {}".format(validation_task_id))
+    # _logger.info("CRRROOON id {}".format(validation_task_id))
     
-    conn = AteneaMoodleConnection( 
-      moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
-      moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url'))
+    try:
+      conn = AteneaMoodleConnection( 
+        moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
+        moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url'))
+    except Exception:
+      raise Exception('No es posible realiza la conexión con Moodle')
+  
+    _logger.info("CRRROOON id {}".format(conn))
 
- 
+    assignments = MoodleAssignments(conn, 
+      course_filter=validation_classroom_id, 
+      assignment_filter=validation_task_id)
+    
+    for s in assignments.submissions():
+      _logger.info(s)
 
 
     return
