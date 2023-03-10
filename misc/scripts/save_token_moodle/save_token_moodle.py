@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 Añade al fichero de tokens un nuevo token de usuario
-Necesita de la instalación libcurl4-openssl-dev y libssl-dev
+Para instalar correctamente los requirements, necesita de la instalación 
+libcurl4-openssl-dev y libssl-dev, además de build-essential y python3-dev
+apt-get update & apt-get install python3-dev build-essential libcurl4-openssl-dev libssl-dev
+
 """
 import sys
 import os
@@ -91,7 +94,7 @@ try:
   with open(os.path.expanduser("~/.atenea_moodleteacher"), "wb") as f:
     pickle.dump(users_tokens, f)
 
-  print('\033[0;32m[INFO]\033[0m FIchero .atenea_moodleteacher actualizado correctamente.')
+  print('\033[0;32m[INFO]\033[0m Fichero .atenea_moodleteacher actualizado correctamente.')
 
 except Exception:
   print('\033[0;31m[ERROR]\033[0m No se ha podido crear el fichero .atenea_moodleteacher.')
