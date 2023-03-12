@@ -736,8 +736,10 @@ class SchoolYear(models.Model):
             'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
-            'code': 'model._cron_download_validations({},{})'.format(subject.classroom_id.moodle_id,
-              subject.classroom_id.get_task_id_by_key('validation')),
+            'code': 'model._cron_download_validations({},{},"{}")'
+              .format(subject.classroom_id.moodle_id,
+                subject.classroom_id.get_task_id_by_key('validation'),
+                course.abbr),
           }) 
       
           cron_ids.append(task)

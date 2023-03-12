@@ -32,6 +32,7 @@ class AteneaMoodleConnection(MoodleConnection):
   
     if moodle_user not in users_tokens:
       raise Exception('El usuario {} no se encuentra en el fichero .atena_moodleteacher. Utiliza el script save_token_moodle para añadirlo.'.format(moodle_user))
+  
 
-    super().__init__(moodle_host,  users_tokens[moodle_user], is_fake = False)
+    super().__init__(moodle_host,  str(users_tokens[moodle_user]), is_fake = False)
     

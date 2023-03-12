@@ -19,5 +19,6 @@ class TaskMoodle(models.Model):
   description = fields.Char('Descripción de la tarea')
   
   _sql_constraints = [ 
-    ('unique_key', 'unique(key, classroom_id)', 'La clave de búsqueda tiene que ser única para cada tarea y aula')	
+    ('unique_key', 'unique(key, classroom_id)', 'La clave de búsqueda tiene que ser única para cada tarea y aula.'),
+    ('unique_moodle_id', 'unique(moodle_id)', 'El identificador de moodle tiene que ser único.'),
   ]
