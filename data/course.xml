@@ -16,5 +16,11 @@
       <field name="name">Desarrollo de Aplicaciones Web</field>
     </record>
 
+    <record model="atenea.course" id="atenea.course_DAM">
+      <field name="abbr">DAM</field>
+      <field name="name">Desarrollo de Aplicaciones Multiplataforma</field>
+    </record>
+
+
   </data>
 </odoo>

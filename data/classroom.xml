@@ -7,6 +7,12 @@
       <field name="description">Aula de tutoria de DAW</field>
     </record>
 
+    <record model="atenea.classroom" id="atenea.classroom_DAM_TUT12">
+      <field name="code">SEG9_CEE_46025799_2022_836104_TU02CF</field>
+      <field name="moodle_id">2</field>
+      <field name="description">Aula de tutoria de DAM</field>
+    </record>
+
     <record model="atenea.classroom" id="atenea.classroom_DAW_SIN">
       <field name="code">SEG9_CEE_46025799_2022_845104_048</field>
       <field name="moodle_id">1976</field>

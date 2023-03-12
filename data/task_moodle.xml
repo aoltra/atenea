@@ -7,5 +7,13 @@
       <field name="description">Tarea para entrega de convalidaciones y aprobados con anterioridad</field>
       <field name="classroom_id" ref="atenea.classroom_DAW_TUT12" />
     </record>
+
+    <record model="atenea.task_moodle" id="atenea.task_moodle_DAM_TUT12_validations">
+      <field name="key">validation</field>
+      <field name="moodle_id">2</field>
+      <field name="description">Tarea para entrega de convalidaciones y aprobados con anterioridad</field>
+      <field name="classroom_id" ref="atenea.classroom_DAM_TUT12" />
+    </record>
+
   </data>
 </odoo>
