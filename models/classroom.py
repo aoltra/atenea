@@ -54,6 +54,11 @@ class Classroom(models.Model):
     if course_abbr == None:
       _logger.error("CRON: course_abbr no definido")
       return
+    
+    validations_path = self.env['ir.config_parameter'].get_param('atenea.validations_path') or None
+    if validations_path == None:
+      _logger.error('La ruta de almacenamiento de convalidaciones no está definida')
+      return
 
     # _logger.info("CRRROOON id {}".format(validation_task_id))
     
@@ -70,23 +75,43 @@ class Classroom(models.Model):
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
       
-
-    #users = AteneaMoodleUser.get_data_users_from_id(conn, [12055, 12048])
-    # users = MoodleUser.from_userid(conn, 2)
-
-    #for a in assignments:
     for submission in assignments[0].submissions():
       if len(submission.files) == 1:
+
+        if not submission.files[0].is_zip:
+          _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodled id: {}'.format(submission.userid))
+          return
+        
         user = AteneaMoodleUser.from_userid(conn, submission.userid)
         
         grade = submission.load_grade()
         _logger.info("###############################")
         _logger.info(grade)
-        if not os.path.exists('/mnt/atenea_data/convalidaciones/{}/{} - {}, {}'
-          .format(course_abbr, user.id_, user.lastname.upper(), user.firstname.upper())):
-          _logger.info("#########################NOOOO######")
-          os.makedirs('/mnt/atenea_data/convalidaciones/{}/{} - {}, {}'
-          .format(course_abbr, user.id_, user.lastname.upper(), user.firstname.upper()))
-      
+        path = '{}/{}/{}/'.format(validations_path, 
+            '2223',  # TODO!! poner curso actual
+            course_abbr) 
+       
+        path = path.replace('//', '/')
+
+         # creación del directorio para descomprimirlo
+        if not os.path.exists(path):  
+          os.makedirs(path)
+        
+        # descarga del archivo
+        filename = '[{}] - {}, {}'.format(
+          user.id_,
+          user.lastname.upper(), 
+          user.firstname.upper())
+          
+        submission.files[0].from_url(conn = conn,url = submission.files[0].url)
+        submission.files[0].save_as(path, filename + '.zip')
+
+        # creación del directorio para descomprimirlo
+        if not os.path.exists(path + filename):  
+          os.makedirs(path + filename)
+
+        submission.files[0].unpack_to(path + filename, remove_directories = False)
+      else:
+        _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {}".format(submission.userid))
 
     return
