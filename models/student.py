@@ -11,7 +11,8 @@ class Student(models.Model):
   _description = 'Estudiante'
   _order = 'surname'
 
-  nia = fields.Char(string = 'NIA', size = 9, required = True)
+  moodle_id = fields.Char(string = 'moodle_id', size = 9, required = True)
+  nia = fields.Char(string = 'NIA', size = 9)
   name = fields.Char(string = 'Nombre', required = True)
   surname = fields.Char(string = 'Apellidos', required = True)
   email = fields.Char(string = 'Email')

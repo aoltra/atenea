@@ -78,11 +78,26 @@ class Classroom(models.Model):
     for submission in assignments[0].submissions():
       if len(submission.files) == 1:
 
+        user = AteneaMoodleUser.from_userid(conn, submission.userid)
+
+        a_user_list = self.env['atenea.student'].search([('moodle_id', '=', submission.userid)])
+
+        if len(a_user_list) == 0:
+          a_user = self.env['atenea.student'].create([
+              { 'moodle_id': submission.userid,
+                'name': user.firstname,
+                'surname': user.lastname,
+                'email': user.email }])
+        else:
+          a_user = a_user_list[0]
+
+          
+
         if not submission.files[0].is_zip:
-          _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodled id: {}'.format(submission.userid))
+          _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
           return
         
-        user = AteneaMoodleUser.from_userid(conn, submission.userid)
+        
         
         grade = submission.load_grade()
         _logger.info("###############################")

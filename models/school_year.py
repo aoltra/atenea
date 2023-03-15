@@ -740,6 +740,8 @@ class SchoolYear(models.Model):
               .format(subject.classroom_id.moodle_id,
                 subject.classroom_id.get_task_id_by_key('validation'),
                 course.abbr),
+            #'code': 'model._cron_download_validations({},{},"{}")'
+            #  .format(2094,183989,course.abbr),
           }) 
       
           cron_ids.append(task)
