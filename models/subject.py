@@ -14,6 +14,6 @@ class Subject(models.Model):
     year = fields.Selection([('1', '1º'), ('2', '2º')], required = True, default = '1', string = 'Curso')
 
     courses_ids = fields.Many2many('atenea.course', string = 'Ciclos')
-    validations_ids = fields.One2many('atenea.validation', 'subject_id')
+    validations_ids = fields.One2many('atenea.validation_subject', 'subject_id')
     classroom_id = fields.Many2one('atenea.classroom', string = 'Aula virtual')
     
