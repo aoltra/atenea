@@ -50,6 +50,20 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="atenea.student_tree">
+      <field name="name">Lista de estudiantes</field>
+      <field name="model">atenea.student</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="nia"/>
+          <field name="moodle_id"/>
+          <field name="name"/>
+          <field name="surname" />
+          <field name="email"/>
+        </tree>
+      </field>
+    </record>
+
     <record model="ir.ui.view" id="atenea.school_year_form">
       <field name="name">school_year.form.view</field>
       <field name="model">atenea.school_year</field>
@@ -244,6 +258,12 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="atenea.action_student">
+      <field name="name">Estudiantes</field>
+      <field name="res_model">atenea.student</field>
+      <field name="view_mode">tree</field>
+    </record>
+
     <record model="ir.actions.act_window" id="atenea.action_config_settings">
       <field name="name">Configuración</field>
       <field name="res_model">res.config.settings</field>
@@ -308,6 +328,8 @@
               action="atenea.action_employee"/>
     <menuitem name="Curso" id="atenea.school_year" parent="atenea.school"
               action="atenea.action_school_year"/>
+    <menuitem name="Estudiantes" id="atenea.school_student" parent="atenea.school"
+              action="atenea.action_student"/>
 
     <!-- Menu Configuración -->
     <menuitem name="General" id="atenea.settings" parent="atenea.configuration"
