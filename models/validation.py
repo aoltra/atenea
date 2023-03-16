@@ -9,11 +9,12 @@ _logger = logging.getLogger(__name__)
 
 class Validation(models.Model):
   """
-  Define las convalidaciones
+  Define la entrega de convalidaciones por parte del alumnado
   """
   _name = 'atenea.validation'
   _description = 'Convalidaciones'
 
+  school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar')
   student_id = fields.Many2one('atenea.student', string = 'Estudiante')
   course_id = fields.Many2one('atenea.course', string = 'Ciclo', required = True)
   validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', string = 'Módulos que se solicita convalidar', )
@@ -35,8 +36,15 @@ class Validation(models.Model):
   correction_date = fields.Date()
 
   correction_reason = fields.Selection([
+    ('MFL', 'Sólo se admite la entrega de un único fichero.'),
+    ('NZP', 'La documentación aportada no se encuentra en un único fichero zip comprimido.'),
     ('SNF', 'Documento no firmado digitalmente'),
     ('RL', 'No se aporta curso de riesgo laborales > 30h'),
     ('EXP', 'No se aporta expediente académico'),
     ], string ='Razón de la subsanación', default = 'SNF',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
+  
+  _sql_constraints = [ 
+    ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
+       'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
+  ]

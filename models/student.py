@@ -17,4 +17,6 @@ class Student(models.Model):
   surname = fields.Char(string = 'Apellidos', required = True)
   email = fields.Char(string = 'Email')
 
+  # un estudiante podría solicitar convalidaciones de dos ciclos diferentes 
+  # (aunque a día de hoy no está permitido)
   validations_ids = fields.One2many('atenea.validation', 'student_id')

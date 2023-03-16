@@ -21,7 +21,7 @@ class SchoolYear(models.Model):
       ('0', 'Borrador'),
       ('1', 'En curso'),
       ('2', 'Finalizado')
-      ], string ='Estado del curso', default = '0')
+      ], string ='Estado del curso', default = '1') # TODO OJO!! hay que cambiarlo a 0
   
   date_init = fields.Date(string='Fecha de inicio oficial')
 
@@ -113,6 +113,8 @@ class SchoolYear(models.Model):
     'date_ord2_exam_end','date_extraord2_exam_ini', 'date_extraord2_exam_end', 
     'date_1term1_end', 'date_1term1_exam_ini', 'date_1term1_exam_end', 'date_2term1_ini', 'date_2term1_end', 
     'date_ord1_exam_ini', 'date_ord1_exam_end','date_extraord1_exam_ini', 'date_extraord1_exam_end', 'state']
+
+  validations_ids = fields.One2many('atenea.validation', 'school_year_id')
 
   # TODO: constraints para que se mantenga el orden cronológico de las fechas
 
@@ -736,10 +738,10 @@ class SchoolYear(models.Model):
             'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
-            'code': 'model._cron_download_validations({},{},"{}")'
+            'code': 'model._cron_download_validations({},{},{})'
               .format(subject.classroom_id.moodle_id,
                 subject.classroom_id.get_task_id_by_key('validation'),
-                course.abbr),
+                course.id),
             #'code': 'model._cron_download_validations({},{},"{}")'
             #  .format(2094,183989,course.abbr),
           }) 
