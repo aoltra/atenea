@@ -48,3 +48,17 @@ Para poder conectar con Moodle desde Atenea es necesario un token de autenticaci
 ```
 curl -d username="USERNAME" -d password="PASSWORD" 'https://aules.edu.gva.es/ed/login/token.php?service=moodle_mobile_app'
 ```
+
+## Cómo hacer peticiones CURL a Moodle
+
+```
+curl "https://your.site.com/webservice/rest/server.php?wstoken=...&wsfunction=...&moodlewsrestformat=json"
+```
+
+Seguido de los parámetros necesarios
+
+```
+curl https://localhost/webservice/rest/server.php?wstoken=abcdef012345678&wsfunction=mod_assign_set_user_flags&moodlewsrestformat=json&assignmentid=1&userflags[0][locked]=1&userflags[0][userid]=5
+```
+
+> Nota: en el caso de hacer peticiones al moodle de docker utilizar http el nular de https
