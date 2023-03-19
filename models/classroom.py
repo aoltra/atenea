@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import datetime
+import datetime
 
 from ..support.atenea_moodle_connection import AteneaMoodleConnection
 from moodleteacher.connection import MoodleConnection      # NOQA
-from moodleteacher.assignments import MoodleAssignments    # NOQA  
+#from moodleteacher.assignments import MoodleAssignments    # NOQA  
+from ..support.atenea_moodle_assignments import AteneaMoodleAssignments 
 from ..support.atenea_moodle_user import AteneaMoodleUser 
 
 import os
@@ -71,7 +72,7 @@ class Classroom(models.Model):
       raise Exception('No es posible realizar la conexión con Moodle')
   
     # obtención de las tareas entregadas
-    assignments = MoodleAssignments(conn, 
+    assignments = AteneaMoodleAssignments(conn, 
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
       
@@ -107,20 +108,18 @@ class Classroom(models.Model):
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
         _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {}".format(submission.userid))
-        validation.correction_reason = 'MFL'
-        validation.state = '1' # subsanación
-        validation.correction_date = datetime.today()
+        feedback = validation.create_correction('MFL')
+        submission.save_grade(3, validation.create_correction('MFL'))
+        submission.lock()
         return
 
       # fichero no en formato zip  (debería ser comprobado en Moodle)
       if not submission.files[0].is_zip:
         _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
-        validation.correction_reason = 'NZP'
-        validation.state = '1' # subsanación
-        validation.correction_date = datetime.today()
+        submission.save_grade(3, validation.create_correction('NZP')) 
         return
       
-      course = self.env['atenea.course'].browse([course_id])
+      """ course = self.env['atenea.course'].browse([course_id])
         
       grade = submission.load_grade()
       _logger.info("###############################")
@@ -148,8 +147,9 @@ class Classroom(models.Model):
       if not os.path.exists(path + filename):  
         os.makedirs(path + filename)
 
-      submission.files[0].unpack_to(path + filename, remove_directories = False)
+      submission.files[0].unpack_to(path + filename, remove_directories = False) """
   
  
     return
+  
   

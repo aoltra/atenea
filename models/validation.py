@@ -2,6 +2,7 @@
 
 from odoo import api, models, fields
 from odoo.exceptions import ValidationError
+import datetime
 import logging
 import os
 
@@ -48,3 +49,26 @@ class Validation(models.Model):
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
+
+
+  def create_correction(self, reason):
+    """
+    Modifica la convalidación asignando los parámetros de subsanación
+    """
+    if reason == None:
+      raise Exception('Es necesario definir una razón para la subsanación')
+    
+    self.write({ 
+      'correction_reason': reason,
+      'state': '1',
+      'correction_date': datetime.datetime.today()
+    })
+
+    feedback = """
+        <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
+        <ul><li>{0}</ul>
+        <p>Se abre un periodo de subsanación de 10 días a contar desde el día de publicación de este mensaje. Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
+        <p><strong>Fin de período de subsanación</strong>: {1}</p>
+        """.format(dict(self._fields['correction_reason'].selection).get(reason), self.correction_date + datetime.timedelta(days = 10))
+
+    return feedback
