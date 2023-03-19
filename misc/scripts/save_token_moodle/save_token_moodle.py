@@ -4,7 +4,8 @@
 Añade al fichero de tokens un nuevo token de usuario
 Para instalar correctamente los requirements, necesita de la instalación 
 libcurl4-openssl-dev y libssl-dev, además de build-essential y python3-dev
-apt-get update & apt-get install python3-dev build-essential libcurl4-openssl-dev libssl-dev
+apt-get update 
+apt-get install python3-dev build-essential libcurl4-openssl-dev libssl-dev
 
 """
 import sys
