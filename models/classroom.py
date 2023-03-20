@@ -107,16 +107,14 @@ class Classroom(models.Model):
       ############                     ############
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
-        _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {}".format(submission.userid))
-        feedback = validation.create_correction('MFL')
-        submission.save_grade(3, validation.create_correction('MFL'))
-        submission.lock()
+        _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {}".format(submission.userid))      
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('MFL'))
         return
 
       # fichero no en formato zip  (debería ser comprobado en Moodle)
       if not submission.files[0].is_zip:
         _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
-        submission.save_grade(3, validation.create_correction('NZP')) 
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NZP')) 
         return
       
       """ course = self.env['atenea.course'].browse([course_id])
