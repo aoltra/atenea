@@ -61,7 +61,7 @@ class AteneaMoodleSubmission(MoodleSubmission):
       'userflags[0][locked]': int(False),
     })
 
-  def save_grade(self, grade, new_attempt = False, feedback=None):
+  def save_grade(self, grade, new_attempt = False, feedback = None):
     """
     Graba una nueva nota para un estudiante y pasa su estado a GRADED
   
@@ -77,21 +77,22 @@ class AteneaMoodleSubmission(MoodleSubmission):
     else:
       userid = self.userid
 
-    data = {'assignmentid': self.assignment.id_,
-            'userid': userid,
-            'workflowstate': GRADED,
-            'attemptnumber': -1,
-            'addattempt': int(new_attempt),
-            'grade': float(grade) if grade else '',
-            # always apply grading to team
-            # if the assignment has no group submission, this has no effect.
-            'applytoall': int(True),
-            'plugindata[assignfeedbackcomments_editor][text]': str(feedback) if feedback else "",
-            # //content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)
-            'plugindata[assignfeedbackcomments_editor][format]': 1
-          }
+    data = {
+      'assignmentid': self.assignment.id_,
+      'userid': userid,
+      'workflowstate': GRADED,
+      'attemptnumber': -1,
+      'addattempt': int(new_attempt),
+      'grade': float(grade) if grade else '',
+      # always apply grading to team
+      # if the assignment has no group submission, this has no effect.
+      'applytoall': int(True),
+      'plugindata[assignfeedbackcomments_editor][text]': str(feedback) if feedback else "",
+      # //content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN)
+      'plugindata[assignfeedbackcomments_editor][format]': 1
+    }
 
     response = MoodleRequest(
-      self.conn, 'mod_assign_save_grade').post(data=data).json()
+      self.conn, 'mod_assign_save_grade').post(data = data).json()
     _logger.debug("Response from grading update: {0}".format(response))
 

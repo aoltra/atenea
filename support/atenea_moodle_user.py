@@ -28,8 +28,6 @@ class AteneaMoodleUser(MoodleUser):
     if response != []:
       assert(response[0]['id'] == user_id)
 
-      _logger.info(response)
-
       obj.fullname = response[0]['fullname']
       obj.email = response[0]['email']
       #obj.username = response[0]['username']
@@ -43,7 +41,50 @@ class AteneaMoodleUser(MoodleUser):
       obj.firstname = "<Unknown>"
    
     return obj
-    
-   
 
-   
+
+  @classmethod
+  def from_raw_json(cls, raw_json):
+    """
+    Crea un :class:`AteneaMoodleUser` objeto desde un JSON
+    """
+    obj = cls()
+    obj.id_ = raw_json['id_']
+    obj.firstname = raw_json['firstname']
+    obj.lastname = raw_json['lastname']
+    obj.email = raw_json['email']
+    
+    return obj
+  
+class AteneaMoodleUsers(list):
+  """
+  Una lista de instancias de la :class:`AteneaMoodleUser`.
+  """
+
+  def __init__(self):
+    list.__init__(self)
+
+  @classmethod
+  def from_course(cls, conn, course_id):
+    """
+    Genera una lista de estudiantes de un curso (de un aula virtual, classroom para atenea)
+    """
+    obj = cls()
+
+    params = {}
+    params['courseid'] = course_id
+    response = MoodleRequest(
+      conn, 'core_enrol_get_enrolled_users').get(params).json()
+
+    for st in response:
+      st_json =  {
+        'id_': st['id'],
+        'firstname': st['firstname'],
+        'lastname': st['lastname'],
+        'email': st['email']
+      }
+
+      student = AteneaMoodleUser.from_raw_json(st_json)
+      obj.append(student)
+
+    return obj

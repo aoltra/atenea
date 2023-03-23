@@ -7,7 +7,7 @@ from ..support.atenea_moodle_connection import AteneaMoodleConnection
 from moodleteacher.connection import MoodleConnection      # NOQA
 #from moodleteacher.assignments import MoodleAssignments    # NOQA  
 from ..support.atenea_moodle_assignments import AteneaMoodleAssignments 
-from ..support.atenea_moodle_user import AteneaMoodleUser 
+from ..support.atenea_moodle_user import AteneaMoodleUser, AteneaMoodleUsers
 
 import os
 import logging
@@ -46,7 +46,7 @@ class Classroom(models.Model):
   @api.model
   def _cron_download_validations(self, validation_classroom_id, validation_task_id, course_id):
 
-    # comporbaciones iniciales
+    # comprobaciones iniciales
     if validation_classroom_id == None:
       _logger.error("CRON: validation_classroom_id no definido")
       return
@@ -93,7 +93,7 @@ class Classroom(models.Model):
 
       # obtención de la convalidación 
       validation_list = [ val for val in a_user.validations_ids if val.course_id.id == course_id]
-      current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0]
+      current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual
       if len(validation_list) == 0:
         validation = self.env['atenea.validation'].create([
             { 'student_id': a_user.id,
@@ -150,4 +150,27 @@ class Classroom(models.Model):
  
     return
   
+  @api.model
+  def cron_enrol_students(self, validation_classroom_id):
+    """
+    Asocia (matricula) estudiantes en un aula
+
+    En caso de que el estudiante no se encuentre en Atenea lo crea
+    """
+    # comprobaciones iniciales
+    if validation_classroom_id == None:
+      _logger.error("CRON: validation_classroom_id no definido")
+      return
+    
+    try:
+      conn = AteneaMoodleConnection( 
+        moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
+        moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url')) 
+    except Exception:
+      raise Exception('No es posible realizar la conexión con Moodle')
   
+    # obtención de los usuarios
+    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id)
+
+    _logger.info("----------------------_")
+    _logger.info(users[0])

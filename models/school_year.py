@@ -726,7 +726,29 @@ class SchoolYear(models.Model):
         # únicamente módulos de tutoria que tengan aulas distintas
         distinct_subject_tut = [subject for subject in list(toolz.unique(tut_subjects, key=lambda x: x.classroom_id))]
     
-        for subject in distinct_subject_tut:        
+        for subject in distinct_subject_tut:   
+
+          ## MATRICULA 
+          task = (0, 0, {
+            'model_id': record.env.ref('atenea.model_atenea_classroom'),
+            'name': 'Matricula alumnos de {} en Atenea {}'.format(course.abbr, 
+              '/{}'.format(subject.year) if len(list(distinct_subject_tut)) > 1 else ''),
+            'active': True,
+            'interval_number': 1,
+            'interval_type': 'days',
+            'numbercall': 60,     # número de veces que será ejecutada la tarea
+            'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+            'nextcall': '2023-03-02 00:27:59',
+            'state': 'code',
+            'code': 'model.cron_enrol_students({})'
+              .format(subject.classroom_id.moodle_id),
+          }) 
+      
+          cron_ids.append(task)
+
+
+
+          ## CONVALIDACIONES     
           task = (0, 0, {
             'model_id': record.env.ref('atenea.model_atenea_classroom'),
             'name': 'Descarga datos convalidaciones {} desde Aules {}'.format(course.abbr, 
@@ -747,6 +769,8 @@ class SchoolYear(models.Model):
           }) 
       
           cron_ids.append(task)
+
+          
 
       _logger.info(cron_ids)
       record.cron_ids = cron_ids
