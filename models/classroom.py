@@ -170,7 +170,14 @@ class Classroom(models.Model):
       raise Exception('No es posible realizar la conexión con Moodle')
   
     # obtención de los usuarios
-    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id)
+    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id, only_students = True)
 
-    _logger.info("----------------------_")
-    _logger.info(users[0])
+    for user in users:
+      # comprobacion: ya está en Atenea
+      # devuelve un recorset
+      student = self.env['atenea.student'].search([('moodle_id', '=', user.id_)])
+      if len(student) == 0:
+        _logger.info("el estudiante {} no existe".format(user.id_))
+        # se crea el estudiante Atenea
+      else: 
+        _logger.info("el estudiante si existe")

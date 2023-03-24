@@ -6,6 +6,11 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+class ContinueOutter(Exception):
+    pass
+
+continue_outter = ContinueOutter()
+
 class AteneaMoodleUser(MoodleUser):
   """
   Amplia los datos que se obtienen de un usuario
@@ -17,6 +22,7 @@ class AteneaMoodleUser(MoodleUser):
   username = None
   lastname = None
   firstname = None
+  roles = None
 
   @classmethod
   def from_userid(cls, conn, user_id):
@@ -48,12 +54,13 @@ class AteneaMoodleUser(MoodleUser):
     """
     Crea un :class:`AteneaMoodleUser` objeto desde un JSON
     """
+
     obj = cls()
     obj.id_ = raw_json['id_']
     obj.firstname = raw_json['firstname']
     obj.lastname = raw_json['lastname']
     obj.email = raw_json['email']
-    
+ 
     return obj
   
 class AteneaMoodleUsers(list):
@@ -65,9 +72,9 @@ class AteneaMoodleUsers(list):
     list.__init__(self)
 
   @classmethod
-  def from_course(cls, conn, course_id):
+  def from_course(cls, conn, course_id, only_students = False):
     """
-    Genera una lista de estudiantes de un curso (de un aula virtual, classroom para atenea)
+    Genera una lista de participantes de un curso (de un aula virtual, classroom para atenea)
     """
     obj = cls()
 
@@ -81,8 +88,22 @@ class AteneaMoodleUsers(list):
         'id_': st['id'],
         'firstname': st['firstname'],
         'lastname': st['lastname'],
-        'email': st['email']
+        'email': st['email'],
       }
+
+      roles = []
+      for rol in st['roles']:
+        roles.append(rol['shortname'])
+
+      if only_students:
+        try:
+          for s in roles:
+            if 'teacher' in s:
+              raise continue_outter
+        except ContinueOutter:
+          continue
+      else:
+        st_json['roles'] = roles
 
       student = AteneaMoodleUser.from_raw_json(st_json)
       obj.append(student)
