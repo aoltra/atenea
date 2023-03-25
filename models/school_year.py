@@ -740,13 +740,12 @@ class SchoolYear(models.Model):
             'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
-            'code': 'model.cron_enrol_students({})'
-              .format(subject.classroom_id.moodle_id),
+            'code': 'model.cron_enrol_students({}, {})'
+              .format(subject.classroom_id.moodle_id, 
+                 subject.id),
           }) 
       
           cron_ids.append(task)
-
-
 
           ## CONVALIDACIONES     
           task = (0, 0, {

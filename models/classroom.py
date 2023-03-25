@@ -151,9 +151,12 @@ class Classroom(models.Model):
     return
   
   @api.model
-  def cron_enrol_students(self, validation_classroom_id):
+  def cron_enrol_students(self, validation_classroom_id, subject_id):
     """
     Asocia (matricula) estudiantes en un aula
+
+    validation_classroom_id: aula de Moodle de la que tiene que coger los usuarios
+    subject_id: identificador de Atenea de la materia en la que se matricula
 
     En caso de que el estudiante no se encuentre en Atenea lo crea
     """
@@ -177,7 +180,23 @@ class Classroom(models.Model):
       # devuelve un recorset
       student = self.env['atenea.student'].search([('moodle_id', '=', user.id_)])
       if len(student) == 0:
-        _logger.info("el estudiante {} no existe".format(user.id_))
-        # se crea el estudiante Atenea
+        # No existe, se crea el estudiante Atenea
+        new_student = self.env['atenea.student'].create({
+          'moodle_id': user.id_,
+          'name': user.firstname,
+          'surname': user.lastname,
+          'email': user.email
+        })
       else: 
         _logger.info("el estudiante si existe")
+        new_student = student[0]
+
+      enrolled = new_student.subjects_ids.filtered(lambda r: r.atenea_subject_id == subject_id)
+
+      if len(enrolled) == 0:
+        # No está matriculado en ese módulo, se matricula
+        # el 4 añade una relación entre el record y el record relacionado (subject_id)
+        new_student.subjects_ids = [ (4, subject_id, 0 )] 
+      else:
+        _logger.info("SI matricualdao")
+      
