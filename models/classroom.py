@@ -191,12 +191,19 @@ class Classroom(models.Model):
         _logger.info("el estudiante si existe")
         new_student = student[0]
 
-      enrolled = new_student.subjects_ids.filtered(lambda r: r.atenea_subject_id == subject_id)
+      enrolled = new_student.subjects_ids.filtered(lambda r: r.id == subject_id)
 
       if len(enrolled) == 0:
         # No está matriculado en ese módulo, se matricula
         # el 4 añade una relación entre el record y el record relacionado (subject_id)
-        new_student.subjects_ids = [ (4, subject_id, 0 )] 
+        # Al menos en la versión 13, en relaciones M2M con tabla intermedia personalizada no crea el registro
+        # new_student.subjects_ids = [ (4, subject_id, 0 )] 
+        # se crea de manera manual
+        _logger.info("NO matriculado {} {}".format(enrolled,new_student.subjects_ids.id))
+        self.env['atenea.subject_student_rel'].create({
+          'student_id': new_student.id,
+          'subject_id': subject_id,
+        })
       else:
         _logger.info("SI matricualdao")
       

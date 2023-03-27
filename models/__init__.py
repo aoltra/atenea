@@ -14,3 +14,4 @@ from . import config_settings
 from . import classroom
 from . import task_moodle
 from . import cron
+from . import subject_student_rel
