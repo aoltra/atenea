@@ -44,7 +44,7 @@ class Classroom(models.Model):
     return tasks[0].moodle_id
 
   @api.model
-  def _cron_download_validations(self, validation_classroom_id, validation_task_id, course_id):
+  def cron_download_validations(self, validation_classroom_id, validation_task_id, course_id):
 
     # comprobaciones iniciales
     if validation_classroom_id == None:
