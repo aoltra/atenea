@@ -13,6 +13,9 @@ class SubjectStudentRel(models.Model):
   student_id = fields.Many2one('atenea.student') 
   subject_id = fields.Many2one('atenea.subject') 
 
+  # ciclo en el que está matriculado
+  course_id = fields.Many2one('atenea.course')
+
   # número que determina los flags asociados al estado del record
   status_flags = fields.Integer(default = 0) 
 

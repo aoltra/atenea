@@ -151,12 +151,13 @@ class Classroom(models.Model):
     return
   
   @api.model
-  def cron_enrol_students(self, validation_classroom_id, subject_id):
+  def cron_enrol_students(self, validation_classroom_id, course_id, subject_id):
     """
     Asocia (matricula) estudiantes en un aula
 
     validation_classroom_id: aula de Moodle de la que tiene que coger los usuarios
     subject_id: identificador de Atenea de la materia en la que se matricula
+    course_id: identificador del ciclo formativo
 
     En caso de que el estudiante no se encuentre en Atenea lo crea
     """
@@ -187,8 +188,9 @@ class Classroom(models.Model):
           'surname': user.lastname,
           'email': user.email
         })
+        _logger.info('Creando en Atenea al estudiante moodle_id:{}'.format(user.id_))
       else: 
-        _logger.info("el estudiante si existe")
+        _logger.info('El estudiante moodle_id:{} ya existe en Atenea'.format(user.id_))
         new_student = student[0]
 
       enrolled = new_student.subjects_ids.filtered(lambda r: r.id == subject_id)
@@ -197,13 +199,16 @@ class Classroom(models.Model):
         # No está matriculado en ese módulo, se matricula
         # el 4 añade una relación entre el record y el record relacionado (subject_id)
         # Al menos en la versión 13, en relaciones M2M con tabla intermedia personalizada no crea el registro
-        # new_student.subjects_ids = [ (4, subject_id, 0 )] 
-        # se crea de manera manual
-        _logger.info("NO matriculado {} {}".format(enrolled,new_student.subjects_ids.id))
+        # así que se crea de manera manual
         self.env['atenea.subject_student_rel'].create({
           'student_id': new_student.id,
           'subject_id': subject_id,
+          'course_id': course_id
         })
+
+        # y luego se vincula
+        new_student.subjects_ids = [ (4, subject_id, 0 )] 
+        _logger.info("Estudiante moodle_id:{} no matriculado en {} -> Matriculando".format(user.id_,course_id))
       else:
-        _logger.info("SI matricualdao")
+        _logger.info("Alumno moodle_id:{} ya matriculado en {}".format(user.id_, course_id))
       

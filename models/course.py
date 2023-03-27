@@ -14,5 +14,5 @@ class Course(models.Model):
     name = fields.Char('Ciclo', required = True, translate=True)
 
     subjects_ids = fields.Many2many('atenea.subject')
-
+    students_ids = fields.Many2many('atenea.student')
     roles_ids = fields.One2many('atenea.rol', 'course_id')
