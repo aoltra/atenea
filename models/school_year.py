@@ -742,6 +742,7 @@ class SchoolYear(models.Model):
             'state': 'code',
             'code': 'model.cron_enrol_students({}, {}, {})'
               .format(subject.classroom_id.moodle_id,
+                subject.id,
                 course.id,
                 subject.id),
           }) 
@@ -760,8 +761,9 @@ class SchoolYear(models.Model):
             'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
-            'code': 'model.cron_download_validations({},{},{})'
+            'code': 'model.cron_download_validations({}, {}, {}, {})'
               .format(subject.classroom_id.moodle_id,
+                subject.id,
                 subject.classroom_id.get_task_id_by_key('validation'),
                 course.id),
             #'code': 'model._cron_download_validations({},{},"{}")'

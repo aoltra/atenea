@@ -37,28 +37,33 @@ class AteneaMoodleSubmission(MoodleSubmission):
     response = MoodleRequest(
       self.conn, 'mod_assign_set_user_flags').post(data = user_flags).json()
     
-  def lock(self):
+  def get_user_id(self):
     if self.is_group_submission():
       userid = self.get_group_members()[0].id_
     else:
       userid = self.userid
 
+    return userid
+    
+  def lock(self):
     self.set_user_flags({
       'assignmentid': self.assignment.id_,
-      'userflags[0][userid]': userid,
+      'userflags[0][userid]': self.get_user_id(),
       'userflags[0][locked]': int(True),
     })
 
   def unlock(self):
-    if self.is_group_submission():
-      userid = self.get_group_members()[0].id_
-    else:
-      userid = self.userid
-
     self.set_user_flags({
       'assignmentid': self.assignment.id_,
-      'userflags[0][userid]': userid,
+      'userflags[0][userid]': self.get_user_id(),
       'userflags[0][locked]': int(False),
+    })
+
+  def set_extension_due_date(self, to):
+     self.set_user_flags({
+      'assignmentid': self.assignment.id_,
+      'userflags[0][userid]': self.get_user_id(),
+      'userflags[0][extensionduedate]': 60*60*24*7,
     })
 
   def save_grade(self, grade, new_attempt = False, feedback = None):

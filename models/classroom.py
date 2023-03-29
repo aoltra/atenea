@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-import datetime
+from datetime import date
+
+from ..support.helper import is_set
+from ..support import constants
 
 from ..support.atenea_moodle_connection import AteneaMoodleConnection
 from moodleteacher.connection import MoodleConnection      # NOQA
@@ -42,10 +45,58 @@ class Classroom(models.Model):
       return None
 
     return tasks[0].moodle_id
+  
+
+  def _enrol_student(self, user, subject_id, course_id):
+    """
+    Matricula a un usuario atenea en un módulo
+    Si no existe el usuario,  lo crea
+
+    user: usuario moodle
+    subject_id: identificador atenea del módulo
+    course_id: identificador atenea del ciclo 
+    """
+
+    # comprobación: ya está en Atenea
+    # devuelve un recorset
+    student = self.env['atenea.student'].search([('moodle_id', '=', user.id_)])
+    if len(student) == 0:
+      # No existe, se crea el estudiante Atenea
+      new_student = self.env['atenea.student'].create({
+        'moodle_id': user.id_,
+        'name': user.firstname,
+        'surname': user.lastname,
+        'email': user.email
+      })
+      _logger.info('Creando en Atenea al estudiante moodle_id:{}'.format(user.id_))
+    else: 
+      _logger.info('El estudiante moodle_id:{} ya existe en Atenea'.format(user.id_))
+      new_student = student[0]
+
+    enrolled = new_student.subjects_ids.filtered(lambda r: r.id == subject_id)
+
+    if len(enrolled) == 0:
+      # No está matriculado en ese módulo, se matricula
+      # el 4 añade una relación entre el record y el record relacionado (subject_id)
+      # Al menos en la versión 13, en relaciones M2M con tabla intermedia personalizada no crea el registro
+      # así que se crea de manera manual
+      self.env['atenea.subject_student_rel'].create({
+        'student_id': new_student.id,
+        'subject_id': subject_id,
+        'course_id': course_id
+      })
+
+      # y luego se vincula
+      new_student.subjects_ids = [ (4, subject_id, 0 )] 
+      _logger.info("Estudiante moodle_id:{} no matriculado en {} -> Matriculando".format(user.id_,course_id))
+    else:
+      _logger.info("Alumno moodle_id:{} ya estaba matriculado en {}".format(user.id_, course_id))
+
+    return new_student
+    
 
   @api.model
-  def cron_download_validations(self, validation_classroom_id, validation_task_id, course_id):
-
+  def cron_download_validations(self, validation_classroom_id, subject_id, validation_task_id, course_id):
     # comprobaciones iniciales
     if validation_classroom_id == None:
       _logger.error("CRON: validation_classroom_id no definido")
@@ -75,25 +126,33 @@ class Classroom(models.Model):
     assignments = AteneaMoodleAssignments(conn, 
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
+    
+    current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual  
       
-    # comprobación de cada una de las tareaws
+    # comprobación de cada una de las tareas
     for submission in assignments[0].submissions():
       
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
-      a_user_list = self.env['atenea.student'].search([('moodle_id', '=', submission.userid)]) # usuario atenea
+      a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
+         
+      """ subject_list = a_user.subjects_ids.filtered(lambda r: r.id == subject_id)
+      subject = subject_list[0]   """
+      subject_student = self.env['atenea.subject_student_rel']\
+        .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
+      _logger.info("#€#")
+      _logger.info(subject_student.status_flags)
 
-      if len(a_user_list) == 0:
-        a_user = self.env['atenea.student'].create([
-            { 'moodle_id': submission.userid,
-              'name': user.firstname,
-              'surname': user.lastname,
-              'email': user.email }])
-      else:
-        a_user = a_user_list[0]
+      if not is_set(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
+        # asigno un periodo de 30 dias de plazo
+        today = date.today()
+        if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
+          submission.set_extension_due_date(0)
+        else:
+          submission.set_extension_due_date(0)
 
       # obtención de la convalidación 
       validation_list = [ val for val in a_user.validations_ids if val.course_id.id == course_id]
-      current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual
+      
       if len(validation_list) == 0:
         validation = self.env['atenea.validation'].create([
             { 'student_id': a_user.id,
@@ -150,6 +209,7 @@ class Classroom(models.Model):
  
     return
   
+  
   @api.model
   def cron_enrol_students(self, validation_classroom_id, course_id, subject_id):
     """
@@ -177,38 +237,4 @@ class Classroom(models.Model):
     users = AteneaMoodleUsers.from_course(conn, validation_classroom_id, only_students = True)
 
     for user in users:
-      # comprobacion: ya está en Atenea
-      # devuelve un recorset
-      student = self.env['atenea.student'].search([('moodle_id', '=', user.id_)])
-      if len(student) == 0:
-        # No existe, se crea el estudiante Atenea
-        new_student = self.env['atenea.student'].create({
-          'moodle_id': user.id_,
-          'name': user.firstname,
-          'surname': user.lastname,
-          'email': user.email
-        })
-        _logger.info('Creando en Atenea al estudiante moodle_id:{}'.format(user.id_))
-      else: 
-        _logger.info('El estudiante moodle_id:{} ya existe en Atenea'.format(user.id_))
-        new_student = student[0]
-
-      enrolled = new_student.subjects_ids.filtered(lambda r: r.id == subject_id)
-
-      if len(enrolled) == 0:
-        # No está matriculado en ese módulo, se matricula
-        # el 4 añade una relación entre el record y el record relacionado (subject_id)
-        # Al menos en la versión 13, en relaciones M2M con tabla intermedia personalizada no crea el registro
-        # así que se crea de manera manual
-        self.env['atenea.subject_student_rel'].create({
-          'student_id': new_student.id,
-          'subject_id': subject_id,
-          'course_id': course_id
-        })
-
-        # y luego se vincula
-        new_student.subjects_ids = [ (4, subject_id, 0 )] 
-        _logger.info("Estudiante moodle_id:{} no matriculado en {} -> Matriculando".format(user.id_,course_id))
-      else:
-        _logger.info("Alumno moodle_id:{} ya matriculado en {}".format(user.id_, course_id))
-      
+      self._enrol_student(user, subject_id, course_id)
