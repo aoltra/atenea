@@ -153,6 +153,11 @@ class Classroom(models.Model):
         users_to_change_due_date.append((user.id_,int(datetime(year = new_due_date.year, 
                      month = new_due_date.month,
                      day = new_due_date.day).timestamp())))
+        
+        # indicamos que ese usuario ya tiene el periodo abierto
+        subject_student.write({
+          'status_flags': set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN)
+        })
 
     # obtención de las tareas entregadas
     assignments = AteneaMoodleAssignments(conn, 
