@@ -5,4 +5,4 @@
 ########################
 
 # El plazo de convalidaciones está abierto
-VALIDATION_PERIOD_OPEN = 1
+VALIDATION_PERIOD_OPEN = 0

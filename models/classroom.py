@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import date
+from datetime import date, timedelta, datetime
 
-from ..support.helper import is_set
+from ..support.helper import is_set_flag, set_flag, unset_flag
 from ..support import constants
 
 from ..support.atenea_moodle_connection import AteneaMoodleConnection
@@ -88,9 +88,9 @@ class Classroom(models.Model):
 
       # y luego se vincula
       new_student.subjects_ids = [ (4, subject_id, 0 )] 
-      _logger.info("Estudiante moodle_id:{} no matriculado en {} -> Matriculando".format(user.id_,course_id))
+      _logger.info("Estudiante moodle_id:{} no matriculado en el módulo_atenea_id: {} -> Matriculando".format(user.id_,course_id))
     else:
-      _logger.info("Alumno moodle_id:{} ya estaba matriculado en {}".format(user.id_, course_id))
+      _logger.info("Alumno moodle_id:{} ya estaba matriculado en el módulo_atenea_id: {}".format(user.id_, course_id))
 
     return new_student
     
@@ -121,35 +121,52 @@ class Classroom(models.Model):
         moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url')) 
     except Exception:
       raise Exception('No es posible realizar la conexión con Moodle')
+    
+    current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual  
   
+    ############
+    ### asignación de la fecha de entrega de manera individual
+    ############
+    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id, only_students = True)
+
+    users_to_change_due_date = []
+
+    for user in users:
+      a_user = self._enrol_student(user, subject_id, course_id)
+
+      subject_student = self.env['atenea.subject_student_rel']\
+        .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
+      
+      # aún no tiene abierto el periodo de convalidaciones
+      if not is_set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
+        # asigno un periodo de 30 dias de plazo
+        today = date.today()
+        if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
+          _logger.info("#P€#")
+          _logger.info(subject_student.status_flags)
+          new_due_date = current_school_year.date_init_lective + timedelta(days = 31)
+        else:
+          _logger.info("#O€#")
+          _logger.info(subject_student.status_flags)
+          new_due_date = today + timedelta(days = 31)
+          
+        users_to_change_due_date.append((user.id_,int(datetime(year = new_due_date.year, 
+                     month = new_due_date.month,
+                     day = new_due_date.day).timestamp())))
+
     # obtención de las tareas entregadas
     assignments = AteneaMoodleAssignments(conn, 
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
     
-    current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual  
-      
+    assignments[0].set_extension_due_date(users_to_change_due_date)
+    
     # comprobación de cada una de las tareas
     for submission in assignments[0].submissions():
       
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
       a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
          
-      """ subject_list = a_user.subjects_ids.filtered(lambda r: r.id == subject_id)
-      subject = subject_list[0]   """
-      subject_student = self.env['atenea.subject_student_rel']\
-        .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
-      _logger.info("#€#")
-      _logger.info(subject_student.status_flags)
-
-      if not is_set(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
-        # asigno un periodo de 30 dias de plazo
-        today = date.today()
-        if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
-          submission.set_extension_due_date(0)
-        else:
-          submission.set_extension_due_date(0)
-
       # obtención de la convalidación 
       validation_list = [ val for val in a_user.validations_ids if val.course_id.id == course_id]
       
@@ -164,16 +181,24 @@ class Classroom(models.Model):
       ############                     ############
       ##### comprobación de errores a subsanar ####
       ############                     ############
+      # en caso de subsanación se abre un perido de 15 dias naturales
+      new_due_date = today + timedelta(days = 15)
+      new_timestamp =  int(datetime(year = new_due_date.year, 
+                         month = new_due_date.month,
+                         day = new_due_date.day).timestamp())
+      
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
-        _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {}".format(submission.userid))      
+        _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {} {}".format(submission.userid, len(submission.files)))      
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('MFL'))
+        submission.set_extension_due_date(to = new_timestamp)
         return
 
       # fichero no en formato zip  (debería ser comprobado en Moodle)
       if not submission.files[0].is_zip:
         _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NZP')) 
+        submission.set_extension_due_date(to = new_timestamp)
         return
       
       """ course = self.env['atenea.course'].browse([course_id])

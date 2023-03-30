@@ -26,7 +26,7 @@ class AteneaMoodleAssignment(MoodleAssignment):
     params = {}
     params['assignid'] = self.id_
     params['userid'] = user_id
-    logger.debug("Fetching submission information for user {userid} in assignment {assignid}".format(**params))
+    logger.info("Fetching submission information for user {userid} in assignment {assignid}".format(**params))
     try:
       response = MoodleRequest(
         self.conn, 'mod_assign_get_submission_status').get(params).json()
@@ -65,6 +65,22 @@ class AteneaMoodleAssignment(MoodleAssignment):
       
     return None
  
+  def set_extension_due_date(self, users):
+    """
+    Modifica la fecha de entrega de una tarea (assignment) por usuario, sin que haga falta 
+    que el usuario haya entregado algo (submission)
+    """
+
+    params = {'assignmentid': self.id_}
+    num_user = 0
+    for u,d in users:
+      params['userids['+ str(num_user) + ']'] = u
+      params['dates['+ str(num_user) + ']'] = d
+      num_user += 1 
+
+    response = MoodleRequest(
+      self.conn, 'mod_assign_save_user_extensions').post(params).json()
+
 
 class AteneaMoodleAssignments(list):
   """
