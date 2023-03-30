@@ -6,11 +6,11 @@ from datetime import date, timedelta, datetime
 from ..support.helper import is_set_flag, set_flag, unset_flag
 from ..support import constants
 
-from ..support.atenea_moodle_connection import AteneaMoodleConnection
+from ..support.atenea_moodleteacher.atenea_moodle_connection import AteneaMoodleConnection
 from moodleteacher.connection import MoodleConnection      # NOQA
 #from moodleteacher.assignments import MoodleAssignments    # NOQA  
-from ..support.atenea_moodle_assignments import AteneaMoodleAssignments 
-from ..support.atenea_moodle_user import AteneaMoodleUser, AteneaMoodleUsers
+from ..support.atenea_moodleteacher.atenea_moodle_assignments import AteneaMoodleAssignments 
+from ..support.atenea_moodleteacher.atenea_moodle_user import AteneaMoodleUser, AteneaMoodleUsers
 
 import os
 import logging

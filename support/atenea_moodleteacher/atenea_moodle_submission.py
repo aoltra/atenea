@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from moodleteacher.submissions import MoodleSubmission
-from ..support.atenea_moodle_submission import MoodleSubmission
+from .atenea_moodle_submission import MoodleSubmission
 from moodleteacher.requests import MoodleRequest
 
 import logging
