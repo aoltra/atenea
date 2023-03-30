@@ -88,8 +88,9 @@ info_token = json.loads(response)
 if 'token' in info_token:
   users_tokens[atenea_user] = info_token['token']
 else:
-  print('\033[0;31m[ERROR]\033[0m El usuario o la contraseña de Moodle no es correcta.')  
-  exit();
+  print('\033[0;31m[ERROR]\033[0m El usuario o la contraseña de Moodle no es correcta.')
+  print('\033[0;31m[ERROR]\033[0m ' + info_token['error'])  
+  exit()
 
 try:
   with open(os.path.expanduser("~/.atenea_moodleteacher"), "wb") as f:
