@@ -94,6 +94,44 @@ class Classroom(models.Model):
 
     return new_student
     
+  def _assigns_end_date_validation_period(self, conn, validation_classroom_id, subject_id, course_id, current_school_year):
+    """
+    Asignación de la fecha fin de plazo del periodo de convalidaciones
+    Se actualiza la fecha de todos los participantes en caso de que aún no la
+    tengan asignada.
+
+    Devuelve un array de tuplas (moodle_user_id, nueva fecha)
+    """
+
+    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id, only_students = True)
+
+    users_to_change_due_date = []
+    today = date.today()
+
+    for user in users:
+      a_user = self._enrol_student(user, subject_id, course_id)
+
+      subject_student = self.env['atenea.subject_student_rel']\
+        .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
+      
+      # aún no tiene abierto el periodo de convalidaciones
+      if not is_set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
+        # asigno un periodo de 30 dias de plazo
+        if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
+          new_due_date = current_school_year.date_init_lective + timedelta(days = 31)
+        else:
+          new_due_date = today + timedelta(days = 31)
+          
+        users_to_change_due_date.append((user.id_,int(datetime(year = new_due_date.year, 
+                     month = new_due_date.month,
+                     day = new_due_date.day).timestamp())))
+        
+        # indicamos que ese usuario ya tiene el periodo abierto
+        subject_student.write({
+          'status_flags': set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN)
+        })
+     
+    return users_to_change_due_date
 
   @api.model
   def cron_download_validations(self, validation_classroom_id, subject_id, validation_task_id, course_id):
@@ -124,48 +162,20 @@ class Classroom(models.Model):
     
     current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual  
   
-    ############
-    ### asignación de la fecha de entrega de manera individual
-    ############
-    users = AteneaMoodleUsers.from_course(conn, validation_classroom_id, only_students = True)
-
-    users_to_change_due_date = []
-
-    for user in users:
-      a_user = self._enrol_student(user, subject_id, course_id)
-
-      subject_student = self.env['atenea.subject_student_rel']\
-        .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
-      
-      # aún no tiene abierto el periodo de convalidaciones
-      if not is_set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
-        # asigno un periodo de 30 dias de plazo
-        today = date.today()
-        if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
-          _logger.info("#P€#")
-          _logger.info(subject_student.status_flags)
-          new_due_date = current_school_year.date_init_lective + timedelta(days = 31)
-        else:
-          _logger.info("#O€#")
-          _logger.info(subject_student.status_flags)
-          new_due_date = today + timedelta(days = 31)
-          
-        users_to_change_due_date.append((user.id_,int(datetime(year = new_due_date.year, 
-                     month = new_due_date.month,
-                     day = new_due_date.day).timestamp())))
-        
-        # indicamos que ese usuario ya tiene el periodo abierto
-        subject_student.write({
-          'status_flags': set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN)
-        })
-
     # obtención de las tareas entregadas
     assignments = AteneaMoodleAssignments(conn, 
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
     
-    assignments[0].set_extension_due_date(users_to_change_due_date)
+    assignments[0].set_extension_due_date(self._assigns_end_date_validation_period(
+        conn, 
+        validation_classroom_id, 
+        subject_id, 
+        course_id,
+        current_school_year))
     
+    today = date.today()
+
     # comprobación de cada una de las tareas
     for submission in assignments[0].submissions():
       
