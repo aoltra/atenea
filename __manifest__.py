@@ -37,11 +37,16 @@
     },
     # always loaded
     'data': [
+        # seguridad
+        'security/security_access_data.xml',
         'security/ir.model.access.csv',
+        # vistas
         'views/views.xml',
         'views/config_settings_view.xml',
+        # configuración de serie
         'data/config/config_data.xml',
         'data/config/outgoing_mail.xml',
+        # datos de modelos
         'data/school.xml',
         'data/departament.xml',
         'data/classroom.xml',
