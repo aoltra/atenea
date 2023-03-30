@@ -26,22 +26,30 @@
 }
 
 .month td {
-  padding: 0.04cm 0.2cm;
+  padding: 0cm 0.225cm;
 }
 
 /* se opta por float que es soportado sin problemas */
 .grid-month {
   width: 7.3cm;
-  height: 7.2cm;
-  
-  margin-top: 0.5cm;
-
+  height: 6.5cm;
   text-align: center;
   border-left: 2px solid black;
-  border-right: 2px solid black;
-  
   float: left;
   font-size: 10pt; 
+}
+
+.grid-month:nth-child(n+4){
+  height: 7cm;
+  margin-top: 0.5cm;
+}
+
+/* 3: november, 6: february, 9: may, 11: july */
+.grid-month:nth-child(3),
+.grid-month:nth-child(6),
+.grid-month:nth-child(9),
+.grid-month:nth-child(11){
+  border-right: 2px solid black;
 }
 
 .description {
@@ -49,44 +57,56 @@
   margin-left: 4%;
 }
 
+table.description{
+  width: 100%;
+}
+
 .description td {
   padding-left: 2px;
   padding-right: 4px;
   vertical-align:top;
+  font-size: 8.5pt;
 }
 
 /* día del mes */
-.description tr td:first-child {
+.description tr td.day {
   text-align: right;
-  padding: 0; 
+  padding: 0;
   margin: 0;
   width: auto;
+  width: 31px;
 }
 
 /* cuerpo de la descripción */
-.description tr td:last-child {
+.description tr td.description {
   text-align: left;
   padding: 0; 
   margin: 0;
+  width: 200px;
 }
 
 
-.G-type {
+.month .G-type {
   background-color: aqua;
 }
 
-.S-type {
+.month .S-type {
   background-color: brown;
 }
 
-.P-type {
+.month .P-type {
   background-color: rgb(220, 20, 183);
 }
 
-.H-type {
+.month .sun, .sat {
   color: rgb(202, 74, 74);
 }
 
-.sun, .sat {
+.month .H-type {
   color: rgb(202, 74, 74);
+}
+
+.month .S-type,
+.month .P-type{
+  color: white;
 }
