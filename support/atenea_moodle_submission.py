@@ -59,11 +59,11 @@ class AteneaMoodleSubmission(MoodleSubmission):
       'userflags[0][locked]': int(False),
     })
 
-  def set_extension_due_date(self, to):
-     self.set_user_flags({
+  def set_extension_due_date(self, to):   
+    self.set_user_flags({
       'assignmentid': self.assignment.id_,
       'userflags[0][userid]': self.get_user_id(),
-      'userflags[0][extensionduedate]': 60*60*24*7,
+      'userflags[0][extensionduedate]': to,
     })
 
   def save_grade(self, grade, new_attempt = False, feedback = None):
