@@ -30,6 +30,20 @@ class IrCron(models.Model):
   """ inactivity_period_ids = fields.One2many('ir.cron.inactivity.period', 
     string = 'Periodos de inactividad',
     inverse_name = 'cron_id') """
+     
+  def method_direct_trigger(self):
+    self.check_access_rights('write')
+    for cron in self:
+      try:
+        cron.with_user(cron.user_id).with_context({'lastcall': cron.lastcall}).ir_actions_server_id.run()
+        cron.lastcall = fields.Datetime.now()
+      except Exception:
+        _logger.error('Se ha producido una excepción el cron_id: {}, name: {}'.format( 
+          cron.id,
+          cron.name))
+    
+    return True 
+  
 
   """ @api.model
   def _callback(self, model_name, method_name, args, job_id):
@@ -43,4 +57,5 @@ class IrCron(models.Model):
         return
     
     return super(IrCron, self)._callback(
-      model_name, method_name, args, job_id) """
+        model_name, method_name, args, job_id) """
+    
