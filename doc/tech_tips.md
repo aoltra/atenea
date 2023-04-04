@@ -46,7 +46,7 @@ __Nota__: Es necesario estar logueado en otra pestaña en Odoo
 Para poder conectar con Moodle desde Atenea es necesario un token de autenticación. El token se consigue haciendo una petición al _servicio moodle_mobile_app_
 
 ```
-curl -d username="USERNAME" -d password="PASSWORD" 'https://aules.edu.gva.es/ed/login/token.php?service=moodle_mobile_app'
+curl -d username="USERNAME" -d password="PASSWORD" 'http://moodle:8080/login/token.php?service=moodle_mobile_app'
 ```
 
 ## Cómo hacer peticiones CURL a Moodle
