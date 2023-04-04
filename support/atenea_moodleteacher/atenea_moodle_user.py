@@ -80,8 +80,12 @@ class AteneaMoodleUsers(list):
 
     params = {}
     params['courseid'] = course_id
-    response = MoodleRequest(
-      conn, 'core_enrol_get_enrolled_users').get(params).json()
+    try:
+      response = MoodleRequest(
+        conn, 'core_enrol_get_enrolled_users').get(params).json()
+    except Exception as e:
+      raise Exception("Excepción [core_enrol_get_enrolled_users]: " + str(e))
+    
 
     for st in response:
       st_json =  {

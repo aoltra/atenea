@@ -5,10 +5,11 @@ from datetime import date, timedelta, datetime
 
 from ..support.helper import is_set_flag, set_flag, unset_flag
 from ..support import constants
+from ..support.atenea_logger.exceptions import AteneaException
 
+# Moodle
 from ..support.atenea_moodleteacher.atenea_moodle_connection import AteneaMoodleConnection
 from moodleteacher.connection import MoodleConnection      # NOQA
-#from moodleteacher.assignments import MoodleAssignments    # NOQA  
 from ..support.atenea_moodleteacher.atenea_moodle_assignments import AteneaMoodleAssignments 
 from ..support.atenea_moodleteacher.atenea_moodle_user import AteneaMoodleUser, AteneaMoodleUsers
 
@@ -115,7 +116,7 @@ class Classroom(models.Model):
         .search([('subject_id', '=', subject_id),('student_id', '=', a_user.id),('course_id', '=', course_id)])
       
       # aún no tiene abierto el periodo de convalidaciones
-      if not is_set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN):
+      if not is_set_flag(subject_student[0].status_flags,constants.VALIDATION_PERIOD_OPEN):
         # asigno un periodo de 30 dias de plazo
         if current_school_year.date_init_lective > today: # el proceso ha ocurrido antes de abrir las aulas virtuales
           new_due_date = current_school_year.date_init_lective + timedelta(days = 31)
@@ -127,7 +128,7 @@ class Classroom(models.Model):
                      day = new_due_date.day).timestamp())))
         
         # indicamos que ese usuario ya tiene el periodo abierto
-        subject_student.write({
+        subject_student[0].write({
           'status_flags': set_flag(subject_student.status_flags,constants.VALIDATION_PERIOD_OPEN)
         })
      
@@ -167,21 +168,42 @@ class Classroom(models.Model):
       course_filter=[validation_classroom_id], 
       assignment_filter=[validation_task_id])
     
+    if len(assignments) == 0:
+      raise AteneaException(
+          _logger, 
+          'No se ha encontrado la tarea para convalidaciones (moodle_id: {})'.format(validation_task_id),
+          50, # critica!
+          comments = '''Es posible que la tarea con moodle_id:{} no exista en moodle o no
+                      exista dentro del curso con moodle_id: {}. 
+                      Es posible que se haya creado un nuevo curso escolar y no se haya
+                      actualizado los moodle_id dentro de atenea'''.
+                      format(validation_task_id, validation_classroom_id))
+    
     assignments[0].set_extension_due_date(self._assigns_end_date_validation_period(
         conn, 
         validation_classroom_id, 
         subject_id, 
         course_id,
         current_school_year))
-    
+  
+    # creación del directorio del ciclo para descomprimir las convalidaciones
     today = date.today()
+    course = self.env['atenea.course'].browse([course_id])
+    path = '{}/{}/{}/'.format(validations_path, 
+          '%s_%s' % (current_school_year.date_init.year, current_school_year.date_init.year + 1),  # TODO!! poner curso actual
+          course.abbr) 
+       
+    path = path.replace('//', '/')
+
+    if not os.path.exists(path):  
+      os.makedirs(path)
 
     # comprobación de cada una de las tareas
     for submission in assignments[0].submissions():
       
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
       a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
-         
+      _logger.info("*******-1********")   
       # obtención de la convalidación 
       validation_list = [ val for val in a_user.validations_ids if val.course_id.id == course_id]
       
@@ -193,6 +215,7 @@ class Classroom(models.Model):
       else:
         validation = validation_list[0]
 
+      _logger.info("*******0********")  
       ############                     ############
       ##### comprobación de errores a subsanar ####
       ############                     ############
@@ -216,35 +239,47 @@ class Classroom(models.Model):
         submission.set_extension_due_date(to = new_timestamp)
         return
       
-      """ course = self.env['atenea.course'].browse([course_id])
-        
-      grade = submission.load_grade()
-      _logger.info("###############################")
-      _logger.info(grade)
-      path = '{}/{}/{}/'.format(validations_path, 
-          '%s/%s' % (current_school_year.date_init.year, current_school_year.date_init.year + 1),  # TODO!! poner curso actual
-          course.abbr) 
-       
-      path = path.replace('//', '/')
-
-      # creación del directorio para descomprimirlo
-      if not os.path.exists(path):  
-        os.makedirs(path)
-        
+      _logger.info("*******1********")  
       # descarga del archivo
       filename = '[{}] - {}, {}'.format(
         user.id_,
-        user.lastname.upper(), 
-        user.firstname.upper())
+        user.lastname.upper() if user.lastname is not None else 'SIN APELLIDOS', 
+        user.firstname.upper() if user.firstname is not None else 'SIN NOMBRE')
         
       submission.files[0].from_url(conn = conn,url = submission.files[0].url)
       submission.files[0].save_as(path, filename + '.zip')
-
+      _logger.info("*******2********")  
       # creación del directorio para descomprimirlo
       if not os.path.exists(path + filename):  
         os.makedirs(path + filename)
 
-      submission.files[0].unpack_to(path + filename, remove_directories = False) """
+      submission.files[0].unpack_to(path + filename, remove_directories = False)
+
+      files_unzip = []
+      for file in os.listdir(path + filename):
+        if os.path.isfile(os.path.join(path + filename, file)):
+            files_unzip.append(file.upper())
+
+      annex_file = [file for file in files_unzip if 'ANEXO' in file or 'ANNEX' in file]
+
+      # más de un anexo (o ninguno)
+      if len(annex_file) != 1:
+        _logger.error("Es necesario que haya un (y sólo un) fichero llamado anexo. Estudiante moodle id: {} {}".format(submission.userid, len(annex_file)))   
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NNX'))
+        submission.set_extension_due_date(to = new_timestamp)
+        return
+
+
+
+
+      """ 
+        
+      grade = submission.load_grade()
+      _logger.info("###############################")
+      _logger.info(grade)
+    
+        
+      """
   
  
     return

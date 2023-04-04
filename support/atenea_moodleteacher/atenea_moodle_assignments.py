@@ -13,6 +13,10 @@ class AteneaMoodleAssignment(MoodleAssignment):
   Amplia la fucionalidad de MoodleAssignment
 
   Hereda de MoodleAssignment
+
+  NOTA: Por alguna razón desconocida, el id de la tarea que aparece en la barra de navegación del 
+        navegador no es del id que devuelve la API (el de la API es id-1). 
+        Aun asi el funcionamiento es correcto
   """
 
   # al no definir el init toma el del padre
@@ -73,14 +77,19 @@ class AteneaMoodleAssignment(MoodleAssignment):
 
     params = {'assignmentid': self.id_}
     num_user = 0
+
     for u,d in users:
       params['userids['+ str(num_user) + ']'] = u
       params['dates['+ str(num_user) + ']'] = d
       num_user += 1 
 
-    response = MoodleRequest(
-      self.conn, 'mod_assign_save_user_extensions').post(params).json()
-
+    if len(users) > 0:
+      try:
+        response = MoodleRequest(
+          self.conn, 'mod_assign_save_user_extensions').post(params).json()
+      except Exception as e:
+        logger.error("Error en [set_extension_due_date]: " + str(e))
+  
 
 class AteneaMoodleAssignments(list):
   """

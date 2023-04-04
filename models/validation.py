@@ -39,6 +39,7 @@ class Validation(models.Model):
   correction_reason = fields.Selection([
     ('MFL', 'Sólo se admite la entrega de un único fichero.'),
     ('NZP', 'La documentación aportada no se encuentra en un único fichero zip comprimido.'),
+    ('NNX', 'No se encuentra un fichero llamado anexo o hay más de uno.'),
     ('SNF', 'Documento no firmado digitalmente'),
     ('RL', 'No se aporta curso de riesgo laborales > 30h'),
     ('EXP', 'No se aporta expediente académico'),
