@@ -1,6 +1,6 @@
 <odoo>
-  <template id="external_layout_standard_report_footer_custom" inherit_id="report.external_layout_footer">
-    <xpath expr="(//div/div[contains(@class, 'row')])[3]" position="replace">
+  <template id="external_layout_standard_report_footer_custom" inherit_id="web.external_layout_standard">
+    <xpath expr="(//div/div[hasclass('row')])[3]" position="replace">
       <div class="col-12" name="company_address">
         <span t-field="company.name" />
         <span t-field="company.street" />
@@ -8,7 +8,7 @@
         <span t-field="company.zip" />
       </div>
     </xpath>
-    <xpath expr="//div/div[contains(@class, 'text-center')]" position="replace">
+    <xpath expr="//div/div[hasclass('text-center')]" position="replace">
       <div class="row" style="font-family: 'Trebuchet MS', sans-serif; border-top: 1px solid black;">
         <div class="col-6 mb4 text-right">
           <ul class="list-inline mb4 text-nowrap">
