@@ -22,6 +22,7 @@ _logger = logging.getLogger(__name__)
     """
 class IrCron(models.Model):
   _inherit = 'ir.cron'
+  _name = 'atenea.ir.cron'
 
   # Objectoid al que va asociado el cron, 
   # no confundir con el modelo que tiene el código a ejecutar.

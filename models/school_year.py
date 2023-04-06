@@ -102,9 +102,8 @@ class SchoolYear(models.Model):
   # renuncia convocatoria extraordinaria primero
   date_waiver_extraord1 = fields.Date(string = 'Fin renuncia convocatoria extraordinaria', compute = '_compute_waiver_extraord1') 
 
-
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
-  cron_ids = fields.One2many('ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
+  cron_ids = fields.One2many('atenea.ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
 
   # report calendario escolar  
   school_calendar_version = fields.Integer(string = 'Versión calendario escolar', default = 1, store = True, readonly = True)
@@ -711,6 +710,8 @@ class SchoolYear(models.Model):
       courses = self.env['atenea.course'].browse(courses_id)  
       cron_ids = []
 
+      record.cron_ids = [(5, 0 ,0)]
+      
       for course in courses:
         # descarga desde Aules
 
@@ -771,12 +772,14 @@ class SchoolYear(models.Model):
           }) 
       
           cron_ids.append(task)
-
-          
+ 
 
       _logger.info(cron_ids)
+    
+      # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 
       record.cron_ids = cron_ids
-
+     
+  
 
   """
   https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
