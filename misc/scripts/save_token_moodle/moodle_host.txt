@@ -1,1 +1,1 @@
-https://moodle.org
+http://moodle:8080
