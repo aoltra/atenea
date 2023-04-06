@@ -62,3 +62,27 @@ curl https://localhost/webservice/rest/server.php?wstoken=abcdef012345678&wsfunc
 ```
 
 > Nota: en el caso de hacer peticiones al moodle de docker utilizar http el nular de https
+
+## Configuración de GitHub
+
+Es conveniente bloquear la rama _main_ y la rama _dev_ del repo y para que sólo se pueda acceder a ella mediante PR. Además, es conveniente que las ramas creadas para cada tarea se borren de manera automática una vez el PR ha sido aceptado
+
+Desde _Settings/General_
+
+* Desmarcar _Allow merge commits (Add all commits from the head branch to the base branch with a merge commit)_
+* Desmarcar _Allow rebase merging (Add all commits from the head branch onto the base branch individually)_
+* Desmarcar _Automatically delete head branches (Deleted branches will still be able to be restored)_
+
+Desde _Settings/Branches_
+
+Crear dos reglas, una para _main_ y otra para _dev_. Cada una de ellas marcar:
+
+* _Require a pull request before merging_
+* _Require approvals_
+* _Dismiss stale pull request approvals when new commits are pushed_
+* _Require review from Code Owners_
+
+
+
+
+
