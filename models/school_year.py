@@ -109,6 +109,10 @@ class SchoolYear(models.Model):
   date_1term_pfc_exposition_end = fields.Date(string = 'Fin periodo de defensas', compute = '_compute_1term_pfc_exposition_end')
   date_2term_pfc_delivery =  fields.Date(string = 'Entrega documentación', compute = '_compute_2term_pfc_delivery', readonly = False) 
   date_1term_pfc_delivery =  fields.Date(string = 'Entrega documentación', compute = '_compute_1term_pfc_delivery', readonly = False) 
+  date_2term_pfc_waiver =  fields.Date(string = 'Fin renuncia a la convocatoria', compute = '_compute_2term_pfc_waiver') 
+  date_1term_pfc_waiver =  fields.Date(string = 'Fin renuncia a la convocatoria', compute = '_compute_1term_pfc_waiver') 
+  date_2term_pfc_cancellation =  fields.Date(string = 'Fin anulación matrícula (registro)', compute = '_compute_2term_pfc_cancellation') 
+  date_1term_pfc_cancellation =  fields.Date(string = 'Fin anulación matrícula (registro)', compute = '_compute_1term_pfc_cancellation') 
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
   cron_ids = fields.One2many('atenea.ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
@@ -668,6 +672,39 @@ class SchoolYear(models.Model):
         record.date_1term_pfc_delivery = ''
       else: 
         record.date_1term_pfc_delivery = record.date_1term_pfc_exposition_ini - datetime.timedelta(days = 10)
+
+  @api.depends('date_1term_pfc_exposition_ini')
+  def _compute_1term_pfc_waiver(self):
+    for record in self:
+      if record.date_1term_pfc_exposition_ini == False:
+        record.date_1term_pfc_waiver = ''
+      else: 
+        record.date_1term_pfc_waiver = record.date_1term_pfc_exposition_ini - datetime.timedelta(days = 30)
+
+  @api.depends('date_2term_pfc_exposition_ini')
+  def _compute_2term_pfc_waiver(self):
+    for record in self:
+      if record.date_2term_pfc_exposition_ini == False:
+        record.date_2term_pfc_waiver = ''
+      else: 
+        record.date_2term_pfc_waiver = record.date_2term_pfc_exposition_ini - datetime.timedelta(days = 30)
+
+  @api.depends('date_2term_pfc_exposition_ini')
+  def _compute_2term_pfc_cancellation(self):
+    for record in self:
+      if record.date_2term_pfc_exposition_ini == False:
+        record.date_2term_pfc_cancellation = ''
+      else: 
+        record.date_2term_pfc_cancellation = record.date_2term_pfc_exposition_ini - datetime.timedelta(days = 60)
+   
+  @api.depends('date_1term_pfc_exposition_ini')
+  def _compute_1term_pfc_cancellation(self):
+    for record in self:
+      if record.date_1term_pfc_exposition_ini == False:
+        record.date_1term_pfc_cancellation = ''
+      else: 
+        record.date_1term_pfc_cancellation = record.date_1term_pfc_exposition_ini - datetime.timedelta(days = 60)
+  
 
   # ###########
   # FESTIVOS

@@ -178,12 +178,18 @@
                   <field name="date_1term_pfc_delivery"/>
                   <field name="date_1term_pfc_exposition_ini"/>
                   <field name="date_1term_pfc_exposition_end" force_save="1"/>
+                  <separator/>
+                  <field name="date_1term_pfc_cancellation"/>
+                  <field name="date_1term_pfc_waiver"/>  
                 </group>
                 <group>
                   <separator string="Segundo periodo (febrero)" style="padding-bottom:15px"/>
                   <field name="date_2term_pfc_delivery"/>
                   <field name="date_2term_pfc_exposition_ini"/>
                   <field name="date_2term_pfc_exposition_end" force_save="1"/>
+                  <separator/>
+                  <field name="date_2term_pfc_cancellation"/>
+                  <field name="date_2term_pfc_waiver"/>  
                 </group>
               </group>
             </page>
