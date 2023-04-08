@@ -55,8 +55,8 @@ Para cada una de las tareas a realizar hay que crearse un rama, en la que irán 
 
    ```
    > git pull origin dev
-   ```
-   
+   ```   
+
 2. Desde _dev_ crear una rama y posicionarse en ella para el desarrollo del código. La rama tendrá como nomenclatura:
 
    _tipo_módulo_descripción_
@@ -133,4 +133,3 @@ En caso que querer modificar el código del PR, se pueden realizar todos los com
   ```
   > git pull upstream pull/20/head
   ```
-  
