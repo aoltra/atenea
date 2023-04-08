@@ -21,6 +21,39 @@
       <field name="name">Desarrollo de Aplicaciones Multiplataforma</field>
     </record>
 
+    <record model="atenea.course" id="atenea.course_ASIR">
+      <field name="abbr">ASIR</field>
+      <field name="name">Administración de Sistemas Informáticos y Redes</field>
+    </record>
 
+    <record model="atenea.course" id="atenea.course_GAT">
+      <field name="abbr">GAT</field>
+      <field name="name">Gestión de Alojamientos Turísticos</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_GIAT">
+      <field name="abbr">GIAT</field>
+      <field name="name">Guía, Información y Asistencias Turísticas</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_AVGE">
+      <field name="abbr">AVGE</field>
+      <field name="name">Agencias de Viajes y Gestión de Eventos</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_CI">
+      <field name="abbr">CI</field>
+      <field name="name">Comercio Internacional</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_TIL">
+      <field name="abbr">TIL</field>
+      <field name="name">Transporte y Logística</field>
+    </record>
+
+    <record model="atenea.course" id="atenea.course_GVEC">
+      <field name="abbr">GEVEC</field>
+      <field name="name">Gestión y Ventas de Espacios Comerciales</field>
+    </record>
   </data>
 </odoo>

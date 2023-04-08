@@ -102,6 +102,14 @@ class SchoolYear(models.Model):
   # renuncia convocatoria extraordinaria primero
   date_waiver_extraord1 = fields.Date(string = 'Fin renuncia convocatoria extraordinaria', compute = '_compute_waiver_extraord1') 
 
+  # PFC
+  date_2term_pfc_exposition_ini = fields.Date(string = 'Inicio periodo de defensas', compute = '_compute_2term_pfc_exposition_ini', readonly = False) 
+  date_2term_pfc_exposition_end = fields.Date(string = 'Fin periodo de defensas', compute = '_compute_2term_pfc_exposition_end') 
+  date_1term_pfc_exposition_ini = fields.Date(string = 'Inicio periodo de defensas', compute = '_compute_1term_pfc_exposition_ini', readonly = False) 
+  date_1term_pfc_exposition_end = fields.Date(string = 'Fin periodo de defensas', compute = '_compute_1term_pfc_exposition_end')
+  date_2term_pfc_delivery =  fields.Date(string = 'Entrega documentación', compute = '_compute_2term_pfc_delivery', readonly = False) 
+  date_1term_pfc_delivery =  fields.Date(string = 'Entrega documentación', compute = '_compute_1term_pfc_delivery', readonly = False) 
+
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
   cron_ids = fields.One2many('atenea.ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
 
@@ -112,6 +120,9 @@ class SchoolYear(models.Model):
     'date_ord2_exam_end','date_extraord2_exam_ini', 'date_extraord2_exam_end', 
     'date_1term1_end', 'date_1term1_exam_ini', 'date_1term1_exam_end', 'date_2term1_ini', 'date_2term1_end', 
     'date_ord1_exam_ini', 'date_ord1_exam_end','date_extraord1_exam_ini', 'date_extraord1_exam_end', 'state']
+  
+  pfc_calendar_version = fields.Integer(string = 'Versión calendario PFC', default = 1, store = True, readonly = True)
+  pfc_calendar_update_keys = ['date_2term_exposition_ini']
 
   validations_ids = fields.One2many('atenea.validation', 'school_year_id')
 
@@ -134,15 +145,9 @@ class SchoolYear(models.Model):
       (self.state == '1' or ('state' in vals and vals['state'] == '1')):
       vals['school_calendar_version'] = self.school_calendar_version + 1
 
-    """ self.env['ir.cron'].create({
-      'name': 'demo',  
-      'interval_number': 1,
-      'interval_type': 'days',
-      'numbercall': -1,     # número de veces que será ejecutada la tarea
-      'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
-      'model_id': ref('atenea.model_atenea_validation').id,
-      'code': '_cron_example'
-    }) """
+    if any([i in vals for i in self.pfc_calendar_update_keys]) and \
+      (self.state == '1' or ('state' in vals and vals['state'] == '1')):
+      vals['pfc_calendar_version'] = self.pfc_calendar_version + 1
 
     super(SchoolYear, self).write(vals)
 
@@ -557,7 +562,7 @@ class SchoolYear(models.Model):
       if record.date_ord1_exam_ini == False:
         record.date_extraord1_exam_ini = ''
       else: 
-        record.date_extraord1_exam_ini = record.date_ord1_exam_ini + datetime.timedelta(weeks = 3)
+        record.date_extraord1_exam_ini = record.date_ord1_exam_ini + datetime.timedelta(weeks = 4)
 
   @api.constrains('date_extraord1_exam_ini')
   def _check_date_extraord1_exam_ini(self):
@@ -597,6 +602,72 @@ class SchoolYear(models.Model):
         record.date_waiver_extraord1 = ''      
       else:
         record.date_waiver_extraord1 = datetime.datetime(record.date_extraord1_exam_ini.year, record.date_extraord1_exam_ini.month - 1, record.date_extraord1_exam_ini.day)
+
+
+  # ###########
+  # PFC
+  # ###########
+  @api.depends('date_2term2_exam_ini')
+  def _compute_2term_pfc_exposition_ini(self):
+    for record in self:
+      if record.date_2term2_exam_ini == False:
+        record.date_2term_pfc_exposition_ini = ''
+      else: 
+        record.date_2term_pfc_exposition_ini = record.date_2term2_exam_ini - datetime.timedelta(weeks = 1)
+
+  @api.constrains('date_2term_pfc_exposition_ini')
+  def _check_date_2term_pfc_exposition_ini(self):
+    for record in self:
+      if record.date_2term_pfc_exposition_ini != False: 
+        if record.date_2term_pfc_exposition_ini.weekday() != 0:
+          raise ValidationError('La fecha de inicio de las defensas tiene que ser un lunes')
+
+  @api.depends('date_ord1_exam_ini')
+  def _compute_1term_pfc_exposition_ini(self):
+    for record in self:
+      if record.date_ord1_exam_ini == False:
+        record.date_1term_pfc_exposition_ini = ''
+      else: 
+        record.date_1term_pfc_exposition_ini = record.date_ord1_exam_ini + datetime.timedelta(weeks = 1)
+
+  @api.constrains('date_1term_pfc_exposition_ini')
+  def _check_date_1term_pfc_exposition_ini(self):
+    for record in self:
+      if record.date_1term_pfc_exposition_ini != False: 
+        if record.date_1term_pfc_exposition_ini.weekday() != 0:
+          raise ValidationError('La fecha de inicio de las defensas tiene que ser un lunes')
+        
+  @api.depends('date_2term_pfc_exposition_ini')
+  def _compute_2term_pfc_exposition_end(self):
+    for record in self:
+      if record.date_2term_pfc_exposition_ini == False:
+        record.date_2term_pfc_exposition_end = ''
+      else: 
+        record.date_2term_pfc_exposition_end = record.date_2term_pfc_exposition_ini + datetime.timedelta(days = 4)
+
+  @api.depends('date_1term_pfc_exposition_ini')
+  def _compute_1term_pfc_exposition_end(self):
+    for record in self:
+      if record.date_1term_pfc_exposition_ini == False:
+        record.date_1term_pfc_exposition_end = ''
+      else: 
+        record.date_1term_pfc_exposition_end = record.date_1term_pfc_exposition_ini + datetime.timedelta(days = 4)
+
+  @api.depends('date_2term_pfc_exposition_ini')
+  def _compute_2term_pfc_delivery(self):
+    for record in self:
+      if record.date_2term_pfc_exposition_ini == False:
+        record.date_2term_pfc_delivery = ''
+      else: 
+        record.date_2term_pfc_delivery = record.date_2term_pfc_exposition_ini - datetime.timedelta(days = 10)
+
+  @api.depends('date_1term_pfc_exposition_ini')
+  def _compute_1term_pfc_delivery(self):
+    for record in self:
+      if record.date_1term_pfc_exposition_ini == False:
+        record.date_1term_pfc_delivery = ''
+      else: 
+        record.date_1term_pfc_delivery = record.date_1term_pfc_exposition_ini - datetime.timedelta(days = 10)
 
   # ###########
   # FESTIVOS

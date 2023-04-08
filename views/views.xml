@@ -172,6 +172,20 @@
               </group>
             </page>
              <page string = 'PFC'>
+              <group col="2">
+                <group>
+                  <separator string="Primer periodo (junio)" style="padding-bottom:15px"/>
+                  <field name="date_1term_pfc_delivery"/>
+                  <field name="date_1term_pfc_exposition_ini"/>
+                  <field name="date_1term_pfc_exposition_end" force_save="1"/>
+                </group>
+                <group>
+                  <separator string="Segundo periodo (febrero)" style="padding-bottom:15px"/>
+                  <field name="date_2term_pfc_delivery"/>
+                  <field name="date_2term_pfc_exposition_ini"/>
+                  <field name="date_2term_pfc_exposition_end" force_save="1"/>
+                </group>
+              </group>
             </page>
             <page string = 'Festivos'>
               <field name="holidays_ids">
@@ -186,8 +200,13 @@
               </field>
             </page>
             <page string = 'Información'>
-              <group>
-                <field name="school_calendar_version"/>
+              <group col="3">
+                <group>
+                  <field name="school_calendar_version"/>
+                  <field name="pfc_calendar_version"/>
+                </group>
+                <group></group>
+                <group></group>
               </group>
             </page>
             <page string = "Tareas">

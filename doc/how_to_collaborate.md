@@ -14,8 +14,6 @@
 
 ... In progress
 
-
-
 2. Desde la carpeta _volumesOdoo/addons_, crear una carpeta _atenea_ y posicionarse en su interior
 
    ```
@@ -58,7 +56,7 @@ Para cada una de las tareas a realizar hay que crearse un rama, en la que irán 
    ```
    > git pull origin dev
    ```
-
+   
 2. Desde _dev_ crear una rama y posicionarse en ella para el desarrollo del código. La rama tendrá como nomenclatura:
 
    _tipo_módulo_descripción_
@@ -79,10 +77,9 @@ Para cada una de las tareas a realizar hay que crearse un rama, en la que irán 
 
 3. Crear todos los commits necesarios en local.
 
-
 ## Pull Request
 
-Una vez finalizado la tarea hay que solicitar un pull request para que el código se incluya en la rama _main_ del repo.
+Una vez finalizada la tarea hay que solicitar un pull request para que el código se incluya en la rama _main_ del repo.
 
 1. Hacer un _push_ de la rama a _origin_
 
@@ -112,7 +109,6 @@ Una vez finalizado la tarea hay que solicitar un pull request para que el códig
    > git pull origin fix_core_34
    ```
  
-
 ## Cómo testear el PR
 
 Para testear y aprobar el código del PR, los pasos son:
@@ -137,5 +133,4 @@ En caso que querer modificar el código del PR, se pueden realizar todos los com
   ```
   > git pull upstream pull/20/head
   ```
-
   
