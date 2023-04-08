@@ -15,6 +15,7 @@ Lista de tipos de commit y abreviatura a utilizar
 | Nombre | tipo |  descripción |
 | :-- | :-------:  |  :--------- | 
 | build | _build_  | Modificación o creación archivos elementos que afectan a la infraestructura de desarrollo, requirements, package.json, etc |
+| data | _data_  | Modificación o creación archivos de datos: configuraciones, datos de ejemplo, datos de partida, etc |
 | feature | _feat_ |  Nueva característica |
 | fix | _fix_  | Error corregido |
 | documentos | _docs_ | Actualización de documentación |
