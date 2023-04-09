@@ -119,6 +119,10 @@ class SchoolYear(models.Model):
   date_1term_pfc_proposal1 = fields.Date(string = 'Entrega propuesta', compute = '_compute_1term_pfc_proposal', readonly = False) 
   date_2term_pfc_proposal2= fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_2term_pfc_fixed_proposal') 
   date_1term_pfc_proposal2 = fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_1term_pfc_fixed_proposal') 
+  date_2term_pfc_list1 = fields.Date(string = 'Resolución provisional', compute = '_compute_2term_pfc_list1') 
+  date_1term_pfc_list1 = fields.Date(string = 'Resolución provisional', compute = '_compute_1term_pfc_list1')
+  date_2term_pfc_list2 = fields.Date(string = 'Resolución definitiva', compute = '_compute_2term_pfc_list2') 
+  date_1term_pfc_list2 = fields.Date(string = 'Resolución definitiva', compute = '_compute_1term_pfc_list2') 
 
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
@@ -746,24 +750,67 @@ class SchoolYear(models.Model):
       else: 
         record.date_1term_pfc_proposal1 = record.date_1term_pfc_talk + datetime.timedelta(days = 14)
 
-  @api.depends('date_2term_pfc_proposal1')
+  @api.constrains('date_1term_pfc_proposal1')
+  def _check_date_1term_pfc_proposal1(self):
+    for record in self:
+      if record.date_1term_pfc_proposal1 != False: 
+        if record.date_1term_pfc_proposal1.weekday() != 4:
+          raise ValidationError('El día de fin de entrega de propuestas tienen que ser un jueves')
+        
+  @api.constrains('date_2term_pfc_proposal1')
+  def _check_date_2term_pfc_proposal1(self):
+    for record in self:
+      if record.date_2term_pfc_proposal1 != False: 
+        if record.date_2term_pfc_proposal1.weekday() != 4:
+          raise ValidationError('El día de fin de entrega de propuestas tienen que ser un jueves')
+
+  @api.depends('date_2term_pfc_list1')
   def _compute_2term_pfc_fixed_proposal(self):
     for record in self:
-      if record.date_2term_pfc_proposal1 == False:
+      if record.date_2term_pfc_list1 == False:
         record.date_2term_pfc_proposal2 = ''
       else: 
-        record.date_2term_pfc_proposal2 = record.date_2term_pfc_proposal1 + datetime.timedelta(days = 21)
+        record.date_2term_pfc_proposal2 = record.date_2term_pfc_list1 + datetime.timedelta(days = 20)
 
-  @api.depends('date_1term_pfc_proposal1')
+  @api.depends('date_1term_pfc_list1')
   def _compute_1term_pfc_fixed_proposal(self):
     for record in self:
-      if record.date_1term_pfc_proposal1 == False:
+      if record.date_1term_pfc_list1 == False:
         record.date_1term_pfc_proposal2 = ''
       else: 
-        record.date_1term_pfc_proposal2 = record.date_1term_pfc_proposal1 + datetime.timedelta(days = 21)
+        record.date_1term_pfc_proposal2 = record.date_1term_pfc_list1 + datetime.timedelta(days = 20)
 
-      
-  date_2term_pfc_proposal2= fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_2term_pfc_fixed_proposal') 
+  @api.depends('date_1term_pfc_proposal1')
+  def _compute_1term_pfc_list1(self):
+    for record in self:
+      if record.date_1term_pfc_proposal1 == False:
+        record.date_1term_pfc_list1 = ''
+      else: 
+        record.date_1term_pfc_list1 = record.date_1term_pfc_proposal1 + datetime.timedelta(days = 1)
+
+  @api.depends('date_2term_pfc_proposal1')
+  def _compute_2term_pfc_list1(self):
+    for record in self:
+      if record.date_2term_pfc_proposal1 == False:
+        record.date_2term_pfc_list1 = ''
+      else: 
+        record.date_2term_pfc_list1 = record.date_2term_pfc_proposal1 + datetime.timedelta(days = 1)
+
+  @api.depends('date_1term_pfc_proposal2')
+  def _compute_1term_pfc_list2(self):
+    for record in self:
+      if record.date_1term_pfc_proposal2 == False:
+        record.date_1term_pfc_list2 = ''
+      else: 
+        record.date_1term_pfc_list2 = record.date_1term_pfc_proposal2 + datetime.timedelta(days = 1)
+
+  @api.depends('date_2term_pfc_proposal2')
+  def _compute_2term_pfc_list2(self):
+    for record in self:
+      if record.date_2term_pfc_proposal2 == False:
+        record.date_2term_pfc_list2 = ''
+      else: 
+        record.date_2term_pfc_list2 = record.date_2term_pfc_proposal2 + datetime.timedelta(days = 1)
 
   # ###########
   # FESTIVOS
