@@ -115,6 +115,10 @@ class SchoolYear(models.Model):
   date_1term_pfc_cancellation =  fields.Date(string = 'Fin anulación matrícula (registro)', compute = '_compute_1term_pfc_cancellation') 
   date_1term_pfc_talk = fields.Date(string = 'Charla informativa', compute = '_compute_1term_pfc_talk') 
   date_2term_pfc_talk = fields.Date(string = 'Charla informativa', compute = '_compute_2term_pfc_talk') 
+  date_2term_pfc_proposal1 = fields.Date(string = 'Entrega propuesta', compute = '_compute_2term_pfc_proposal', readonly = False) 
+  date_1term_pfc_proposal1 = fields.Date(string = 'Entrega propuesta', compute = '_compute_1term_pfc_proposal', readonly = False) 
+  date_2term_pfc_proposal2= fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_2term_pfc_fixed_proposal') 
+  date_1term_pfc_proposal2 = fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_1term_pfc_fixed_proposal') 
 
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
@@ -720,11 +724,46 @@ class SchoolYear(models.Model):
   def _compute_2term_pfc_talk(self):
     for record in self:
       september_last_day = datetime.date(record.date_init.year, 9, 30)
+      # siempre en jueves
       if september_last_day.weekday()>=3:
         record.date_2term_pfc_talk = september_last_day - datetime.timedelta(days = september_last_day.weekday() - 3)
       else:
         record.date_2term_pfc_talk = september_last_day + datetime.timedelta(days = 3 - september_last_day.weekday())
 
+  @api.depends('date_2term_pfc_talk')
+  def _compute_2term_pfc_proposal(self):
+    for record in self:
+      if record.date_2term_pfc_talk == False:
+        record.date_2term_pfc_proposal1 = ''
+      else: 
+        record.date_2term_pfc_proposal1 = record.date_2term_pfc_talk + datetime.timedelta(days = 7)
+
+  @api.depends('date_1term_pfc_talk')
+  def _compute_1term_pfc_proposal(self):
+    for record in self:
+      if record.date_1term_pfc_talk == False:
+        record.date_1term_pfc_proposal1 = ''
+      else: 
+        record.date_1term_pfc_proposal1 = record.date_1term_pfc_talk + datetime.timedelta(days = 14)
+
+  @api.depends('date_2term_pfc_proposal1')
+  def _compute_2term_pfc_fixed_proposal(self):
+    for record in self:
+      if record.date_2term_pfc_proposal1 == False:
+        record.date_2term_pfc_proposal2 = ''
+      else: 
+        record.date_2term_pfc_proposal2 = record.date_2term_pfc_proposal1 + datetime.timedelta(days = 21)
+
+  @api.depends('date_1term_pfc_proposal1')
+  def _compute_1term_pfc_fixed_proposal(self):
+    for record in self:
+      if record.date_1term_pfc_proposal1 == False:
+        record.date_1term_pfc_proposal2 = ''
+      else: 
+        record.date_1term_pfc_proposal2 = record.date_1term_pfc_proposal1 + datetime.timedelta(days = 21)
+
+      
+  date_2term_pfc_proposal2= fields.Date(string = 'Entrega propuesta corregidas', compute = '_compute_2term_pfc_fixed_proposal') 
 
   # ###########
   # FESTIVOS

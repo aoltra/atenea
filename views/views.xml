@@ -176,6 +176,8 @@
                 <group>
                   <separator string="Primer periodo (junio)" style="padding-bottom:15px"/>
                   <field name="date_1term_pfc_talk"/>
+                  <field name="date_1term_pfc_proposal1"/>
+                  <field name="date_1term_pfc_proposal2"/>
                   <separator/>
                   <field name="date_1term_pfc_delivery"/>
                   <field name="date_1term_pfc_exposition_ini"/>
@@ -187,6 +189,8 @@
                 <group>
                   <separator string="Segundo periodo (febrero)" style="padding-bottom:15px"/>
                   <field name="date_2term_pfc_talk"/>
+                  <field name="date_2term_pfc_proposal1"/>
+                  <field name="date_2term_pfc_proposal2"/>
                   <separator/>
                   <field name="date_2term_pfc_delivery"/>
                   <field name="date_2term_pfc_exposition_ini"/>
