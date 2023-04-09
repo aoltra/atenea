@@ -916,6 +916,11 @@ class SchoolYear(models.Model):
 
   @api.onchange('date_init')
   def _calculate_task(self):
+    """
+    Crea las tareas cron de:
+    - matriculación
+    - descarga de convalidaciones
+    """
     for record in self:
       if record.date_init == False:
         continue
@@ -994,16 +999,14 @@ class SchoolYear(models.Model):
       record.cron_ids = cron_ids
      
   
-
-  """
-  https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
-  """
   @staticmethod
   def _calc_easter(year):
     '''
     Gauss algorithm to calculate the date of easter in a given year
     note // forces integer division in Python3
     returns a date object
+
+    https://www.daniweb.com/programming/software-development/code/463551/another-look-at-easter-dates-python
     '''
     month = 3
     # determine the Golden number
@@ -1036,17 +1039,7 @@ class SchoolYear(models.Model):
       month = 4
 
     return datetime.datetime(year, month, day)
-
-  "Calcula los dias entre dos fechas, pero si cambia de mes, sólo hasta final o principio de ese mes"
-  def _calc_dur(dateI, dateE):
-    if dateI.month == dateE.month:
-      return (dateE-dateI).days
-    else:
-      if dateI < dateE:
-        return (datetime.datetime(dateI.year, dateI.month, 31) - dateI).days + 1
-      else:
-        return (datetime.datetime(dateI.year, dateI.month, 1) - dateI).days - 1
-      
+    
 
   def update_dates(self):
     self.dates['init_lective'] = { 
