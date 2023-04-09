@@ -113,6 +113,9 @@ class SchoolYear(models.Model):
   date_1term_pfc_waiver =  fields.Date(string = 'Fin renuncia a la convocatoria', compute = '_compute_1term_pfc_waiver') 
   date_2term_pfc_cancellation =  fields.Date(string = 'Fin anulación matrícula (registro)', compute = '_compute_2term_pfc_cancellation') 
   date_1term_pfc_cancellation =  fields.Date(string = 'Fin anulación matrícula (registro)', compute = '_compute_1term_pfc_cancellation') 
+  date_1term_pfc_talk = fields.Date(string = 'Charla informativa', compute = '_compute_1term_pfc_talk') 
+  date_2term_pfc_talk = fields.Date(string = 'Charla informativa', compute = '_compute_2term_pfc_talk') 
+
 
   holidays_ids = fields.One2many('atenea.holiday', 'school_year_id')
   cron_ids = fields.One2many('atenea.ir.cron', 'school_year_id') #, domain = 'self._get_school_year_id')
@@ -704,7 +707,24 @@ class SchoolYear(models.Model):
         record.date_1term_pfc_cancellation = ''
       else: 
         record.date_1term_pfc_cancellation = record.date_1term_pfc_exposition_ini - datetime.timedelta(days = 60)
-  
+
+  @api.depends('date_1term1_end')
+  def _compute_1term_pfc_talk(self):
+    for record in self:
+      if record.date_1term1_end == False:
+        record.date_1term_pfc_talk = ''
+      else: 
+        record.date_1term_pfc_talk = record.date_1term1_end - datetime.timedelta(days = 1)
+
+  @api.depends('date_init')
+  def _compute_2term_pfc_talk(self):
+    for record in self:
+      september_last_day = datetime.date(record.date_init.year, 9, 30)
+      if september_last_day.weekday()>=3:
+        record.date_2term_pfc_talk = september_last_day - datetime.timedelta(days = september_last_day.weekday() - 3)
+      else:
+        record.date_2term_pfc_talk = september_last_day + datetime.timedelta(days = 3 - september_last_day.weekday())
+
 
   # ###########
   # FESTIVOS
