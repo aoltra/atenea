@@ -57,6 +57,7 @@
         # reports
         'reports/custom_footer.xml',
         'reports/school_calendar.xml',
+        'reports/pfc_calendar.xml',
         'reports/paper_format.xml',     # el último del bloque
     ],
     # only loaded in demonstration mode

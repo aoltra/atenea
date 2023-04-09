@@ -1,0 +1,66 @@
+<odoo>
+  <report id="pfc_calendar_pdf_report" 
+    string="Calendario PFC" 
+    model="atenea.school_year" 
+    report_type="qweb-pdf" 
+    file="atenea.report_pfc_calendar"
+    name="atenea.report_pfc_calendar"
+    print_report_name="'Calendario proyecto - %s' % (object.name)"/>
+  
+  <template id="report_pfc_calendar">
+    <t t-call="web.html_container">
+      <!-- por si se mandará a imprimir calendarios de varios cursos escolares -->
+      <t t-foreach="docs" t-as="record">  
+        <t t-call="web.external_layout"> <!-- añade el header y el footer -->
+          <!-- wktmltopdf no lee los ficheros CSS externos, asi que hay que embeber el código 
+               en la etiqueta style. Para poder disponer del código en un fichero externo
+               buscamos la etiqueta style e  insertamos el enlace al ficher .css  --> 
+          <xpath expr="//style" position="after">
+            <link rel="stylesheet" href="/atenea/static/css/pfc_calendar_report.css"/>
+          </xpath>
+          <style/>
+          <div class="page" style="margin-top: -1.5cm">
+            <h2>Calendario Proyecto Fin de Ciclo</h2>
+            <h3>Segundo periodo</h3>
+            <table>
+              <thead>
+                <tr><th class="date-row">Fecha</th><th>Evento</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="date-row"><t t-esc="record.date_2term_pfc_talk"/></td>
+                  <td>Charla informativa (online)</td>
+                </tr>
+                <tr class="horz-separator"/>
+                <tr>
+                  <td class="date-row"><t t-esc="record.date_2term_pfc_proposal1"/></td>
+                  <td>Fecha tope de entrega de propuestas</td>
+                </tr>
+                <tr>
+                  <td class="date-row"><t t-esc="record.date_2term_pfc_list1"/></td>
+                  <td>Reunión aceptación propuestas / Publicación listado provisional</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                
+                </tr>
+              </tbody>
+            </table>
+            <h3>Primer periodo</h3>
+          
+          </div>
+
+          
+        </t>    
+        
+      </t>
+    </t>
+    
+  </template>
+</odoo>
