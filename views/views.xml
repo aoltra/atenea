@@ -69,13 +69,25 @@
       <field name="model">atenea.school_year</field>
       <field name="arch" type="xml">
         <form>
+          <header>
+            <!-- como es del tipo object, llama a la función school_year_to_current_action 
+              del modelo definido en el field model, en este caso atenea.school_year  -->
+            <button name="school_year_to_current_action" icon="fa-bookmark" 
+              string="Convertir en curso actual" class="oe_highlight"
+              attrs="{'invisible': ['|', ('state','=', '2'), ('state','=', '1')] }"
+              type="object"/>
+            <button name="school_year_to_draft_action" icon="fa-pencil" 
+              string="Convertir en borrador" class="oe_highlight"
+              attrs="{'invisible': ['|', ('state','=', '0'), ('state','=', '1')] }"
+              type="object"/>
+            <field name="state" widget="statusbar" statusbar_visible="0,1,2"/>
+          </header>
           <group col='2'>
             <group>
               <field name="name"/>
             </group>
             <group>
               <field name="date_init"/>
-              <field name="state"/>
             </group>
           </group>
           <notebook>

@@ -21,7 +21,7 @@ class SchoolYear(models.Model):
       ('0', 'Borrador'),
       ('1', 'En curso'),
       ('2', 'Finalizado')
-      ], string ='Estado del curso', default = '1') # TODO OJO!! hay que cambiarlo a 0
+      ], string ='Estado del curso', default = '0')
   
   date_init = fields.Date(string='Fecha de inicio oficial')
 
@@ -727,12 +727,15 @@ class SchoolYear(models.Model):
   @api.depends('date_init')
   def _compute_2term_pfc_talk(self):
     for record in self:
-      september_last_day = datetime.date(record.date_init.year, 9, 30)
-      # siempre en jueves
-      if september_last_day.weekday()>=3:
-        record.date_2term_pfc_talk = september_last_day - datetime.timedelta(days = september_last_day.weekday() - 3)
+      if record.date_init == False:
+        record.date_2term_pfc_talk = ''
       else:
-        record.date_2term_pfc_talk = september_last_day + datetime.timedelta(days = 3 - september_last_day.weekday())
+        september_last_day = datetime.date(record.date_init.year, 9, 30)
+        # siempre en jueves
+        if september_last_day.weekday()>=3:
+          record.date_2term_pfc_talk = september_last_day - datetime.timedelta(days = september_last_day.weekday() - 3)
+        else:
+          record.date_2term_pfc_talk = september_last_day + datetime.timedelta(days = 3 - september_last_day.weekday())
 
   @api.depends('date_2term_pfc_talk')
   def _compute_2term_pfc_proposal(self):
@@ -1039,7 +1042,35 @@ class SchoolYear(models.Model):
       month = 4
 
     return datetime.datetime(year, month, day)
-    
+
+  def school_year_to_current_action(self):
+    """
+    Convierte el curso en pantalla en el curso actual, poniendo el anterior actual a finalizado.
+    Sólo funciona con cursos en borrador
+    El flujo es:  borrador -> actual -> finalizado -> borrador
+    """
+    school_year = self.env['atenea.school_year'].search([('state', '=', '1')])
+
+    assert len(school_year) < 2, f'Sólo puede haber un curso actual (o ninguno) y hay {len(school_year)}'
+
+    if len(school_year) == 1: 
+      school_year[0].state = '2'
+
+    # no tiene mucho sentido ya que es ua opción que se ejecuta desde la vista formulario 
+    # por lo que sólo afecta a un registo
+    for record in self:
+        record.state = '1'
+
+  def school_year_to_draft_action(self):
+    """
+    Convierte el curso en pantalla en borrador. Sólo funciona con cursos finalizados
+    El flujo es:  borrador -> actual -> finalizado -> borrador
+    """
+
+    # no tiene mucho sentido ya que es ua opción que se ejecuta desde la vista formulario 
+    # por lo que sólo afecta a un registo
+    for record in self:
+        record.state = '0'
 
   def update_dates(self):
     self.dates['init_lective'] = { 
