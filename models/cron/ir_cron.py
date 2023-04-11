@@ -45,6 +45,8 @@ class IrCron(models.Model):
     
     return True 
   
+  def run_cron(self):
+    self.method_direct_trigger()
 
   """ @api.model
   def _callback(self, model_name, method_name, args, job_id):

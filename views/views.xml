@@ -249,6 +249,8 @@
                   <field name = "active"/> 
                   <field name = "model_id"/>
                   <field name = "code"/>
+                  <button string="Ejecutar manualmente" name="run_cron" 
+                    icon="fa-play" class="oe_highlight" type="object"/>
                 </tree>
               </field>
             </page>
