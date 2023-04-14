@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import subprocess
+import re
+
+import logging
+_logger = logging.getLogger(__name__)
 
 def is_set_flag(value, option):
     """
@@ -21,3 +26,24 @@ def unset_flag(value, option):
     Por ejemplo: unset_flag(25, 1) -> 24
     """
     return value | ~(1 << option) 
+
+def get_data_from_pdf(pdf_file):
+    """
+    Obtiene información de los formularios de un pdf
+    """
+    # Ejecutar pdftk y capturar la salida
+    pdftk_command = ['pdftk', pdf_file, 'dump_data_fields_utf8']
+    output = subprocess.run(pdftk_command, capture_output = True, text = True, check = True)
+
+    # Procesamos la salida utilizando expresiones regulares
+    field_regex = re.compile('FieldType: (.*)\\nFieldName: (.*)\\n(.*\\n|.*\\n.*\\n)FieldValue: (.*)\\n')
+    #"FieldName: (.*)\n|FieldValue: (.*)\n"gm
+
+    fields = {}
+
+    for match in field_regex.finditer(output.stdout):
+      fields[match.group(2)] = (match.group(4).strip(), match.group(1)) 
+        
+    return fields
+ 
+

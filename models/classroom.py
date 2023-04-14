@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 from datetime import date, timedelta, datetime
 
-from ..support.helper import is_set_flag, set_flag, unset_flag
+from ..support.helper import is_set_flag, set_flag, get_data_from_pdf
 from ..support import constants
 from ..support.atenea_logger.exceptions import AteneaException
 
@@ -172,7 +172,7 @@ class Classroom(models.Model):
       raise AteneaException(
           _logger, 
           'No se ha encontrado la tarea para convalidaciones (moodle_id: {})'.format(validation_task_id),
-          50, # critica!
+          50, # critical
           comments = '''Es posible que la tarea con moodle_id:{} no exista en moodle o no
                       exista dentro del curso con moodle_id: {}. 
                       Es posible que se haya creado un nuevo curso escolar y no se haya
@@ -203,7 +203,7 @@ class Classroom(models.Model):
       
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
       a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
-      _logger.info("*******-1********")   
+  
       # obtención de la convalidación 
       validation_list = [ val for val in a_user.validations_ids if val.course_id.id == course_id]
       
@@ -214,8 +214,7 @@ class Classroom(models.Model):
               'school_year_id': current_school_year.id }])
       else:
         validation = validation_list[0]
-
-      _logger.info("*******0********")  
+ 
       ############                     ############
       ##### comprobación de errores a subsanar ####
       ############                     ############
@@ -225,35 +224,40 @@ class Classroom(models.Model):
                          month = new_due_date.month,
                          day = new_due_date.day).timestamp())
       
+      if len(submission.files) == 0:
+        continue
+
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
         _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {} {}".format(submission.userid, len(submission.files)))      
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('MFL'))
         submission.set_extension_due_date(to = new_timestamp)
-        return
+        continue
 
       # fichero no en formato zip  (debería ser comprobado en Moodle)
       if not submission.files[0].is_zip:
         _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NZP')) 
         submission.set_extension_due_date(to = new_timestamp)
-        return
-      
-      _logger.info("*******1********")  
+        continue
+ 
       # descarga del archivo
-      filename = '[{}] - {}, {}'.format(
+      filename = '[{}] {}, {}'.format(
         user.id_,
-        user.lastname.upper() if user.lastname is not None else 'SIN APELLIDOS', 
-        user.firstname.upper() if user.firstname is not None else 'SIN NOMBRE')
-        
+        user.lastname.upper() if user.lastname is not None else 'SIN-APELLIDOS', 
+        user.firstname.upper() if user.firstname is not None else 'SIN-NOMBRE')
+  
       submission.files[0].from_url(conn = conn,url = submission.files[0].url)
       submission.files[0].save_as(path, filename + '.zip')
-      _logger.info("*******2********")  
+   
       # creación del directorio para descomprimirlo
       if not os.path.exists(path + filename):  
         os.makedirs(path + filename)
 
       submission.files[0].unpack_to(path + filename, remove_directories = False)
+
+      for file in os.listdir(path + filename):
+        os.rename(os.path.join(path + filename, file), os.path.join(path + filename, file.upper()))
 
       files_unzip = []
       for file in os.listdir(path + filename):
@@ -267,11 +271,41 @@ class Classroom(models.Model):
         _logger.error("Es necesario que haya un (y sólo un) fichero llamado anexo. Estudiante moodle id: {} {}".format(submission.userid, len(annex_file)))   
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NNX'))
         submission.set_extension_due_date(to = new_timestamp)
-        return
+        continue
+  
+      fields = get_data_from_pdf(path + filename +'/' + annex_file[0])
+      _logger.info(fields)
 
+      missing_fields = []
+      for mandatory_field in constants.PDF_VALIDATION_FIELDS:
+        assert isinstance(mandatory_field, tuple),  f'Valor incorrecto en constants.PDFVALIDATION_FIELDS. Cada entrada tiene queser una tupla'
+        assert isinstance(mandatory_field[0], (str, tuple)), f'Valor incorrecto en constants.PDFVALIDATION_FIELDS. La primera entrada de cada tupla o es una str o una tuple'
+        
+        if isinstance(mandatory_field[0], str):
+          # assert mandatory_field[0] in fields, f'La clave {mandatory_field[0]} no existe en el pdf'
 
+          # un campo obligatorio no está definido
+          if fields[mandatory_field[0]][0] is None or \
+             len(fields[mandatory_field[0]][0]) == 0:
+              missing_fields.append(mandatory_field[1])
+        elif isinstance(mandatory_field[0], tuple):
+          exist = False
+          for option in mandatory_field[0]:
+            if (fields[option][1] != 'Button' and \
+                fields[option][0] is not None and \
+                len(fields[option][0]) != 0) or \
+               (fields[option][1] == 'Button' and fields[option][0] == 'On'):
+              exist = True
 
+          if not exist:
+            missing_fields.append(mandatory_field[1])
 
+      if len(missing_fields) > 0:
+        _logger.error("Faltan campos obligatorios por definir en el pdf. Estudiante moodle id: {} {}".format(submission.userid, missing_fields))
+        # TODO, descomentar. Se comenta para facilitar las pruebas
+        #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANC'))
+        #submission.set_extension_due_date(to = new_timestamp)
+        continue
       """ 
         
       grade = submission.load_grade()
