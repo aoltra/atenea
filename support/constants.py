@@ -10,7 +10,7 @@ VALIDATION_PERIOD_OPEN = 0
 # campos del anexo del pdf que son obligatorios
 # las listas indican obligatoriedad de todos los elementos
 # las tuplas indican obligatoriedad de al menos uno
-PDF_VALIDATION_FIELDS = [ 
+PDF_VALIDATION_FIELDS_MANDATORY = [ 
       ('A_Apellidos', 'Apellidos'),
       ('A_Nombre', 'Nombre'),
       ('A_NIA', 'NIA, Número de Identificacion del Alumno/a'),
@@ -23,3 +23,13 @@ PDF_VALIDATION_FIELDS = [
       ('C_firma_mes', 'Mes de la firma'),
       ('C_firma_anyo', 'Año de la firma'),
       ('C_firma_ciudad', 'Ciudad de la firma')]
+
+# campos del anexo pdf de convalidaciones que deben ir juntos
+# no puede haber valor en el primer item si lo hay en el segundo
+PDF_VALIDATION_FIELDS_PAIRED = [ 
+      ('C_modulo1', 'C_modulo1_Aav'),
+      ('C_modulo2', 'C_modulo2_Aav'),
+      ('C_modulo3', 'C_modulo3_Aav'),
+      ('C_modulo4', 'C_modulo4_Aav'),
+      ('C_modulo5', 'C_modulo5_Aav'),
+      ('C_modulo6', 'C_modulo6_Aav'),  ]

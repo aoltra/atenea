@@ -273,21 +273,23 @@ class Classroom(models.Model):
         submission.set_extension_due_date(to = new_timestamp)
         continue
   
+      # datos obligatorios rellenados  
       fields = get_data_from_pdf(path + filename +'/' + annex_file[0])
       _logger.info(fields)
 
       missing_fields = []
-      for mandatory_field in constants.PDF_VALIDATION_FIELDS:
-        assert isinstance(mandatory_field, tuple),  f'Valor incorrecto en constants.PDFVALIDATION_FIELDS. Cada entrada tiene queser una tupla'
-        assert isinstance(mandatory_field[0], (str, tuple)), f'Valor incorrecto en constants.PDFVALIDATION_FIELDS. La primera entrada de cada tupla o es una str o una tuple'
+      for mandatory_field in constants.PDF_VALIDATION_FIELDS_MANDATORY:
+        assert isinstance(mandatory_field, tuple),  f'Valor incorrecto en constants.PDF_VALIDATION_FIELDS_MANDATORY. Cada entrada tiene que ser una tupla'
+        assert isinstance(mandatory_field[0], (str, tuple)), f'Valor incorrecto en constants.PDF_VALIDATION_FIELDS_MANDATORY. La primera entrada de cada tupla o es una str o una tuple'
         
         if isinstance(mandatory_field[0], str):
-          # assert mandatory_field[0] in fields, f'La clave {mandatory_field[0]} no existe en el pdf'
+          assert mandatory_field[0] in fields, f'La clave {mandatory_field[0]} no existe en el pdf'
 
           # un campo obligatorio no está definido
           if fields[mandatory_field[0]][0] is None or \
              len(fields[mandatory_field[0]][0]) == 0:
               missing_fields.append(mandatory_field[1])
+
         elif isinstance(mandatory_field[0], tuple):
           exist = False
           for option in mandatory_field[0]:
@@ -306,6 +308,32 @@ class Classroom(models.Model):
         #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANC'))
         #submission.set_extension_due_date(to = new_timestamp)
         continue
+
+      # integridad en la selección de campos
+      paired_fields = []
+      for paired_field in constants.PDF_VALIDATION_FIELDS_PAIRED:
+        assert isinstance(paired_field, tuple),  f'Valor incorrecto en constants.PDF_VALIDATION_FIELDS_PAIRED. Cada entrada tiene que ser una tupla'
+
+        if  ((fields[paired_field[0]][1] != 'Button' and \
+            fields[paired_field[0]][0] is not None and \
+            len(fields[paired_field[0]][0]) != 0) or \
+            (fields[paired_field[0]][1] == 'Button' and fields[paired_field[0]][0] == 'On')) and \
+            ((fields[paired_field[1]][1] != 'Button' and \
+            fields[paired_field[1]][0] is None or \
+            len(fields[paired_field[1]][0]) == 0) or \
+            (fields[paired_field[1]][1] == 'Button' and fields[paired_field[0]][0] == 'Off')):
+              paired_fields.append(paired_field[1])
+
+      if len(paired_field) > 0:
+        _logger.error("No se han definido correctamente si se solicita AA o CO. Estudiante moodle id: {} {}".format(submission.userid, paired_fields))
+        # TODO, descomentar. Se comenta para facilitar las pruebas
+        #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANP'))
+        #submission.set_extension_due_date(to = new_timestamp)
+        continue
+
+      # TODO comprobación de firma digital
+
+
       """ 
         
       grade = submission.load_grade()
