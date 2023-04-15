@@ -16,8 +16,16 @@ class Validation(models.Model):
   _description = 'Convalidaciones'
 
   school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar')
+  
   student_id = fields.Many2one('atenea.student', string = 'Estudiante')
+  student_name = fields.Char(related = 'student_id.name') 
+  student_surname = fields.Char(related = 'student_id.surname') 
+  student_nia = fields.Char(related = 'student_id.nia') 
+  student_info = fields.Char(string = 'Estudiante', compute = '_full_student_info')
+
   course_id = fields.Many2one('atenea.course', string = 'Ciclo', required = True)
+  course_abbr = fields.Char(string = 'Ciclo', related = 'course_id.abbr')
+
   validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', string = 'Módulos que se solicita convalidar', )
   
   # TODO que hacer con instancia superior si tardan en responder??
@@ -37,6 +45,7 @@ class Validation(models.Model):
   correction_date = fields.Date()
 
   correction_reason = fields.Selection([
+    ('---', ''),   # no hay pendiente ninguna subsanación
     ('MFL', 'Sólo se admite la entrega de un único fichero.'),
     ('NZP', 'La documentación aportada no se encuentra en un único fichero zip comprimido.'),
     ('NNX', 'No se encuentra un fichero llamado anexo o hay más de uno.'),
@@ -45,14 +54,13 @@ class Validation(models.Model):
     ('SNF', 'Documento no firmado digitalmente'),
     ('RL', 'No se aporta curso de riesgo laborales > 30h'),
     ('EXP', 'No se aporta expediente académico'),
-    ], string ='Razón de la subsanación', default = 'SNF',
+    ], string ='Razón de la subsanación', default = '---',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
-
 
   def create_correction(self, reason):
     """
@@ -75,3 +83,12 @@ class Validation(models.Model):
         """.format(dict(self._fields['correction_reason'].selection).get(reason), self.correction_date + datetime.timedelta(days = 10))
 
     return feedback
+
+  def _full_student_info(self):
+    for record in self:
+      if record.student_nia == False:
+        record.student_info = record.student_surname + ', ' + record.student_name
+      else: 
+        record.student_info = '(' + record.student_nia + ') ' + record.student_surname + ', ' + record.student_name
+
+

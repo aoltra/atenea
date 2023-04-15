@@ -259,6 +259,21 @@
       </field>
     </record> 
 
+    <record model="ir.ui.view" id="atenea.validation_tree">
+      <field name="name">Lista de convalidaciones/aprobados con anterioridad solicitados</field>
+      <field name="model">atenea.validation</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="course_abbr"/>
+          <field name="student_info"/>
+          <field name="validation_subjects_ids" />
+          <field name="state"/>
+          <field name="correction_date"/>
+          <field name="correction_reason"/>
+        </tree>
+      </field>
+    </record>
+
   <!--   <record model="ir.ui.view" id="atenea.cron_form">
       <field name="name">atenea.cron.form</field>
       <field name="model">atenea.cron</field>
@@ -312,6 +327,12 @@
     <record model="ir.actions.act_window" id="atenea.action_student">
       <field name="name">Estudiantes</field>
       <field name="res_model">atenea.student</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="atenea.action_validation">
+      <field name="name">Convalidaciones</field>
+      <field name="res_model">atenea.validation</field>
       <field name="view_mode">tree</field>
     </record>
 
@@ -381,6 +402,8 @@
               action="atenea.action_school_year"/>
     <menuitem name="Estudiantes" id="atenea.school_student" parent="atenea.school"
               action="atenea.action_student"/>
+    <menuitem name="Convalidaciones" id="atenea.validation" parent="atenea.school"
+              action="atenea.action_validation"/>
 
     <!-- Menu Configuración -->
     <menuitem name="General" id="atenea.settings" parent="atenea.configuration"

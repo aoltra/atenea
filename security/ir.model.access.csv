@@ -9,8 +9,9 @@ access_atenea_holiday,access_atenea_holiday,atenea.model_atenea_holiday,base.gro
 access_atenea_classroom,access_atenea_classroom,atenea.model_atenea_classroom,base.group_user,1,1,1,1
 access_atenea_cron,access_atenea_cron,atenea.model_atenea_ir_cron,base.group_user,1,1,1,1
 access_atenea_subject,access_atenea_subject,atenea.model_atenea_subject,base.group_user,1,1,1,1
-access_atenea_validation,access_atenea_validation,atenea.model_atenea_validation,base.group_user,1,1,1,1
 access_atenea_task_moodle,access_atenea_task_moodle,atenea.model_atenea_task_moodle,base.group_user,1,1,1,1
 access_atenea_student,access_atenea_student,atenea.model_atenea_student,base.group_user,1,1,1,1
 access_atenea_cron_inactivity_period,access_atenea_cron_inactivity_period,atenea.model_ir_cron_inactivity_period,base.group_user,1,1,1,1
 access_atenea_subject_student_rel,access_atenea_subject_student_rel,atenea.model_atenea_subject_student_rel,base.group_user,1,1,1,1
+access_atenea_validation,access_atenea_validation,atenea.model_atenea_validation,base.group_user,1,1,1,1
+access_atenea_validation_subject,access_atenea_validation_subject,atenea.model_atenea_validation_subject,base.group_user,1,1,1,1
