@@ -161,8 +161,18 @@ class Classroom(models.Model):
     except Exception:
       raise Exception('No es posible realizar la conexión con Moodle')
     
-    current_school_year = (self.env['atenea.school_year'].search([('state', '=', 1)]))[0] # curso escolar actual  
-  
+    current_sy = (self.env['atenea.school_year'].search([('state', '=', 1)])) # curso escolar actual  
+
+    if len(current_sy) == 0:
+      raise AteneaException(
+          _logger, 
+          'No se ha definido un curso actual',
+          50, # critical
+          comments = '''Es posible que no se haya marcado com actal ningún curso escolar''')
+    else:
+      current_school_year = current_sy[0]
+        
+
     # obtención de las tareas entregadas
     assignments = AteneaMoodleAssignments(conn, 
       course_filter=[validation_classroom_id], 
