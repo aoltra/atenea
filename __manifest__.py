@@ -39,7 +39,8 @@
     'data': [
         # seguridad
         'security/security_access_data.xml',
-        'security/ir.model.access.csv',
+        'security/ir.model.access.csv',  # politicas de acceso generales (todo abierto)
+        'security/ir.model.access.xml',   # politicas de acceso finales (reescribe las anteriores)
         # vistas
         'views/views.xml',
         'views/config_settings_view.xml',

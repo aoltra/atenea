@@ -13,7 +13,7 @@ class Validation(models.Model):
   Define la entrega de convalidaciones por parte del alumnado
   """
   _name = 'atenea.validation'
-  _description = 'Convalidaciones'
+  _description = 'Solicitud convalidación'
 
   school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar')
   
