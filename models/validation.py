@@ -21,12 +21,13 @@ class Validation(models.Model):
   student_name = fields.Char(related = 'student_id.name') 
   student_surname = fields.Char(related = 'student_id.surname') 
   student_nia = fields.Char(related = 'student_id.nia') 
-  student_info = fields.Char(string = 'Estudiante', compute = '_full_student_info')
+  student_info = fields.Char(string = 'Estudiante', compute = '_compute_full_student_info')
 
   course_id = fields.Many2one('atenea.course', string = 'Ciclo', required = True)
   course_abbr = fields.Char(string = 'Ciclo', related = 'course_id.abbr')
 
-  validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', string = 'Módulos que se solicita convalidar', )
+  validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', string = 'Módulos que se solicita convalidar')
+  validation_subjects_info = fields.Char(string = 'Resueltas / Solicitadas', compute = '_compute_validation_subjects_info')
   
   # TODO que hacer con instancia superior si tardan en responder??
   # una opción es pasado un tiempo enviar el mail de confirmación al alumno
@@ -39,6 +40,7 @@ class Validation(models.Model):
       ('4', 'Revisada'),
       ('5', 'Finalizada'),
       ('6', 'Finalizada parcialmente'),
+      ('7', 'En proceso'),
       ], string ='Estado de la convalidación', default = '0')
   
   # fecha de solicitud de la subsanación
@@ -69,10 +71,12 @@ class Validation(models.Model):
     if reason == None:
       raise Exception('Es necesario definir una razón para la subsanación')
     
+    self.correction_date = datetime.datetime.today()
+    
     self.write({ 
       'correction_reason': reason,
       'state': '1',
-      'correction_date': datetime.datetime.today()
+      'correction_date': self.correction_date
     })
 
     feedback = """
@@ -84,11 +88,18 @@ class Validation(models.Model):
 
     return feedback
 
-  def _full_student_info(self):
+  def _compute_full_student_info(self):
     for record in self:
       if record.student_nia == False:
         record.student_info = record.student_surname + ', ' + record.student_name
       else: 
         record.student_info = '(' + record.student_nia + ') ' + record.student_surname + ', ' + record.student_name
 
+  def _compute_validation_subjects_info(self):
+    for record in self:
+        num_resolved = len([val for val in record.validation_subjects_ids if val.state == '3'])
+        record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
+
+
+  # TODO realizar un campo compute para actulizar el estado en función del estado de las convalidaciones de los modulos
 
