@@ -19,7 +19,7 @@ class SchoolCalendarReport(models.AbstractModel):
     end = month_cal[month_cal[:month_cal.find('>' + str(dt['date'].day) + '<')].rindex("class") + 7:]
 
     return prev +  dt['type'] + '-type ' + end
-  
+
   """ Devuelve una tabla HTML (sólo tr) con las fechas del mes"""
   def _generate_tr_dates(self, date_month):
     date_month.sort(key = lambda x: x['date'].day)
@@ -45,8 +45,8 @@ class SchoolCalendarReport(models.AbstractModel):
         day = str(dt['date'].day)
         description = dt['desc'].lower()
 
-      table_tr += '<tr><td>' + day + '</td><td>:</td><td>' + description + '</td></tr>'
-    
+      table_tr += '<tr><td class="day '+ dt['type'] +'-type">' + day + '</td><td>:</td><td class="description">' + description + '</td></tr>'
+
     return table_tr
 
   def _get_report_values(self, docids, data=None):
@@ -62,14 +62,14 @@ class SchoolCalendarReport(models.AbstractModel):
     for doc in docs:
       doc.update_dates()   # se actualiza la estructura de fechas
       months_calendar[doc.id] = []
-      
+
       for month in months:
         month_cal = html_cal.formatmonth(doc.date_init.year + 1  if month <7 else doc.date_init.year, month)
 
         # fechas de school_year.dates que son del mes month
         # enumerate convierte una lista en un diccionario con key indices: 0,1,2,3...
         date_month = [x for i,x in enumerate(doc.dates.values()) if x['date'].month == month]
-      
+
         for dt in date_month:
           month_cal = self._include_dates_month(month_cal, dt)
           if 'dur' in dt:
@@ -81,7 +81,7 @@ class SchoolCalendarReport(models.AbstractModel):
               if dtT['date'].month == month:
                 month_cal = self._include_dates_month(month_cal, dtT)
 
-        month_cal +='<table class="description">' + self._generate_tr_dates(date_month)  + ' </table>' 
+        month_cal +='<table class="description">' + self._generate_tr_dates(date_month)  + ' </table>'
         months_calendar[doc.id].append(month_cal)
 
 

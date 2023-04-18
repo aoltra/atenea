@@ -21,27 +21,66 @@
   border: 2px solid red;
 } */
 
+.pt-5{
+  padding: 0 !important;
+}
+
+.page{
+  padding-top: 3rem;
+}
+
+.calendar{
+  margin-top: 1rem;
+}
+
 .month {
   margin: 0 auto;
 }
 
 .month td {
-  padding: 0.04cm 0.2cm;
+  padding: 0cm 0.225cm;
 }
 
 /* se opta por float que es soportado sin problemas */
 .grid-month {
   width: 7.3cm;
-  height: 7.2cm;
-  
-  margin-top: 0.5cm;
-
+  height: 6.2cm;
   text-align: center;
-  border-left: 2px solid black;
   border-right: 2px solid black;
-  
   float: left;
-  font-size: 10pt; 
+  font-size: 10pt;
+  padding: 0 10px;
+}
+
+.grid-month:nth-child(1),
+.grid-month:nth-child(4),
+.grid-month:nth-child(7),
+.grid-month:nth-child(10){
+  padding-left: 0 !important;
+}
+
+/* 3: november, 6: february, 9: may, 11: legend */
+.grid-month:nth-child(3),
+.grid-month:nth-child(6),
+.grid-month:nth-child(9),
+.grid-month:nth-child(12){
+  border-right: none;
+  padding-right: 0 !important;
+}
+
+.grid-month .mon,
+.grid-month .tue,
+.grid-month .wed,
+.grid-month .thu,
+.grid-month .fri,
+.grid-month .sat,
+.grid-month .sun{
+  font-size: 8pt;
+}
+
+.grid-month:nth-child(n+4){
+  height: 6.7cm;
+  margin-top: 0.5cm;
 }
 
 .description {
@@ -49,44 +88,101 @@
   margin-left: 4%;
 }
 
+table.description{
+  width: 100%;
+}
+
 .description td {
   padding-left: 2px;
   padding-right: 4px;
   vertical-align:top;
+  font-size: 8.5pt;
 }
 
 /* día del mes */
-.description tr td:first-child {
+.description tr td.day {
   text-align: right;
-  padding: 0; 
+  padding: 0;
   margin: 0;
   width: auto;
+  width: 31px;
 }
 
 /* cuerpo de la descripción */
-.description tr td:last-child {
+.description tr td.description {
   text-align: left;
   padding: 0; 
   margin: 0;
+  width: 200px;
+  font-size: 9pt;
 }
 
-
-.G-type {
-  background-color: aqua;
+/*
+Color palette
+--jasper: #db504aff;
+--bittersweet: #ff6f59ff;
+--dark-slate-gray: #254441ff;
+--zomp: #43aa8bff;
+--sage: #b2b09bff;
+*/
+.month .G-type,
+.legend-square.G-type {
+  background-color: #B2B09B;
 }
 
-.S-type {
-  background-color: brown;
+.day.G-type,
+.day.G-type ~ td  {
+  color: #B2B09B;
 }
 
-.P-type {
-  background-color: rgb(220, 20, 183);
+.month .P-type,
+.legend-square.P-type {
+  background-color: #254441
 }
 
-.H-type {
-  color: rgb(202, 74, 74);
+.day.P-type,
+.day.P-type ~ td {
+  color: #254441
 }
 
-.sun, .sat {
-  color: rgb(202, 74, 74);
+.month .S-type,
+.legend-square.S-type {
+  background-color: #DB504A;
+}
+
+.day.S-type,
+.day.S-type ~ td {
+  color: #DB504A;
+}
+
+.month .sun, .sat {
+  color: #FF6F59
+}
+
+.month .H-type {
+  color: #FC2F00
+}
+
+.month .S-type,
+.month .P-type{
+  color: white;
+}
+
+/* LEGEND */
+.legend-title-container{
+  text-align: center;
+}
+
+.legend-title-container h2{
+  font-size: 1.25rem;
+}
+
+.legend .row{
+  padding-top: 1rem;
+  text-align: left;
+}
+
+.legend-square{
+  width: 20px;
+  height: 20px;
 }
