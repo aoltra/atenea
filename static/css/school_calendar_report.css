@@ -46,9 +46,26 @@
   width: 7.3cm;
   height: 6.2cm;
   text-align: center;
-  border-left: 2px solid black;
+  border-right: 2px solid black;
   float: left;
   font-size: 10pt;
+  padding: 0 10px;
+}
+
+.grid-month:nth-child(1),
+.grid-month:nth-child(4),
+.grid-month:nth-child(7),
+.grid-month:nth-child(10){
+  padding-left: 0 !important;
+}
+
+/* 3: november, 6: february, 9: may, 11: legend */
+.grid-month:nth-child(3),
+.grid-month:nth-child(6),
+.grid-month:nth-child(9),
+.grid-month:nth-child(12){
+  border-right: none;
+  padding-right: 0 !important;
 }
 
 .grid-month .mon,
@@ -64,14 +81,6 @@
 .grid-month:nth-child(n+4){
   height: 6.7cm;
   margin-top: 0.5cm;
-}
-
-/* 3: november, 6: february, 9: may, 11: legend */
-.grid-month:nth-child(3),
-.grid-month:nth-child(6),
-.grid-month:nth-child(9),
-.grid-month:nth-child(12){
-  border-right: 2px solid black;
 }
 
 .description {
