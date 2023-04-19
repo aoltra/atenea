@@ -75,7 +75,8 @@
             <button name="school_year_to_current_action" icon="fa-bookmark" 
               string="Convertir en curso actual" class="oe_highlight"
               attrs="{'invisible': ['|', ('state','=', '2'), ('state','=', '1')] }"
-              type="object"/>
+              type="object"
+              confirm="ATENCIÓN: Convertir un curso en actual implica la desactivación de todos los usuarios. ¿Deseas continuar?"/>
             <button name="school_year_to_draft_action" icon="fa-pencil" 
               string="Convertir en borrador" class="oe_highlight"
               attrs="{'invisible': ['|', ('state','=', '0'), ('state','=', '1')] }"

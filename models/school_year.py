@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-from odoo import api, models, fields
-from odoo.exceptions import ValidationError
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError, AccessDenied
 import toolz
 import logging
 
@@ -18,12 +18,12 @@ class SchoolYear(models.Model):
 
   name = fields.Char(readonly = True, compute = '_compute_name', string = 'Curso')
   state = fields.Selection([
-      ('0', 'Borrador'),
-      ('1', 'En curso'),
-      ('2', 'Finalizado')
-      ], string ='Estado del curso', default = '0')
+      ('0', _('Borrador')),
+      ('1', _('En curso')),
+      ('2', _('Finalizado'))
+      ], string = _('Estado del curso'), default = '0')
   
-  date_init = fields.Date(string='Fecha de inicio oficial')
+  date_init = fields.Date(string = _('Fecha de inicio oficial'))
 
   # estructura de datos con las fechas 
   dates = { 'init_lective': { 'date': '', 'desc': 'Inicio clases', 'type': 'G'}}
@@ -1049,6 +1049,9 @@ class SchoolYear(models.Model):
     Sólo funciona con cursos en borrador
     El flujo es:  borrador -> actual -> finalizado -> borrador
     """
+    if self.env.is_admin() == False:
+      raise AccessDenied(_('Sólo el administrador puede convertir un curso en actual'))
+
     school_year = self.env['atenea.school_year'].search([('state', '=', '1')])
 
     assert len(school_year) < 2, f'Sólo puede haber un curso actual (o ninguno) y hay {len(school_year)}'
@@ -1064,7 +1067,6 @@ class SchoolYear(models.Model):
         record.state = '1'
         # se ponen inactivos todos los users menos el admin (partner_id = admin_partner_id)      
         self.env.cr.execute(f"""UPDATE res_users SET active=FALSE WHERE partner_id!={admin_partner_id.id}""")
-
 
 
   def school_year_to_draft_action(self):
