@@ -1058,8 +1058,14 @@ class SchoolYear(models.Model):
 
     # no tiene mucho sentido ya que es ua opción que se ejecuta desde la vista formulario 
     # por lo que sólo afecta a un registo
+    admin_partner_id = self.env.ref('base.partner_admin')
+
     for record in self:
         record.state = '1'
+        # se ponen inactivos todos los users menos el admin (partner_id = admin_partner_id)      
+        self.env.cr.execute(f"""UPDATE res_users SET active=FALSE WHERE partner_id!={admin_partner_id.id}""")
+
+
 
   def school_year_to_draft_action(self):
     """
