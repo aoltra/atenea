@@ -33,11 +33,10 @@ class Employee(models.Model):
   replaces_id = fields.Many2one('atenea.employee', string='Sustituye a')
   replaced_by_ids = fields.One2many('atenea.employee', 'replaces_id')
   
-
   departament_ids = fields.Many2many('atenea.departament', required = True, string = 'Departamentos')
   roles_ids = fields.Many2many('atenea.rol', string = 'Cargos')
   
-  #active = fields.Boolean('Activo', related='resource_id.active', default = True, store = True, readonly = False)
+  active = fields.Boolean('Activo', related='user_id.active', help = 'Indica si el usuario Atenea asociado está activo')
 
   @api.depends('replaced_by_ids')
   def compute_teacher(self):
