@@ -1,42 +1,75 @@
 <odoo>
-  <report id="school_calendar_pdf_report" 
-    string="Calendario escolar" 
-    model="atenea.school_year" 
-    report_type="qweb-pdf" 
+  <report id="school_calendar_pdf_report"
+    string="Calendario escolar"
+    model="atenea.school_year"
+    report_type="qweb-pdf"
     file="atenea.report_school_calendar"
     name="atenea.report_school_calendar"
     print_report_name="'Calendario escolar - %s' % (object.name)"/>
-  
   <template id="report_school_calendar">
     <t t-call="web.html_container">
       <!-- por si se mandará a imprimir calendarios de varios cursos escolares -->
-      <t t-foreach="docs" t-as="record">  
+      <t t-foreach="docs" t-as="record">
         <t t-call="web.external_layout"> <!-- añade el header y el footer -->
-          <!-- wktmltopdf no lee los ficheros CSS externos, asi que hay que embeber el código 
+          <!-- wktmltopdf no lee los ficheros CSS externos, asi que hay que embeber el código
                en la etiqueta style. Para poder disponer del código en un fichero externo
-               buscamos la etiqueta style e  insertamos el enlace al ficher .css  --> 
+               buscamos la etiqueta style e  insertamos el enlace al ficher .css  -->
           <xpath expr="//style" position="after">
             <link rel="stylesheet" href="/atenea/static/css/school_calendar_report.css"/>
           </xpath>
           <style/>
-          <div class="page" style="margin-top: -1.5cm">
+          <div class="page">
             <h2>Calendario escolar Ciclos Formativos</h2>
             <div class="calendar">
-              <t t-foreach="months_cal[record.id]" t-as="m">  
+              <t t-foreach="months_cal[record.id]" t-as="m">
                 <div class="grid-month col-4">
                   <!-- Utilizo t-raw ya que voy a insertar directamente HTML a renderizar -->
                   <!-- t-esc mostraría el HTML como texto, no como código -->
                   <!-- t-field muestra un campo del record -->
                   <!-- OJO! obsoletas en versión 16 y superior-->
                   <span t-raw="m"/>
-                </div>               
+                </div>
               </t>
-            </div> 
+              <div class="grid-month legend col-4">
+                <div class="row">
+                  <div class="col-12 legend-title-container">
+                    <h2>
+                      Leyenda del calendario
+                    </h2>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="offset-2 col-2">
+                    <div class="legend-square P-type"></div>
+                  </div>
+                  <div class="col-8">
+                    <span>Fechas de <strong>Primero</strong></span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="offset-2 col-2">
+                    <div class="legend-square S-type"></div>
+                  </div>
+                  <div class="col-8">
+                    <span>Fechas de <strong>Segundo</strong></span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="offset-2 col-2">
+                    <div class="legend-square G-type"></div>
+                  </div>
+                  <div class="col-8">
+                    <span>Fechas <strong>Generales</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </t>    
-        
+        </t>
       </t>
     </t>
-    
   </template>
 </odoo>
