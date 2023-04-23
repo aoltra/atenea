@@ -12,8 +12,15 @@ class Employee(models.Model):
   _description = 'Empleado del centro (profesor o administrativo)'
   _order = 'surname'
 
-  user_id = fields.Many2one('res.users')
-
+  # simulación de un One2one
+  # en user hay un many2one y aqui un one2many
+  user_ids = fields.One2many('res.users', 'employee_id')
+  # creo un campo que obtenga su valor y que pueda darle valor al employee_id 
+  # a partir de user_ids
+  user_id = fields.Many2one('res.users', 
+                            compute = '_compute_user_id', 
+                            inverse = '_user_inverse')
+  
   #dni = fields.Char(string = 'DNI', size = 9, required = True)
   name = fields.Char(string = 'Nombre', required = True)
   surname = fields.Char(string = 'Apellidos', required = True)
@@ -29,7 +36,9 @@ class Employee(models.Model):
   
   # sustituciones. Simulo un One2one con dos many2one, un one2many y funciones calculadas
   sick_leave = fields.Boolean(default = False)
-  replaced_by_id = fields.Many2one('atenea.employee', string='Sustituye a', compute='compute_teacher', inverse='teacher_inverse')
+  replaced_by_id = fields.Many2one('atenea.employee', string='Sustituye a', 
+                                    compute='_compute_teacher', 
+                                    inverse='_teacher_inverse')
   replaces_id = fields.Many2one('atenea.employee', string='Sustituye a')
   replaced_by_ids = fields.One2many('atenea.employee', 'replaces_id')
   
@@ -38,13 +47,32 @@ class Employee(models.Model):
   
   active = fields.Boolean('Activo', related='user_id.active', help = 'Indica si el usuario Atenea asociado está activo')
 
+  @api.depends('user_ids')
+  def _compute_user_id(self):
+    """
+    Asigna el usuario como primer elemento de la relacio doble uno a muccho
+    """
+    if len(self.user_ids) > 0:
+      self.user_id = self.user_ids[0] 
+
+  def _user_inverse(self):
+    """
+    En el caso de que el user_id cambie, se modifica el employee_id de ese user_id
+    """
+    if len(self.user_ids) > 0:
+      # borramos la referencia previa
+      user = self.env['res.users'].browse(self.user_ids[0].id)
+      user.employee_id = False
+    
+    self.user_id.employee_id = self
+
   @api.depends('replaced_by_ids')
-  def compute_teacher(self):
+  def _compute_teacher(self):
     for record in self:
       if len(record.replaced_by_ids) > 0:
         record.replaced_by_id = record.replaced_by_ids[0]
 
-  def teacher_inverse(self):
+  def _teacher_inverse(self):
     for record in self:
       if len(record.replaced_by_ids) > 0:
         # delete previous reference

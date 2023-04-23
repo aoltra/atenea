@@ -1,6 +1,17 @@
 <odoo>
   <data>
     <!-- Roles -->
+    <record model="atenea.rol" id="atenea.rol_JEFCF">
+      <field name="rol">JFCF</field>
+      <field name="description">Jefe de Estudios de Ciclos Formativos</field>
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_JEFDAFI">
+      <field name="rol">JFDP</field>
+      <field name="description">Jefe de departamento de Administración</field>
+      <field name="departament_id" ref="atenea.departament_ADM" />
+    </record>
+
     <record model="atenea.rol" id="atenea.rol_TUT1AFI">
       <field name="rol">TUT1</field>
       <field name="description">Tutor de primero de AFI</field>
@@ -13,10 +24,16 @@
       <field name="course_id" ref="atenea.course_AFI" />
     </record>
 
-    <record model="atenea.rol" id="atenea.rol_JEFDAFI">
-      <field name="rol">JEFD</field>
-      <field name="description">Jefe de departamento de Administración</field>
-      <field name="departament_id" ref="atenea.departament_ADM" />
+    <record model="atenea.rol" id="atenea.rol_CONVAFI">
+      <field name="rol">CVAFI</field>
+      <field name="description">Convalidador del ciclo de AFI</field>
+      <field name="course_id" ref="atenea.course_AFI" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_CONVDAM">
+      <field name="rol">CVDAM</field>
+      <field name="description">Convalidador del ciclo de DAM</field>
+      <field name="course_id" ref="atenea.course_DAM" />
     </record>
 
   </data>
