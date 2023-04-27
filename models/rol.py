@@ -12,8 +12,8 @@ class Rol(models.Model):
 
     _rec_name = 'rol'
 
-    rol = fields.Char('Cargo', size = 5, required = True)
+    rol = fields.Char('Cargo', size = 6, required = True)
     course_id = fields.Many2one('atenea.course', string = 'Ciclo')
     departament_id = fields.Many2one('atenea.departament', 'Departamento')
-    description = fields.Char('Descripción')
+    description = fields.Char('Descripción', required = True)
     

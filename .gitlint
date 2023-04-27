@@ -55,7 +55,7 @@ contrib=contrib-title-conventional-commits
 # This is an example of how to configure the "title-max-length" rule and
 # set the line-length it enforces to 50
 [title-max-length]
-line-length=70
+line-length=80
 
 # Conversely, you can also enforce minimal length of a title with the
 # "title-min-length" rule:
