@@ -19,15 +19,6 @@
       <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
     </record>
 
-    <record model="atenea.subject" id="atenea.subject_DAW_SIN">
-      <field name="abbr">SIN</field>
-      <field name="code">0483</field>
-      <field name="name">Sistemas Informáticos</field>
-      <field name="year">1</field>
-      <field name="classroom_id" ref="atenea.classroom_DAW_SIN"/>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
-    </record>
-
     <record model="atenea.subject" id="atenea.subject_DAM_TUT1">
       <field name="abbr">TUT1</field>
       <field name="code">0000</field>
@@ -36,6 +27,34 @@
       <field name="classroom_id" ref="atenea.classroom_DAM_TUT12"/>
       <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>    
     </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_SIN">
+      <field name="abbr">SIN</field>
+      <field name="code">0483</field>
+      <field name="name">Sistemas Informáticos</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_SIN"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM') ])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_BD">
+      <field name="abbr">BD</field>
+      <field name="code">0484</field>
+      <field name="name">Bases de Datos</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_BD"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>          
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_LM">
+      <field name="abbr">LM</field>
+      <field name="code">0373</field>
+      <field name="name">Lenguaje de Marcas</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_LM"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR') ])]"/>                            
+    </record>
+
 
   </data>
 </odoo>

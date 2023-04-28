@@ -67,6 +67,14 @@ user_id=models.execute_kw(db, uid, password, 'res.users', 'create',
 [{'name':"userAPI9", 'login':'userapi2@gmail.com', 'new_password':'123456'}]) 
 'company_id':1, 'company_ids':[1], 'sel_groups_39_40':40,    'sel_groups_9_44_10':10, 'sel_groups_29_30':30, 'sel_groups_36_37':37, 'sel_groups_21_22_23':23,'sel_groups_5':5
  """
+try:
+  inactive_users = models.execute_kw(db, uid, password, 'res.users', 'search_read', [[['active','=', False]]], { 'fields': ['id', 'login']})
+  print(inactive_users)
+except (xmlrpc.client.Fault) as e:
+  print('\033[0;31m[ERROR]\033[0m ' + e.faultString)
+  print(f'\033[0;32m[INFO]\033[0m Saliendo...')
+  exit()
+
 
 line_count_OK = 0
 line_count_ERROR = 0
@@ -74,18 +82,25 @@ line_count_ERROR = 0
 for user in users:  
   print("\033[0;32m[INFO]\033[0m Procesando ", user)
   try:
-    id = models.execute_kw(db, uid, password, 'res.users', 'create', [user])
+    # Esta en Atenea pero esta inactivo
+    odoo_user = next((item for item in inactive_users if item['login'] == user['login']), None)
 
-    employees[user['login']]['user_id'] = id
-    employees[user['login']]['departament_ids'] = [(4, departaments[employees[user['login']]['departament_ids']])]
-    models.execute_kw(db, uid, password, 'atenea.employee', 'create', [employees[user['login']]])
-
+    if odoo_user == None: # no está inactivo en Atenea 
+      # se crea. En caso de que ya exista salta una excepción
+      id = models.execute_kw(db, uid, password, 'res.users', 'create', [user])
+      employees[user['login']]['user_id'] = id
+      employees[user['login']]['departament_ids'] = [(4, departaments[employees[user['login']]['departament_ids']])]
+      models.execute_kw(db, uid, password, 'atenea.employee', 'create', [employees[user['login']]])
+    else: # está pero inactivo
+      print(f'\t\033[0;32m[INFO]\033[0m {user["name"]} ({user["login"]}) ya existe en Atenea. Activandolo')
+      models.execute_kw(db, uid, password, 'res.users', 'write', [[odoo_user['id']], {'active': True}])
+   
     line_count_OK += 1
   except (xmlrpc.client.Fault) as e:
-    print('\033[0;31m[ERROR]\033[0m ' + e.faultString)
+    print('\t\033[0;31m[ERROR]\033[0m ' + e.faultString)
     line_count_ERROR += 1
   except KeyError:
-    print('\033[0;31m[ERROR]\033[0m Clave no encontrada. Posiblemente el departamento no existe')
+    print('\t\033[0;31m[ERROR]\033[0m Clave no encontrada. Posiblemente el departamento no existe')
     line_count_ERROR += 1
   
 print(f'\033[0;32m[INFO]\033[0m Procesados {line_count_OK} usuarios / Errores: {line_count_ERROR}.')

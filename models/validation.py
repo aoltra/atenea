@@ -101,5 +101,5 @@ class Validation(models.Model):
         record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
 
 
-  # TODO realizar un campo compute para actulizar el estado en función del estado de las convalidaciones de los modulos
+  # TODO realizar un campo compute para actualizar el estado en función del estado de las convalidaciones de los modulos
 

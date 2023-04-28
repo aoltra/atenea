@@ -168,7 +168,7 @@ class Classroom(models.Model):
           _logger, 
           'No se ha definido un curso actual',
           50, # critical
-          comments = '''Es posible que no se haya marcado com actal ningún curso escolar''')
+          comments = '''Es posible que no se haya marcado como actual ningún curso escolar''')
     else:
       current_school_year = current_sy[0]
         
@@ -296,17 +296,17 @@ class Classroom(models.Model):
           assert mandatory_field[0] in fields, f'La clave {mandatory_field[0]} no existe en el pdf'
 
           # un campo obligatorio no está definido
-          if fields[mandatory_field[0]][0] is None or \
-             len(fields[mandatory_field[0]][0]) == 0:
+          if fields[mandatory_field[0]][constants.PDF_FIELD_VALUE] is None or \
+             len(fields[mandatory_field[0]][constants.PDF_FIELD_VALUE]) == 0:
               missing_fields.append(mandatory_field[1])
 
         elif isinstance(mandatory_field[0], tuple):
           exist = False
           for option in mandatory_field[0]:
-            if (fields[option][1] != 'Button' and \
-                fields[option][0] is not None and \
-                len(fields[option][0]) != 0) or \
-               (fields[option][1] == 'Button' and fields[option][0] == 'On'):
+            if (fields[option][constants.PDF_FIELD_TYPE] != 'Button' and \
+                fields[option][constants.PDF_FIELD_VALUE] is not None and \
+                len(fields[option][constants.PDF_FIELD_VALUE]) != 0) or \
+               (fields[option][constants.PDF_FIELD_TYPE] == 'Button' and fields[option][constants.PDF_FIELD_VALUE] == 'Yes'):
               exist = True
 
           if not exist:
@@ -324,18 +324,18 @@ class Classroom(models.Model):
       for paired_field in constants.PDF_VALIDATION_FIELDS_PAIRED:
         assert isinstance(paired_field, tuple),  f'Valor incorrecto en constants.PDF_VALIDATION_FIELDS_PAIRED. Cada entrada tiene que ser una tupla'
 
-        if  ((fields[paired_field[0]][1] != 'Button' and \
-            fields[paired_field[0]][0] is not None and \
-            len(fields[paired_field[0]][0]) != 0) or \
-            (fields[paired_field[0]][1] == 'Button' and fields[paired_field[0]][0] == 'On')) and \
-            ((fields[paired_field[1]][1] != 'Button' and \
-            fields[paired_field[1]][0] is None or \
-            len(fields[paired_field[1]][0]) == 0) or \
-            (fields[paired_field[1]][1] == 'Button' and fields[paired_field[0]][0] == 'Off')):
+        if  ((fields[paired_field[0]][constants.PDF_FIELD_TYPE] != 'Button' and \
+            fields[paired_field[0]][constants.PDF_FIELD_VALUE] is not None and \
+            len(fields[paired_field[0]][constants.PDF_FIELD_VALUE]) != 0) or \
+            (fields[paired_field[0]][constants.PDF_FIELD_TYPE] == 'Button' and fields[paired_field[0]][constants.PDF_FIELD_VALUE] == 'Yes')) and \
+            ((fields[paired_field[1]][constants.PDF_FIELD_TYPE] != 'Button' and \
+            fields[paired_field[1]][constants.PDF_FIELD_VALUE] is None or \
+            len(fields[paired_field[1]][constants.PDF_FIELD_VALUE]) == 0) or \
+            (fields[paired_field[1]][constants.PDF_FIELD_TYPE] == 'Button' and fields[paired_field[0]][constants.PDF_FIELD_VALUE] == 'Off')):
               paired_fields.append(paired_field[1])
 
-      if len(paired_field) > 0:
-        _logger.error("No se han definido correctamente si se solicita AA o CO. Estudiante moodle id: {} {}".format(submission.userid, paired_fields))
+      #if len(paired_field) > 0:
+      #  _logger.error("No se han definido correctamente si se solicita AA o CO. Estudiante moodle id: {} {}".format(submission.userid, paired_fields))
         # TODO, descomentar. Se comenta para facilitar las pruebas
         #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANP'))
         #submission.set_extension_due_date(to = new_timestamp)
@@ -343,6 +343,40 @@ class Classroom(models.Model):
 
       # TODO comprobación de firma digital
 
+      # asignacion de módulos a CO/AA
+      validation_subjects = []
+      
+      # TODO comprobar y eliminar si es el caso, si un mismo módulo aparece más de una vez
+      for key in fields:
+        _logger.info("asdasasd1" + key)
+
+        # es el nombre del módulo
+        if key.startswith('C_Modulo') and len(key) < 12:
+          code = fields[key][0][:4]
+          
+          if len(code) == 0:
+            continue
+          
+          subject = self.env['atenea.subject'].search([('code', '=', code)])
+            
+          if len(subject) == 0:
+            raise AteneaException(
+              _logger, 
+              'No se encuentra en Atenea el módulo con código {}'.format(code),
+              50, # critical
+              comments = '''Tal vez falten módulos por codificar o que el código del PDF no sea el correcto. Código: {}
+                '''. format(code))
+          _logger.info("asdasasd3")
+          valid_subject = (0, 0, {
+            'subject_id': subject.id,
+            'state': '0',
+            'validation_type': 'aa'  # TODO: ajustarlo según el PDF
+          }) 
+      
+          validation_subjects.append(valid_subject)
+
+      # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 
+      validation.validation_subjects_ids = validation_subjects
 
       """ 
         
