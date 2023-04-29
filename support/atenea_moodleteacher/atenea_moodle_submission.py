@@ -19,7 +19,13 @@ class AteneaMoodleSubmission(MoodleSubmission):
   Hereda de MoodleSubmission
   """
 
-  # al no definir el init toma el del padre
+  def __init__(self, conn=None, submission_id=None, assignment=None, 
+               user_id=None, group_id=None, status=None, gradingstatus=None, 
+               textfield=None, files=[], attemptnumber = 0):
+        self.attemptnumber = attemptnumber
+        super().__init__(conn, submission_id, assignment, 
+               user_id, group_id, status, gradingstatus, 
+               textfield, files)
 
   def set_user_flags(self, user_flags):
     """
