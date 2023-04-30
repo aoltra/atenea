@@ -208,6 +208,7 @@ class Classroom(models.Model):
       os.makedirs(path)
 
     # comprobación de cada una de las tareas
+    # TODO: probar con un parámetro en submission must_have_files = True
     for submission in assignments[0].submissions():
       # esta comprobación se hace la primera para evitar problemas de resto de datos que puede
       # haber en el tarea de Moodle
@@ -380,10 +381,11 @@ class Classroom(models.Model):
       # diccionario con todos los code de los modulos solicitados en la anterior entrega
       for val_subject in self.env['atenea.validation_subject'].search([('validation_id', '=', validation.id)]):
         validation_subjects_code_previous[val_subject.subject_id.code] = {
-          'id': val_subject.id,
+          'id': val_subject.subject_id.id,
           'type': val_subject.validation_type } 
 
       # TODO comprobar y eliminar si es el caso, si un mismo módulo aparece más de una vez
+      id_subjects = []
       for key in fields:
 
         # es el nombre del módulo
@@ -417,19 +419,32 @@ class Classroom(models.Model):
             }) 
           else:
             # actualizo el registro con el nuevo tipo de validación
-            valid_subject = (1, validation_subjects_code_previous[code].id, {
+            valid_subject = (1, validation_subjects_code_previous[code]['id'], {
               'validation_type': validation_type 
             }) 
             del validation_subjects_code_previous[code]
     
-          validation_subjects.append(valid_subject)
+          # lo añade a la lista si no existe ya => en caso de módulo repetido
+          # se queda con la primera aparición
+          if subject.id not in id_subjects: 
+            validation_subjects.append(valid_subject)
+            id_subjects.append(subject.id)
+
+      # los módulos solicitados en anteriores entregas que no han sido solcitados en esta
+      # se eliminan
+      for val_key in validation_subjects_code_previous:
+        _logger.error(" va: {} {}".format(validation_subjects_code_previous[val_key], validation.id))
+        self.env['atenea.validation_subject']. \
+          search([('subject_id', '=', validation_subjects_code_previous[val_key]['id']),
+                  ('validation_id', '=', validation.id)]). \
+                  unlink()
 
       # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 
       validation.validation_subjects_ids = validation_subjects
       # ha pasado los filtros iniciales => cambio el estado a en proceso
       submission.save_grade(2)
   
- 
+
     return
   
   
