@@ -9,6 +9,8 @@
       <field name="name">Acceso usuario general a validation</field>
       <field name="model_id" ref="model_atenea_validation"/>
       <field name="group_id" ref="base.group_user"></field>
+      <!-- Si se da acceso o no de ese tipo de operación. 
+           Por defecto es no. Si no estuviera definido el permiso no se tendría acceso -->
       <field name="perm_read">0</field>
       <field name="perm_create">0</field>
       <field name="perm_write">0</field>
@@ -28,7 +30,7 @@
 
     <!-- permisos Secretaria -->
     <record id="atenea.validation_admin_access" model="ir.model.access">
-      <field name="name">Acceso de Secreataria a validation</field>
+      <field name="name">Acceso de Secretaria a validation</field>
       <field name="model_id" ref="model_atenea_validation"/>
       <field name="group_id" ref="atenea.group_ADMIN"/>
       <field name="perm_read">1</field>
@@ -118,6 +120,18 @@
       <field name="perm_unlink">1</field>
     </record>
 
+    <!-- ************************************************************************* -->
+    <!-- Reglas de registro. Condiciones que se deben dar para que algo ocurra. 
+         Se ejecutan registro por registro                                         -->
+    <!-- ************************************************************************* -->
+
+    <!-- Regla para ver solo las convalidciones que le corresponden al convalidador -->
+    <record id="atenea.validation_validator_rol_rule" model="ir.rule">
+      <field name="name">Acceso de los validadores solo a las convalidaciones de sus ciclos</field>
+      <field name="model_id" ref="model_atenea_validation"/>
+      <field name="groups" eval="[(4, ref('atenea.group_VALID'))]"/>
+      <field name="domain_force">[('course_abbr','in',[rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id is not None])]</field>
+    </record>
 
   </data>
 </odoo>

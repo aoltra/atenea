@@ -38,7 +38,7 @@ class AteneaMoodleAssignment(MoodleAssignment):
       logger.error("Could not fetch submission information:")
       logger.exception(e)
       return None
-    
+
     if 'lastattempt' in response:
       if 'submission' in response['lastattempt']:
         if must_have_files:
@@ -54,10 +54,11 @@ class AteneaMoodleAssignment(MoodleAssignment):
 
         submission = AteneaMoodleSubmission(
           conn=self.conn,
-          submission_id=response['lastattempt']['submission']['id'],
+          submission_id = response['lastattempt']['submission']['id'],
           assignment=self,
-          user_id=response['lastattempt']['submission']['userid'],
-          status=response['lastattempt']['submission']['status'])
+          user_id = response['lastattempt']['submission']['userid'],
+          status = response['lastattempt']['submission']['status'],
+          attemptnumber = response['lastattempt']['submission']['attemptnumber'])
         if 'teamsubmission' in response['lastattempt']:
           logger.debug("Identified team submission.")
           submission.group_id = response['lastattempt']['teamsubmission']['groupid']

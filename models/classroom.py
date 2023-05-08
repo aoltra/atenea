@@ -168,7 +168,7 @@ class Classroom(models.Model):
           _logger, 
           'No se ha definido un curso actual',
           50, # critical
-          comments = '''Es posible que no se haya marcado com actal ningún curso escolar''')
+          comments = '''Es posible que no se haya marcado como actual ningún curso escolar''')
     else:
       current_school_year = current_sy[0]
         
@@ -199,18 +199,24 @@ class Classroom(models.Model):
     # creación del directorio del ciclo para descomprimir las convalidaciones
     today = date.today()
     course = self.env['atenea.course'].browse([course_id])
-    path = '{}/{}/{}/'.format(validations_path, 
-          '%s_%s' % (current_school_year.date_init.year, current_school_year.date_init.year + 1),  # TODO!! poner curso actual
+  
+    path = os.path.join(validations_path, 
+          '%s_%s' % (current_school_year.date_init.year, current_school_year.date_init.year + 1), 
           course.abbr) 
-       
-    path = path.replace('//', '/')
 
     if not os.path.exists(path):  
       os.makedirs(path)
 
     # comprobación de cada una de las tareas
+    # TODO: probar con un parámetro en submission must_have_files = True
     for submission in assignments[0].submissions():
-      
+      # esta comprobación se hace la primera para evitar problemas de resto de datos que puede
+      # haber en el tarea de Moodle
+      if len(submission.files) == 0:
+        _logger.info("No hay ficheros en la entrega")
+        continue
+
+      _logger.info("Entrega usuario moodle {}".format(submission.userid))   
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
       a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
   
@@ -221,9 +227,21 @@ class Classroom(models.Model):
         validation = self.env['atenea.validation'].create([
             { 'student_id': a_user.id,
               'course_id': course_id,
+              'attempt_number': submission.attemptnumber + 1,
               'school_year_id': current_school_year.id }])
       else:
         validation = validation_list[0]
+
+        _logger.info("Intento de entrega A{}:M{}".format(validation.attempt_number, submission.attemptnumber + 1))   
+
+        if validation.attempt_number == submission.attemptnumber + 1: # no ha habido cambios en la entrega
+          continue
+        else:
+          # esta condición está pensanda para el caso en el que hay una nueva entrega, pero también controla
+          # el caso de que sean diferentes por problemas de sincronización entre Moodle y Atenea:
+          # si el registro desaparece de atenea => se iguala al de Moodle (en la creación de la convalidación)
+          # si el registro desaparece en Moodle => Atenea se igual al de Moodle
+          validation.attempt_number = submission.attemptnumber + 1  
  
       ############                     ############
       ##### comprobación de errores a subsanar ####
@@ -232,18 +250,15 @@ class Classroom(models.Model):
       new_due_date = today + timedelta(days = 15)
       new_timestamp =  int(datetime(year = new_due_date.year, 
                          month = new_due_date.month,
-                         day = new_due_date.day).timestamp())
+                         day = new_due_date.day).timestamp())     
       
-      if len(submission.files) == 0:
-        continue
-
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
         _logger.error("Sólo está permitido subir un archivo. Estudiante moodle id: {} {}".format(submission.userid, len(submission.files)))      
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('MFL'))
         submission.set_extension_due_date(to = new_timestamp)
         continue
-
+      
       # fichero no en formato zip  (debería ser comprobado en Moodle)
       if not submission.files[0].is_zip:
         _logger.error('El archivo de convalidaciones debe ser un zip. Estudiante moodle id: {}'.format(submission.userid))
@@ -252,39 +267,54 @@ class Classroom(models.Model):
         continue
  
       # descarga del archivo
-      filename = '[{}] {}, {}'.format(
+      foldername = '[{}] {}, {}'.format(
         user.id_,
         user.lastname.upper() if user.lastname is not None else 'SIN-APELLIDOS', 
         user.firstname.upper() if user.firstname is not None else 'SIN-NOMBRE')
-  
-      submission.files[0].from_url(conn = conn,url = submission.files[0].url)
-      submission.files[0].save_as(path, filename + '.zip')
-   
+      
+      filename = '[{}][{}] {}, {}'.format(
+        user.id_,
+        submission.attemptnumber + 1,
+        user.lastname.upper() if user.lastname is not None else 'SIN-APELLIDOS', 
+        user.firstname.upper() if user.firstname is not None else 'SIN-NOMBRE')
+
+      # creación del directorio para almacenarlo
+      path_user = os.path.join(path, foldername, '') 
+      if not os.path.exists(path_user):  
+        os.makedirs(path_user)
+
+      submission.files[0].from_url(conn = conn, url = submission.files[0].url)
+      submission.files[0].save_as(path_user, filename + '.zip')
+      
       # creación del directorio para descomprimirlo
-      if not os.path.exists(path + filename):  
-        os.makedirs(path + filename)
+      path_user_submission = os.path.join(path_user, filename, '') 
+      if not os.path.exists(path_user_submission):
+        os.makedirs(path_user_submission)
 
-      submission.files[0].unpack_to(path + filename, remove_directories = False)
-
-      for file in os.listdir(path + filename):
-        os.rename(os.path.join(path + filename, file), os.path.join(path + filename, file.upper()))
+      # lo descomprime. si el fichero existe, lo sobreescribe
+      submission.files[0].unpack_to(path_user_submission, remove_directories = False)
 
       files_unzip = []
-      for file in os.listdir(path + filename):
-        if os.path.isfile(os.path.join(path + filename, file)):
-            files_unzip.append(file.upper())
+      for file in os.listdir(path_user_submission):
+        os.rename(os.path.join(path_user_submission, file), os.path.join(path_user_submission, file.upper()))
 
+      for file in os.listdir(path_user_submission):
+        if os.path.isfile(os.path.join(path_user_submission, file)):
+            files_unzip.append(file)
+  
+      _logger.info(files_unzip)
+        
       annex_file = [file for file in files_unzip if 'ANEXO' in file or 'ANNEX' in file]
 
       # más de un anexo (o ninguno)
       if len(annex_file) != 1:
-        _logger.error("Es necesario que haya un (y sólo un) fichero llamado anexo. Estudiante moodle id: {} {}".format(submission.userid, len(annex_file)))   
+        _logger.error("Es necesario que haya un (y sólo un) fichero llamado anexo o annex. Estudiante moodle id: {} {}".format(submission.userid, len(annex_file)))   
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('NNX'))
         submission.set_extension_due_date(to = new_timestamp)
         continue
   
       # datos obligatorios rellenados  
-      fields = get_data_from_pdf(path + filename +'/' + annex_file[0])
+      fields = get_data_from_pdf(os.path.join(path_user_submission, annex_file[0]))
       _logger.info(fields)
 
       missing_fields = []
@@ -296,17 +326,17 @@ class Classroom(models.Model):
           assert mandatory_field[0] in fields, f'La clave {mandatory_field[0]} no existe en el pdf'
 
           # un campo obligatorio no está definido
-          if fields[mandatory_field[0]][0] is None or \
-             len(fields[mandatory_field[0]][0]) == 0:
+          if fields[mandatory_field[0]][constants.PDF_FIELD_VALUE] is None or \
+             len(fields[mandatory_field[0]][constants.PDF_FIELD_VALUE]) == 0:
               missing_fields.append(mandatory_field[1])
 
         elif isinstance(mandatory_field[0], tuple):
           exist = False
           for option in mandatory_field[0]:
-            if (fields[option][1] != 'Button' and \
-                fields[option][0] is not None and \
-                len(fields[option][0]) != 0) or \
-               (fields[option][1] == 'Button' and fields[option][0] == 'On'):
+            if (fields[option][constants.PDF_FIELD_TYPE] != 'Button' and \
+                fields[option][constants.PDF_FIELD_VALUE] is not None and \
+                len(fields[option][constants.PDF_FIELD_VALUE]) != 0) or \
+               (fields[option][constants.PDF_FIELD_TYPE] == 'Button' and fields[option][constants.PDF_FIELD_VALUE] == 'Yes'):
               exist = True
 
           if not exist:
@@ -315,8 +345,8 @@ class Classroom(models.Model):
       if len(missing_fields) > 0:
         _logger.error("Faltan campos obligatorios por definir en el pdf. Estudiante moodle id: {} {}".format(submission.userid, missing_fields))
         # TODO, descomentar. Se comenta para facilitar las pruebas
-        #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANC'))
-        #submission.set_extension_due_date(to = new_timestamp)
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANC'))
+        submission.set_extension_due_date(to = new_timestamp)
         continue
 
       # integridad en la selección de campos
@@ -324,36 +354,97 @@ class Classroom(models.Model):
       for paired_field in constants.PDF_VALIDATION_FIELDS_PAIRED:
         assert isinstance(paired_field, tuple),  f'Valor incorrecto en constants.PDF_VALIDATION_FIELDS_PAIRED. Cada entrada tiene que ser una tupla'
 
-        if  ((fields[paired_field[0]][1] != 'Button' and \
-            fields[paired_field[0]][0] is not None and \
-            len(fields[paired_field[0]][0]) != 0) or \
-            (fields[paired_field[0]][1] == 'Button' and fields[paired_field[0]][0] == 'On')) and \
-            ((fields[paired_field[1]][1] != 'Button' and \
-            fields[paired_field[1]][0] is None or \
-            len(fields[paired_field[1]][0]) == 0) or \
-            (fields[paired_field[1]][1] == 'Button' and fields[paired_field[0]][0] == 'Off')):
-              paired_fields.append(paired_field[1])
+        if  ((fields[paired_field[0]][constants.PDF_FIELD_TYPE] != 'Button' and \
+            fields[paired_field[0]][constants.PDF_FIELD_VALUE] is not None and \
+            len(fields[paired_field[0]][constants.PDF_FIELD_VALUE]) != 0) or \
+            (fields[paired_field[0]][constants.PDF_FIELD_TYPE] == 'Button' and \
+            fields[paired_field[0]][constants.PDF_FIELD_VALUE] == 'Yes')) and \
+            ((fields[paired_field[1]][constants.PDF_FIELD_TYPE] != 'Button' and \
+            fields[paired_field[1]][constants.PDF_FIELD_VALUE] is None or \
+            len(fields[paired_field[1]][constants.PDF_FIELD_VALUE]) == 0) or \
+            (fields[paired_field[1]][constants.PDF_FIELD_TYPE] == 'Button' and \
+             fields[paired_field[0]][constants.PDF_FIELD_VALUE] == 'Off')):
+              paired_fields.append(fields[paired_field[0]][constants.PDF_FIELD_VALUE])
 
-      if len(paired_field) > 0:
+      if len(paired_fields) > 0:
         _logger.error("No se han definido correctamente si se solicita AA o CO. Estudiante moodle id: {} {}".format(submission.userid, paired_fields))
         # TODO, descomentar. Se comenta para facilitar las pruebas
-        #submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANP'))
-        #submission.set_extension_due_date(to = new_timestamp)
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANP'))
+        submission.set_extension_due_date(to = new_timestamp)
         continue
 
       # TODO comprobación de firma digital
 
+      # asignacion de módulos a CO/AA
+      validation_subjects = []
+      validation_subjects_code_previous = {}
+      # diccionario con todos los code de los modulos solicitados en la anterior entrega
+      for val_subject in self.env['atenea.validation_subject'].search([('validation_id', '=', validation.id)]):
+        validation_subjects_code_previous[val_subject.subject_id.code] = {
+          'id': val_subject.subject_id.id,
+          'type': val_subject.validation_type } 
 
-      """ 
-        
-      grade = submission.load_grade()
-      _logger.info("###############################")
-      _logger.info(grade)
+      # TODO comprobar y eliminar si es el caso, si un mismo módulo aparece más de una vez
+      id_subjects = []
+      for key in fields:
+
+        # es el nombre del módulo
+        if key.startswith('C_Modulo') and len(key) < 12:
+          code = fields[key][0][:4]
+          validation_type = fields[key + 'AACO'][0][:2].lower()
+          
+          if len(code) == 0:
+            continue
+
+          if code in validation_subjects_code_previous and \
+              validation_subjects_code_previous[code]['type'] == validation_type:
+              del validation_subjects_code_previous[code]
+              continue
+          
+          subject = self.env['atenea.subject'].search([('code', '=', code)])
+            
+          if len(subject) == 0:
+            raise AteneaException(
+              _logger, 
+              'No se encuentra en Atenea el módulo con código {}'.format(code),
+              50, # critical
+              comments = '''Tal vez falten módulos por codificar o que el código del PDF no sea el correcto. Código: {}
+                '''. format(code))
+
+          if code not in validation_subjects_code_previous:
+            valid_subject = (0, 0, {
+              'subject_id': subject.id,
+              'state': '0',
+              'validation_type': validation_type 
+            }) 
+          else:
+            # actualizo el registro con el nuevo tipo de validación
+            valid_subject = (1, validation_subjects_code_previous[code]['id'], {
+              'validation_type': validation_type 
+            }) 
+            del validation_subjects_code_previous[code]
     
-        
-      """
+          # lo añade a la lista si no existe ya => en caso de módulo repetido
+          # se queda con la primera aparición
+          if subject.id not in id_subjects: 
+            validation_subjects.append(valid_subject)
+            id_subjects.append(subject.id)
+
+      # los módulos solicitados en anteriores entregas que no han sido solcitados en esta
+      # se eliminan
+      for val_key in validation_subjects_code_previous:
+        _logger.error(" va: {} {}".format(validation_subjects_code_previous[val_key], validation.id))
+        self.env['atenea.validation_subject']. \
+          search([('subject_id', '=', validation_subjects_code_previous[val_key]['id']),
+                  ('validation_id', '=', validation.id)]). \
+                  unlink()
+
+      # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 
+      validation.validation_subjects_ids = validation_subjects
+      # ha pasado los filtros iniciales => cambio el estado a en proceso
+      submission.save_grade(2)
   
- 
+
     return
   
   

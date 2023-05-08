@@ -52,12 +52,16 @@ class Validation(models.Model):
     ('NZP', 'La documentación aportada no se encuentra en un único fichero zip comprimido.'),
     ('NNX', 'No se encuentra un fichero llamado anexo o hay más de uno.'),
     ('ANC', 'Anexo no cumplimentado correctamente. Campos obligatorios no rellenados.'),
-    ('ANP', 'Anexo no cumplimentado correctamente. Tipo (convalidación/aprobado con anteriorirdad) no indicado.'),
+    ('ANP', 'Anexo no cumplimentado correctamente. Tipo (convalidación/aprobado con anterioridad) no indicado.'),
     ('SNF', 'Documento no firmado digitalmente'),
     ('RL', 'No se aporta curso de riesgo laborales > 30h'),
     ('EXP', 'No se aporta expediente académico'),
     ], string ='Razón de la subsanación', default = '---',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
+  
+  # numeración basada en 1: 1,2,3,4...
+  attempt_number = fields.Integer(string = "Número de entregas realizadas", default = 1, 
+                                  help = 'Indica el número actual de veces que ha realizado la subida de la documentación debido a subsanaciones')
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
@@ -101,5 +105,5 @@ class Validation(models.Model):
         record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
 
 
-  # TODO realizar un campo compute para actulizar el estado en función del estado de las convalidaciones de los modulos
+  # TODO realizar un campo compute para actualizar el estado en función del estado de las convalidaciones de los modulos
 
