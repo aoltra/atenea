@@ -42,6 +42,7 @@ source atenea-env/bin/activate
 3. Instalar los paquetes de desarrollo
 ```
 pip install -r requirements-dev.txt
+pip3 install -r requirements-dev.txt
 ```
 
 4. Instalar el git _commit-msg_ hook

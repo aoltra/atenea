@@ -1,0 +1,90 @@
+version: '3.3'
+
+services:
+#Definimos el servicio Web, en este caso Odoo
+  web:
+    #Indicamos que imagen de Docker Hub utilizaremos
+    build:
+      dockerfile: ./odoo.dockerfile
+    #Indicamos que depende de "db", por lo cual debe ser procesada primero "db"
+    depends_on:
+        - db
+
+    # Port Mapping: indicamos que el puerto 8069 del contenedor se mapeara con el mismo puerto en el anfritrion
+    # Permitiendo acceder a Odoo mediante http://localhost:8069
+    ports:
+      - 8069:8069
+
+    # Mapeamos el directorio de los contenedores (como por ejemplo" /mnt/extra-addons" )
+    # en un directorio local (como por ejemplo en un directorio "./volumesOdoo/addons")
+    # situado en el lugar donde ejecutemos "Docker compose"
+    volumes:
+      - ./volumesOdoo/addons:/mnt/extra-addons
+      - ./volumesOdoo/odoo/filestore:/var/lib/odoo/filestore
+      - ./volumesOdoo/odoo/sessions:/var/lib/odoo/sessions
+    # Indicamos que el contenedor funcionará con usuario root y no con usuario odoo
+    user: root
+    # Definimos variables de entorno de Odoo
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    # Indica que pasa ese parametro al arrancar el servicio Odoo
+    command: --dev=all
+  #Definimos el servicio de la base de datos
+  db:
+    image: postgres:13
+
+    user: root
+    # Definimos variables de entorno de PostgreSQL
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - POSTGRES_DB=postgres
+    # Mapeamos el directorio del contenedor "var/lib/postgresql/data" en un directorio "./volumesOdoo/dataPostgreSQL"
+    # situado en el lugar donde ejecutemos "Docker compose"
+    volumes:
+      - ./volumesOdoo/dataPostgreSQL:/var/lib/postgresql/data 700
+    ports:
+      - 5432:5432
+
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.6
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=bn_moodle
+      - MARIADB_DATABASE=bitnami_moodle
+      - MARIADB_CHARACTER_SET=utf8mb4
+      - MARIADB_COLLATE=utf8mb4_unicode_ci
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+    ports:
+      - 3306:3306
+
+
+  moodle:
+    image: docker.io/bitnami/moodle:3.9.2
+    ports:
+      - '80:8080'
+      - '443:8443'
+    environment:
+      - MOODLE_DATABASE_HOST=mariadb
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=bn_moodle
+      - MOODLE_DATABASE_NAME=bitnami_moodle
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - 'moodle_data:/bitnami/moodle'
+      - 'moodledata_data:/bitnami/moodledata'
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:
+    driver: local
+  moodle_data:
+    driver: local
+  moodledata_data:
+    driver: local

@@ -3,6 +3,7 @@ import logging
 import datetime
 import calendar
 import copy
+import locale
 
 _logger = logging.getLogger(__name__)
 
@@ -33,7 +34,6 @@ class SchoolCalendarReport(models.AbstractModel):
           day = '%s-%s' % (dt['date'].day, str((dt['date'] + dt['dur']).day))
         else:
           day = '%s-%s' % (str((dt['date'] + dt['dur']).day), dt['date'].day)
-
         # para que no aparezca la fecha dos veces en el mismo mes, por el inicio y fin de rango
         if day not in range_day:
           range_day.append(day)
@@ -53,7 +53,9 @@ class SchoolCalendarReport(models.AbstractModel):
     _logger.info("Parser generación calendario escolar")
 
     months = [ 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7]
-    html_cal = calendar.HTMLCalendar(firstweekday = 0)
+    
+    # html_cal = calendar.LocaleHTMLCalendar(firstweekday = 0, locale = "ca_ES.UTF8")
+    html_cal = calendar.LocaleHTMLCalendar(firstweekday = 0, locale = "es_ES.UTF8")
 
     months_calendar = {}
 
