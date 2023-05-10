@@ -124,28 +124,28 @@ Color palette
 --sage: #b2b09bff;
 */
 .day.G-type, .day.G-type ~ td {
-  color: #F1E4E8;
+  color: #B2B09B;
 }
 .day.P-type, .day.day.P-type ~ td {
-  color: #C6C5B9;
+  color: #877320;
 }
 .day.S-type, .day.S-type ~ td {
-  color: #62929E;
+  color: #254441;
 }
 
 .month .G-type,
 .legend-square.G-type {
-  background-color: #F1E4E8;
+  background-color: #B2B09B;
 }
 
 .month .P-type,
 .legend-square.P-type {
-  background-color: #C6C5B9;
+  background-color: #877320;
 }
 
 .month .S-type,
 .legend-square.S-type {
-  background-color: #62929E;
+  background-color: #254441;
 }
 
 .month .S-type,
@@ -153,7 +153,7 @@ Color palette
   color: white;
 }
 .month .sun, .month .sat, .month .H-type {
-  color: #A30B37;
+  color: #ff8773;
 }
 
 /* LEGEND */
