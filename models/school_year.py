@@ -1280,14 +1280,21 @@ class SchoolYear(models.Model):
     }
 
     for holiday in self.holidays_ids:
-      _logger.info(holiday.date)
       holidayDto = { 
         'date': holiday.date,
         'desc': holiday.description,
         'type': 'H'
       }
 
+      holidayEndDto = { 
+        'date': holiday.date_end,
+        'desc': holiday.description,
+        'type': 'H'
+      }
+
       if(holiday.date != holiday.date_end):
         holidayDto['dur'] = holiday.date_end - holiday.date
+        holidayEndDto['dur'] = holiday.date - holiday.date_end
 
       self.dates[holiday.description] = holidayDto
+      self.dates[holiday.description] = holidayEndDto
