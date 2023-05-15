@@ -8,3 +8,8 @@
 | alumno03 | [Alumn0] |    |
 | alumno04 | [Alumn0] |    |
 
+## Activación web services en Moodle
+
+Cómo ususario _administrador_:
+
+Site administration / site administration / Moodle App / Mobile settings -> Enable web services =  True
