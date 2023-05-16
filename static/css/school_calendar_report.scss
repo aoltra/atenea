@@ -9,8 +9,7 @@
 
 /* wkhtmltopdf soporta flex pero tiene un bug con flex-wrap, bug
    que también afecta a bootstrap 
-.calendar {
-  display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
+.calendar {display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap
@@ -22,6 +21,8 @@
 } */
 
 @use './_school_calendar_report_palette.scss' as colors;
+@use './_school_calendar_report_fonts.scss' as fonts;
+@use './_school_calendar_legend.scss' as legend;
 
 .pt-5{
     padding: 0 !important;
@@ -70,14 +71,16 @@
     padding-right: 0 !important;
   }
   
-  .grid-month .mon,
-  .grid-month .tue,
-  .grid-month .wed,
-  .grid-month .thu,
-  .grid-month .fri,
-  .grid-month .sat,
-  .grid-month .sun{
-    font-size: 8pt;
+  .grid-month{
+    .mon,
+    .tue,
+    .wed,
+    .thu,
+    .fri,
+    .sat,
+    .sun{
+      font-size: fonts.$calendar-font-size;
+    }
   }
   
   .grid-month:nth-child(n+4){
@@ -169,21 +172,4 @@
     }
   }
 
-  /* LEGEND */
-  .legend-title-container{
-    text-align: center;
-  }
-  
-  .legend-title-container h2{
-    font-size: 1.25rem;
-  }
-  
-  .legend .row{
-    padding-top: 1rem;
-    text-align: left;
-  }
-  
-  .legend-square{
-    width: 20px;
-    height: 20px;
-  }
+@include legend.legendComponent();

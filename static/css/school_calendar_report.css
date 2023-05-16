@@ -9,8 +9,7 @@
 }*/
 /* wkhtmltopdf soporta flex pero tiene un bug con flex-wrap, bug
    que también afecta a bootstrap 
-.calendar {
-  display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
+.calendar {display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap
@@ -173,4 +172,13 @@ Color palette
 .legend-square {
   width: 20px;
   height: 20px;
+  line-height: 20px;
+}
+.legend-square.H-type {
+  font-size: 7pt;
+  color: #ff867a;
+}
+.legend-square span {
+  display: inline-block;
+  line-height: 20px;
 }/*# sourceMappingURL=school_calendar_report.css.map */
