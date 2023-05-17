@@ -33,3 +33,18 @@ Se accede a la configuración de cada uno de ellos y se elige un nuevo password,
 | alumno02 | [Alumn0] |    |
 | alumno03 | [Alumn0] |    |
 | alumno04 | [Alumn0] |    |
+
+## Creación del fichero de acceso desde Atenea
+
+Desde el contenedor odoodock-web-1 abrir un terminal y acceder a la carpeta /mnt/extra-addons/atenea/misc/scripts/save_token_moodle
+
+```
+$ docker exec -it odoodock-web-1 bash 
+> cd /mnt/extra-addons/atenea/misc/scripts/save_token_moodle
+> python3 ./save_token_moodle.py
+```
+
+Contestar a las preguntas con:
+  - atenea 
+  - atenea
+  - Atenea1;-)
