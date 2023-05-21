@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from moodleteacher.users import MoodleUser
-from moodleteacher.requests import MoodleRequest
+#from moodleteacher.requests import MoodleRequest
+from .atenea_moodle_request import AteneaMoodleRequest
 
 import logging
 
@@ -29,7 +30,7 @@ class AteneaMoodleUser(MoodleUser):
     obj = cls()
     obj.id_ = user_id
     params = {'field': 'id', 'values[0]': str(user_id)}
-    response = MoodleRequest(
+    response = AteneaMoodleRequest(
       conn, 'core_user_get_users_by_field').post(params).json()
     if response != []:
       assert(response[0]['id'] == user_id)
@@ -81,7 +82,7 @@ class AteneaMoodleUsers(list):
     params = {}
     params['courseid'] = course_id
     try:
-      response = MoodleRequest(
+      response = AteneaMoodleRequest(
         conn, 'core_enrol_get_enrolled_users').get(params).json()
     except Exception as e:
       raise Exception("Excepción [core_enrol_get_enrolled_users]: " + str(e))

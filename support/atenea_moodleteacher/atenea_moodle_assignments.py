@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from moodleteacher.courses import MoodleCourse
-from moodleteacher.requests import MoodleRequest
+#from moodleteacher.requests import MoodleRequest
+from .atenea_moodle_request import AteneaMoodleRequest
 from moodleteacher.assignments import MoodleAssignment
 from .atenea_moodle_submission import AteneaMoodleSubmission
 
@@ -32,7 +33,7 @@ class AteneaMoodleAssignment(MoodleAssignment):
     params['userid'] = user_id
     logger.info("Fetching submission information for user {userid} in assignment {assignid}".format(**params))
     try:
-      response = MoodleRequest(
+      response = AteneaMoodleRequest(
         self.conn, 'mod_assign_get_submission_status').get(params).json()
     except Exception as e:
       logger.error("Could not fetch submission information:")
@@ -86,7 +87,7 @@ class AteneaMoodleAssignment(MoodleAssignment):
 
     if len(users) > 0:
       try:
-        response = MoodleRequest(
+        response = AteneaMoodleRequest(
           self.conn, 'mod_assign_save_user_extensions').post(params).json()
       except Exception as e:
         logger.error("Error en [set_extension_due_date]: " + str(e))
@@ -103,7 +104,7 @@ class AteneaMoodleAssignments(list):
     params = {}
     if course_filter:
       params['courseids'] = course_filter
-      response = MoodleRequest(
+      response = AteneaMoodleRequest(
           conn, 'mod_assign_get_assignments').get(params).json()
       if 'courses' in response:
         for course_data in response['courses']:

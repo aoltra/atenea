@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from moodleteacher.submissions import MoodleSubmission
 from .atenea_moodle_submission import MoodleSubmission
-from moodleteacher.requests import MoodleRequest
+#from moodleteacher.requests import MoodleRequest
+from .atenea_moodle_request import AteneaMoodleRequest
 
 import logging
 
@@ -40,7 +41,7 @@ class AteneaMoodleSubmission(MoodleSubmission):
     }
     """
     
-    response = MoodleRequest(
+    response = AteneaMoodleRequest(
       self.conn, 'mod_assign_set_user_flags').post(data = user_flags).json()
     
   def get_user_id(self):
@@ -103,7 +104,7 @@ class AteneaMoodleSubmission(MoodleSubmission):
       'plugindata[assignfeedbackcomments_editor][format]': 1
     }
 
-    response = MoodleRequest(
+    response = AteneaMoodleRequest(
       self.conn, 'mod_assign_save_grade').post(data = data).json()
     _logger.debug("Response from grading update: {0}".format(response))
 
