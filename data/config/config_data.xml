@@ -5,7 +5,7 @@
         <!-- Moodle-->
         <field name="moodle_user">atenea</field>
         <field name="moodle_url">http://moodle:8080</field>
-        <field name="validations_path">/mnt/atenea_data/convalidaciones</field>
+        <field name="validations_path">/mnt/odoo-repo/convalidaciones</field>
     </record>
     <function model="res.config.settings" name="execute">
         <value model="res.config.settings"
