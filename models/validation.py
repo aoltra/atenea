@@ -4,7 +4,10 @@ from odoo import api, models, fields
 from odoo.exceptions import ValidationError
 import datetime
 import logging
+import base64
 import os
+
+from ..support.atenea_logger.exceptions import AteneaException
 
 _logger = logging.getLogger(__name__)
 
@@ -14,6 +17,7 @@ class Validation(models.Model):
   """
   _name = 'atenea.validation'
   _description = 'Solicitud convalidación'
+  _rec_name = 'student_info' 
 
   school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar')
   
@@ -62,6 +66,12 @@ class Validation(models.Model):
   # numeración basada en 1: 1,2,3,4...
   attempt_number = fields.Integer(string = "Número de entregas realizadas", default = 1, 
                                   help = 'Indica el número actual de veces que ha realizado la subida de la documentación debido a subsanaciones')
+
+  documentation = fields.Binary(string = "Documentación")
+  documentation_filename = fields.Char(
+        string='Nombre dl fichero',
+        compute='_compute_documentation_filename'
+    )
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
@@ -104,6 +114,64 @@ class Validation(models.Model):
         num_resolved = len([val for val in record.validation_subjects_ids if val.state == '3'])
         record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
 
+  def _compute_documentation_filename(self):
+    self.ensure_one()
+    self.documentation_filename = '[{}][{}] {}, {}'.format(
+        self.student_id.moodle_id,
+        self.attempt_number,
+        self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
+        self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
+    
+     
+  def download_validation_action(self):
+    """
+    Descarga la última versión de la documentación
+    """
+    self.ensure_one() # esta función sólo puede ser llamada por un único registro, no por un recordset
+
+    validations_path = self.env['ir.config_parameter'].get_param('atenea.validations_path') or None
+    if validations_path == None:
+      _logger.error('La ruta de almacenamiento de convalidaciones no está definida')
+      return
+
+    current_sy = (self.env['atenea.school_year'].search([('state', '=', 1)])) # curso escolar actual  
+
+    if len(current_sy) == 0:
+      raise AteneaException(
+          _logger, 
+          'No se ha definido un curso actual',
+          50, # critical
+          comments = '''Es posible que no se haya marcado como actual ningún curso escolar''')
+    else:
+      current_school_year = current_sy[0]
+
+    path = os.path.join(validations_path, 
+          '%s_%s' % (current_school_year.date_init.year, current_school_year.date_init.year + 1), 
+          self.course_abbr) 
+
+    foldername = '[{}] {}, {}'.format(
+        self.student_id.moodle_id,
+        self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
+        self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
+      
+    filename = '[{}][{}] {}, {}'.format(
+        self.student_id.moodle_id,
+        self.attempt_number,
+        self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
+        self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
+
+    documentation_filename = f'{path}/{foldername}/{filename}.zip'
+    with open(documentation_filename, 'rb') as f:
+      file_bytes = f.read()
+      encode_data = base64.b64encode(file_bytes)
+
+    self.documentation = encode_data
+
+    return {
+      'type': 'ir.actions.act_url',
+      'url': 'web/content?model=atenea.validation&id=%s&field=documentation&filename=%s.zip&download=true' % 
+        (self.id, filename.replace(' ','%20'))
+    }
 
   # TODO realizar un campo compute para actualizar el estado en función del estado de las convalidaciones de los modulos
 

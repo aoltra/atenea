@@ -276,11 +276,11 @@
     </record>
 
     <record model="ir.ui.view" id="atenea.validation_form">
-      <field name="name">Convalidaciones solicitadas</field>
+      <field name="name">validation.form.view</field>
       <field name="model">atenea.validation</field>
       <field name="arch" type="xml">
         <form>
-         <group col='2'>
+          <group col='2'>
             <group>
               <field name="student_surname"/>
               <field name="student_nia"/>
@@ -290,6 +290,17 @@
               <!-- no quiero que aparezca un enlace --> 
               <field name="course_id" options="{'no_open': True}" readonly="1" />
             </group>
+          </group>
+          <group col='2'>            
+            <group>      
+              <button name="download_validation_action" icon="fa-download" 
+                string="Descarga documentación" class="oe_highlight"
+                type="object"/>
+            </group>
+            <group>  
+              <field name="documentation_filename" />
+              <field name="attempt_number" options="{'type': 'number', 'max': '1', 'step': '1'}"/>
+            </group>  
           </group>
           <field name="validation_subjects_ids"/>
         </form>
