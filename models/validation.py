@@ -30,7 +30,19 @@ class Validation(models.Model):
   course_id = fields.Many2one('atenea.course', string = 'Ciclo', required = True)
   course_abbr = fields.Char(string = 'Ciclo', related = 'course_id.abbr')
 
-  validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', string = 'Módulos que se solicita convalidar')
+  validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
+     string = 'Módulos que se solicita convalidar')
+
+  validation_subjects_not_for_correction_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
+     string = 'Módulos que se solicita convalidar',
+     compute = '_compute_validation_subjects_not_for_correction_ids',
+     readonly = False)
+
+  validation_subjects_for_correction_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
+     string = 'Módulos pendientes de subsanación',
+     compute = '_compute_validation_subjects_for_correction_ids',
+     readonly = False)
+     
   validation_subjects_info = fields.Char(string = 'Resueltas / Solicitadas', compute = '_compute_validation_subjects_info')
   
   # TODO que hacer con instancia superior si tardan en responder??
@@ -69,7 +81,7 @@ class Validation(models.Model):
 
   documentation = fields.Binary(string = "Documentación")
   documentation_filename = fields.Char(
-        string='Nombre dl fichero',
+        string='Nombre del fichero',
         compute='_compute_documentation_filename'
     )
   
@@ -113,6 +125,23 @@ class Validation(models.Model):
     for record in self:
         num_resolved = len([val for val in record.validation_subjects_ids if val.state == '3'])
         record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
+
+  @api.depends('validation_subjects_not_for_correction_ids.state')
+  def _compute_validation_subjects_for_correction_ids(self):
+    self.ensure_one()
+    # filtra sobre los recordset, no sobre la tabla
+    self.validation_subjects_for_correction_ids = \
+      self.validation_subjects_ids.filtered(lambda r: r.state == '1')
+    self.validation_subjects_not_for_correction_ids = \
+        self.validation_subjects_ids.filtered(lambda r: r.state != '1')
+
+  @api.depends('validation_subjects_for_correction_ids.state')
+  def _compute_validation_subjects_not_for_correction_ids(self):
+    self.ensure_one()
+    self.validation_subjects_not_for_correction_ids = \
+        self.validation_subjects_ids.filtered(lambda r: r.state != '1')
+    self.validation_subjects_for_correction_ids = \
+      self.validation_subjects_ids.filtered(lambda r: r.state == '1')
 
   def _compute_documentation_filename(self):
     self.ensure_one()

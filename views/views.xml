@@ -299,10 +299,24 @@
             </group>
             <group>  
               <field name="documentation_filename" />
-              <field name="attempt_number" options="{'type': 'number', 'max': '1', 'step': '1'}"/>
+              <field name="attempt_number"/>
             </group>  
           </group>
-          <field name="validation_subjects_ids"/>
+          <!-- <field name="validation_subjects_ids"/> -->
+          
+          <group> <!-- se incluyen dentro de un grupo par que aparezca el texto-->
+            <field name="validation_subjects_not_for_correction_ids"/>
+              <field name="validation_subjects_for_correction_ids" >
+              <!-- Quiero que lso campos a mostrar sean diferentes a los de la vista trre del modelo validation_subject
+                   así que redefindo de manera local la vista -->
+              <tree editable="top"> 
+                <field name="subject_id" options="{'no_open': True}" readonly="1"/>
+                <field name="validation_type" />
+                <field name="state"/>
+                <field name="validation_reason"/>
+              </tree>
+            </field>
+          </group>
         </form>
       </field>
     </record>
