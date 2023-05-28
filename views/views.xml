@@ -313,7 +313,7 @@
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
                 <field name="validation_type" />
                 <field name="state"/>
-                <field name="validation_reason"/>
+                <field name="correction_reason"/>
               </tree>
             </field>
           </group>
@@ -332,6 +332,7 @@
           <field name="mark"/>
           <field name="state"/>
           <field name="validation_reason"/>
+          <field name="comments"/>
         </tree>
       </field>
     </record>
