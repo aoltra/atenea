@@ -26,6 +26,11 @@
       <field name="implied_ids" eval="[(4,ref('atenea.group_VALID')), (4,ref('atenea.group_ADMIN'))]"/>
     </record>
 
+    <record id="atenea.group_MNGT_FP" model="res.groups">
+      <field name="name">Coordinación ciclos</field>
+      <field name="category_id" ref="atenea.category_group"/>
+    </record>
+
     <record id="atenea.group_ROOT" model="res.groups">
       <field name="name">Administración Atenea</field>
       <field name="category_id" ref="atenea.category_group"/>
