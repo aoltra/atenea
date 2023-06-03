@@ -33,15 +33,16 @@ class Validation(models.Model):
   validation_subjects_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
      string = 'Módulos que se solicita convalidar')
 
-  validation_subjects_not_for_correction_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
-     string = 'Módulos que se solicita convalidar',
-     compute = '_compute_validation_subjects_not_for_correction_ids',
-     readonly = False)
+  validation_subjects_not_for_correction_ids = fields.One2many('atenea.validation_subject', 
+  'validation_id', 
+    string = 'Módulos que se solicita convalidar', 
+    domain = [('state', '!=', '1')],
+    compute = '_compute_validation_subjects_not', readonly = False)
 
   validation_subjects_for_correction_ids = fields.One2many('atenea.validation_subject', 'validation_id', 
-     string = 'Módulos pendientes de subsanación',
-     compute = '_compute_validation_subjects_for_correction_ids',
-     readonly = False)
+    string = 'Módulos pendientes de subsanación',
+    domain = [('state', '=', '1')],
+    compute = '_compute_validation_subjects', readonly = False)
      
   validation_subjects_info = fields.Char(string = 'Resueltas / Solicitadas', compute = '_compute_validation_subjects_info')
   
@@ -76,7 +77,8 @@ class Validation(models.Model):
     help = "Permite indicar el motivo por el que se solicita la subsanación")
   
   # numeración basada en 1: 1,2,3,4...
-  attempt_number = fields.Integer(string = "Número de entregas realizadas", default = 1, 
+  attempt_number = fields.Integer(string = "Número de entregas realizadas", default = 1,
+                                  readonly = True, 
                                   help = 'Indica el número actual de veces que ha realizado la subida de la documentación debido a subsanaciones')
 
   documentation = fields.Binary(string = "Documentación")
@@ -126,22 +128,19 @@ class Validation(models.Model):
         num_resolved = len([val for val in record.validation_subjects_ids if val.state == '3'])
         record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
 
-  @api.depends('validation_subjects_not_for_correction_ids.state')
-  def _compute_validation_subjects_for_correction_ids(self):
-    self.ensure_one()
-    # filtra sobre los recordset, no sobre la tabla
-    self.validation_subjects_for_correction_ids = \
-      self.validation_subjects_ids.filtered(lambda r: r.state == '1')
-    self.validation_subjects_not_for_correction_ids = \
-        self.validation_subjects_ids.filtered(lambda r: r.state != '1')
+  @api.depends('validation_subjects_not_for_correction_ids')
+  def _compute_validation_subjects(self):
+    #for validation in self:
+      self.ensure_one()
+      self.validation_subjects_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state == '1')
+      self.validation_subjects_not_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state != '1')
 
-  @api.depends('validation_subjects_for_correction_ids.state')
-  def _compute_validation_subjects_not_for_correction_ids(self):
-    self.ensure_one()
-    self.validation_subjects_not_for_correction_ids = \
-        self.validation_subjects_ids.filtered(lambda r: r.state != '1')
-    self.validation_subjects_for_correction_ids = \
-      self.validation_subjects_ids.filtered(lambda r: r.state == '1')
+  @api.depends('validation_subjects_for_correction_ids')
+  def _compute_validation_subjects_not(self):
+    #for validation in self:
+      self.ensure_one()
+      self.validation_subjects_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state == '1')
+      self.validation_subjects_not_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state != '1')
 
   def _compute_documentation_filename(self):
     self.ensure_one()
@@ -150,7 +149,6 @@ class Validation(models.Model):
         self.attempt_number,
         self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
         self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
-    
      
   def download_validation_action(self):
     """

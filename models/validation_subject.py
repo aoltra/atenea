@@ -34,7 +34,7 @@ class ValidationSubject(models.Model):
       ('11', 'MH')
       ], string =" Nota")
   
-  comments = fields.Char(string = 'Comentarios',
+  comments = fields.Text(string = 'Comentarios',
                          help = 'Ciclo aportado, centro donde se cursó, titulación de inglés aportada...')
   # accepted = fields.Boolean(default = False)
   accepted = fields.Selection([
@@ -60,7 +60,7 @@ class ValidationSubject(models.Model):
     ('EXP', 'No se aporta expediente académico'),
     ], string ='Razón de la subsanación',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
-
+  
   """  # la nota tiene que estar entre 5 (tiene que esta aprobado) y 11
   @api.constrains('mark')
   def _check_mark(self):
