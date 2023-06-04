@@ -12,28 +12,101 @@
       <field name="departament_id" ref="atenea.departament_ADM" />
     </record>
 
+    <record model="atenea.rol" id="atenea.rol_JEFDINF">
+      <field name="rol">JFDP</field>
+      <field name="description">Jefe de departamento de Informática</field>
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
     <record model="atenea.rol" id="atenea.rol_TUT1AFI">
       <field name="rol">TUT1</field>
       <field name="description">Tutor de primero de AFI</field>
       <field name="course_id" ref="atenea.course_AFI" />
+      <field name="departament_id" ref="atenea.departament_ADM" />
     </record>
 
     <record model="atenea.rol" id="atenea.rol_TUT2AFI">
       <field name="rol">TUT2</field>
       <field name="description">Tutor de segundo de AFI</field>
       <field name="course_id" ref="atenea.course_AFI" />
+      <field name="departament_id" ref="atenea.departament_ADM" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT2ADI">
+      <field name="rol">TUT2</field>
+      <field name="description">Tutor de segundo de ADI</field>
+      <field name="course_id" ref="atenea.course_ADI" />
+      <field name="departament_id" ref="atenea.departament_ADM" />
     </record>
 
     <record model="atenea.rol" id="atenea.rol_CONVAFI">
-      <field name="rol">CVAFI</field>
+      <field name="rol">CONV</field>
       <field name="description">Convalidador del ciclo de AFI</field>
       <field name="course_id" ref="atenea.course_AFI" />
+      <field name="departament_id" ref="atenea.departament_ADM" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_CONVADI">
+      <field name="rol">CONV</field>
+      <field name="description">Convalidador del ciclo de ADI</field>
+      <field name="course_id" ref="atenea.course_ADI" />
+      <field name="departament_id" ref="atenea.departament_ADM" />
     </record>
 
     <record model="atenea.rol" id="atenea.rol_CONVDAM">
-      <field name="rol">CVDAM</field>
+      <field name="rol">CONV</field>
       <field name="description">Convalidador del ciclo de DAM</field>
       <field name="course_id" ref="atenea.course_DAM" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_CONVDAW">
+      <field name="rol">CONV</field>
+      <field name="description">Convalidador del ciclo de DAW</field>
+      <field name="course_id" ref="atenea.course_DAW" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_CONVASIR">
+      <field name="rol">CONV</field>
+      <field name="description">Convalidador del ciclo de ASIR</field>
+      <field name="course_id" ref="atenea.course_ASIR" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT1DAM">
+      <field name="rol">TUT1</field>
+      <field name="description">Tutor de primero de DAM</field>
+      <field name="course_id" ref="atenea.course_DAM" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT1DAW">
+      <field name="rol">TUT1</field>
+      <field name="description">Tutor de primero de DAW</field>
+      <field name="course_id" ref="atenea.course_DAW" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT1ASIR">
+      <field name="rol">TUT1</field>
+      <field name="description">Tutor de primero de ASIR</field>
+      <field name="course_id" ref="atenea.course_ASIR" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT2DAM">
+      <field name="rol">TUT2</field>
+      <field name="description">Tutor de segundo de DAM</field>
+      <field name="course_id" ref="atenea.course_DAM" />
+      <field name="departament_id" ref="atenea.departament_INF" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_TUT2DAW">
+      <field name="rol">TUT2</field>
+      <field name="description">Tutor de segundo de DAW</field>
+      <field name="course_id" ref="atenea.course_DAW" />
+      <field name="departament_id" ref="atenea.departament_INF" />
     </record>
 
   </data>
