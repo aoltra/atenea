@@ -74,10 +74,10 @@ class Validation(models.Model):
     ('RL', 'No se aporta curso de riesgo laborales > 30h'),
     ('EXP', 'No se aporta expediente académico'),
     ], string ='Razón de la subsanación', default = '---',
-    help = "Permite indicar el motivo por el que se solicita la subsanación")
+    help = 'Permite indicar el motivo por el que se solicita la subsanación')
   
   # numeración basada en 1: 1,2,3,4...
-  attempt_number = fields.Integer(string = "Número de entregas realizadas", default = 1,
+  attempt_number = fields.Integer(string = 'Número de entregas realizadas', default = 1,
                                   readonly = True, 
                                   help = 'Indica el número actual de veces que ha realizado la subida de la documentación debido a subsanaciones')
 
@@ -92,7 +92,7 @@ class Validation(models.Model):
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
 
-  def create_correction(self, reason):
+  def create_correction(self, reason, comment = ''):
     """
     Modifica la convalidación asignando los parámetros de subsanación
     """
@@ -107,12 +107,18 @@ class Validation(models.Model):
       'correction_date': self.correction_date
     })
 
-    feedback = """
+    footer = """
+      <p>Se abre un periodo de subsanación de 15 días naturales a contar desde el día de publicación de este mensaje. \
+         Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
+      <p><strong>Fin de período de subsanación</strong>: {0}</p>
+      """.format(self.correction_date + datetime.timedelta(days = 15))
+
+    body = """
         <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
         <ul><li>{0}</ul>
-        <p>Se abre un periodo de subsanación de 10 días a contar desde el día de publicación de este mensaje. Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
-        <p><strong>Fin de período de subsanación</strong>: {1}</p>
-        """.format(dict(self._fields['correction_reason'].selection).get(reason), self.correction_date + datetime.timedelta(days = 10))
+        """.format(dict(self._fields['correction_reason'].selection).get(reason))
+
+    feedback = body + comment + footer
 
     return feedback
 

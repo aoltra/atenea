@@ -46,4 +46,16 @@ def get_data_from_pdf(pdf_file):
         
     return fields
  
+def create_HTML_list_from_list(data_list, intro = '') -> str:
+    """
+    Genera una lista HMTL a partir de un list 
+    """ 
+    html_list = ''
+
+    html_list = f'<p>{intro}</p><ul>'
+    for mf in data_list:
+      html_list += f'<li>{mf}' 
+    html_list += '</ul>'
+
+    return html_list
 

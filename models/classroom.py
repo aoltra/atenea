@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 from datetime import date, timedelta, datetime
 
-from ..support.helper import is_set_flag, set_flag, get_data_from_pdf
+from ..support.helper import is_set_flag, set_flag, get_data_from_pdf, create_HTML_list_from_list
 from ..support import constants
 from ..support.atenea_logger.exceptions import AteneaException
 
@@ -343,9 +343,10 @@ class Classroom(models.Model):
             missing_fields.append(mandatory_field[1])
 
       if len(missing_fields) > 0:
-        _logger.error("Faltan campos obligatorios por definir en el pdf. Estudiante moodle id: {} {}".format(submission.userid, missing_fields))
-        # TODO, descomentar. Se comenta para facilitar las pruebas
-        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ANC'))
+        _logger.error('Faltan campos obligatorios por definir en el pdf. Estudiante moodle id: {} {}'.format(submission.userid, missing_fields))
+        submission.save_grade(3, new_attempt = True, 
+                                 feedback = validation.create_correction('ANC', 
+                                                                         create_HTML_list_from_list(missing_fields, 'Campos:')))
         submission.set_extension_due_date(to = new_timestamp)
         continue
 
