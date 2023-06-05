@@ -10,42 +10,29 @@
 
 ## Configuración
 
-1. Ejecutar Odoo via Docker compose 
+1. Instalar Odoodock. Para ello hay que seguir los pasos indicados [aquí](https://github.com/aoltra/odoodock#readme) hasta el paso 8.
 
-... In progress
+2. Modificar el _.env_ para configurar los siguente valores:
 
-2. Desde la carpeta _volumesOdoo/addons_, crear una carpeta _atenea_ y posicionarse en su interior
+         ODOO_VERSION=14
+         ODOO_INSTALL_NANO=true
+         ODOO_INSTALL_SSH=true
+         ODOO_INSTALL_GIT=true
+         ODOO_INSTALL_SSL_DEV=true
+         ODOO_INSTALL_PDFTK=true
+
+3. Modificar el _.services_ descomentando el servicio _moodle_.
+
+4. Continuar las instalación de Odoodock hasta el final.
+
+5. Clonar el repo de _Atenea_ desde [github](https://github.com/aoltra/atenea). Para ello la mejor opción es el uso de script _create-module.sh_, opción O2, tal y como se explica [aquí](https://github.com/aoltra/odoodock#usando-el-script-create-modulesh)
 
    ```
-   > mkdir atenea
-   > cd atenea  
+   $ ./create-module.sh -g https://github.com/aoltra/atenea.git
    ```
 
-3. Inicializar un repositorio git
+TODO: Requirements, aula moodle, contraseñas usuarios, key moodle, modificacion odoo.conf, ajuste id aulas y tareas, configuracion correo, creación de usuarios
 
-   ``` 
-   > git init
-   ```
-
-   > No se opta por clonar para evitar incluir la rama _main_
-
-4. Incluir el remoto _origin_
-
-   ``` 
-   > git remote add origin git@github.com:aoltra/atenea.git 
-   ``` 
-
-5. Crear y posicionarse en una rama llamada _dev_
-
-   ``` 
-   > git checkout -b dev
-   ```
-
-6. Traer el código de _origin/dev_ (los deja en la rama local actual, en este caso _dev_)
-
-   ``` 
-   > git pull origin dev
-   ```
 
 ## Cómo trabajar
 
