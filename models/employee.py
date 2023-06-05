@@ -83,6 +83,21 @@ class Employee(models.Model):
       # set new reference
       record.replaced_by_id.replaces_id = record
 
+  def write(self, vals):
+    """
+    Actualiza en la base de datos un registro
+    """
+    roles_validators = self.env['atenea.rol'].search([('rol','=','CONV')])
+    if 'roles_ids' in vals:
+      if any([rol.id in vals['roles_ids'][0][2] for rol in roles_validators]): # es validador
+        self.env.ref('atenea.group_VALID').write({'users': [(4, self.user_id.id, 0)]})
+      else: # no lo es
+        self.env.ref('atenea.group_VALID').write({'users': [(3, self.user_id.id, 0)]})
+
+    return super(Employee, self).write(vals)
+
+
+  #deprecated??
   @api.onchange('work_email')
   def validate_mail(self):
     if self.work_email:
