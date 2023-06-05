@@ -52,9 +52,9 @@ def create_HTML_list_from_list(data_list, intro = '') -> str:
     """ 
     html_list = ''
 
-    html_list = f'<p>{intro}</p><ul>'
+    html_list = f'<p style="padding-left: 3rem">{intro}</p><ul style="margin-left: 3rem">'
     for mf in data_list:
-      html_list += f'<li>{mf}' 
+      html_list += f'<li>{mf}'  
     html_list += '</ul>'
 
     return html_list

@@ -108,6 +108,7 @@ class Validation(models.Model):
     })
 
     footer = """
+      <br>\
       <p>Se abre un periodo de subsanación de 15 días naturales a contar desde el día de publicación de este mensaje. \
          Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
       <p><strong>Fin de período de subsanación</strong>: {0}</p>
@@ -115,7 +116,7 @@ class Validation(models.Model):
 
     body = """
         <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
-        <ul><li>{0}</ul>
+        <p style="padding-left: 1rem">(01) {0}</p>
         """.format(dict(self._fields['correction_reason'].selection).get(reason))
 
     feedback = body + comment + footer

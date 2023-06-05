@@ -250,7 +250,10 @@ class Classroom(models.Model):
       new_due_date = today + timedelta(days = 15)
       new_timestamp =  int(datetime(year = new_due_date.year, 
                          month = new_due_date.month,
-                         day = new_due_date.day).timestamp())     
+                         day = new_due_date.day,
+                         hour = 23,
+                         minute = 59,
+                         second = 59).timestamp())     
       
       # más de un fichero enviado (debería ser comprobado en Moodle)
       if len(submission.files) != 1:
@@ -338,6 +341,7 @@ class Classroom(models.Model):
                 len(fields[option][constants.PDF_FIELD_VALUE]) != 0) or \
                (fields[option][constants.PDF_FIELD_TYPE] == 'Button' and fields[option][constants.PDF_FIELD_VALUE] == 'Yes'):
               exist = True
+              break
 
           if not exist:
             missing_fields.append(mandatory_field[1])
@@ -346,7 +350,7 @@ class Classroom(models.Model):
         _logger.error('Faltan campos obligatorios por definir en el pdf. Estudiante moodle id: {} {}'.format(submission.userid, missing_fields))
         submission.save_grade(3, new_attempt = True, 
                                  feedback = validation.create_correction('ANC', 
-                                                                         create_HTML_list_from_list(missing_fields, 'Campos:')))
+                                                                         create_HTML_list_from_list(missing_fields, 'Campos a revisar:')))
         submission.set_extension_due_date(to = new_timestamp)
         continue
 
