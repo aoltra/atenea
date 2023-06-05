@@ -25,7 +25,7 @@ class Employee(models.Model):
   name = fields.Char(string = 'Nombre', required = True)
   surname = fields.Char(string = 'Apellidos', required = True)
   phone_extension = fields.Char(string = "Extensión", size = 6)
-  work_email = fields.Char(string = 'Email')
+  work_email = fields.Char(string = 'Email', related = 'user_id.email')
 
   employee_type = fields.Selection([
         ('profesor', 'Profesor/a'),
@@ -50,21 +50,23 @@ class Employee(models.Model):
   @api.depends('user_ids')
   def _compute_user_id(self):
     """
-    Asigna el usuario como primer elemento de la relacio doble uno a muccho
+    Asigna el usuario como primer elemento de la relación doble uno a muchos
     """
-    if len(self.user_ids) > 0:
-      self.user_id = self.user_ids[0] 
+    for record in self:
+      if len(record.user_ids) > 0:
+        record.user_id = record.user_ids[0] 
 
   def _user_inverse(self):
     """
     En el caso de que el user_id cambie, se modifica el employee_id de ese user_id
     """
-    if len(self.user_ids) > 0:
-      # borramos la referencia previa
-      user = self.env['res.users'].browse(self.user_ids[0].id)
-      user.employee_id = False
+    for record in self:
+      if len(record.user_ids) > 0:
+        # borramos la referencia previa
+        user = record.env['res.users'].browse(record.user_ids[0].id)
+        user.employee_id = False
     
-    self.user_id.employee_id = self
+      record.user_id.employee_id = record
 
   @api.depends('replaced_by_ids')
   def _compute_teacher(self):

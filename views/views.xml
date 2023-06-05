@@ -64,6 +64,75 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="atenea.rol_tree">
+      <field name="name">Lista de estudiantes</field>
+      <field name="model">atenea.rol</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="description" />
+          <field name="rol"/>
+          <field name="course_id"/>
+          <field name="departament_id"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="atenea.employee_tree">
+      <field name="name">Lista de empleados</field>
+      <field name="model">atenea.employee</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="surname" />
+          <field name="name"/>
+          <field name="phone_extension"/>
+          <field name="work_email"/>
+          <field name="employee_type"/>
+          <field name="departament_ids" widget="many2many_tags" />
+          <field name="roles_ids" widget="many2many_tags" />
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="atenea.employee_form">
+      <field name="name">Gestión de empleados</field>
+      <field name="model">atenea.employee</field>
+      <field name="arch" type="xml">
+        <form>
+          <group col="2">
+            <group>
+              <field name="user_id" />
+              <field name="surname" />
+              <field name="name"/>
+            </group>
+            <group>
+              <field name="phone_extension" />
+              <field name="work_email"/>
+              <field name="employee_type"/>
+              <field name="active"/>
+            </group>  
+          </group>
+          <notebook>
+            <page string = 'Departamentos'>
+              <group>
+                <field name="departament_ids"/>
+              </group>
+            </page>
+            <page string = 'Cargos'>
+              <group>
+                <field name="roles_ids"/>
+              </group>
+            </page>
+            <page string = 'Sustituciones'>
+              <group>
+                <field name="sick_leave"/>
+                <field name="replaced_by_ids"/>
+              </group>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+
     <record model="ir.ui.view" id="atenea.school_year_form">
       <field name="name">school_year.form.view</field>
       <field name="model">atenea.school_year</field>
