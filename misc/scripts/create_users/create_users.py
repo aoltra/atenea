@@ -58,9 +58,17 @@ departaments = {}
 for dep in departaments_output:
   departaments[dep['name']] = dep['id']
 
-
+print(f'\033[0;32m[INFO]\033[0m Departamentos:')
 print(departaments)
 
+# idiomas activos
+languages_output = models.execute_kw(db, uid, password, 'res.lang', 'search_read', [[['active','=', True]]], { 'fields': ['code']})
+languages = []
+for lang in languages_output:
+  languages.append(lang['code'])
+
+print(f'\033[0;32m[INFO]\033[0m Idiomas:')
+print(languages_output)
 """ 
 
 user_id=models.execute_kw(db, uid, password, 'res.users', 'create', 
@@ -69,6 +77,7 @@ user_id=models.execute_kw(db, uid, password, 'res.users', 'create',
  """
 try:
   inactive_users = models.execute_kw(db, uid, password, 'res.users', 'search_read', [[['active','=', False]]], { 'fields': ['id', 'login']})
+  print(f'\033[0;32m[INFO]\033[0m Usuarios inactivos:')
   print(inactive_users)
 except (xmlrpc.client.Fault) as e:
   print('\033[0;31m[ERROR]\033[0m ' + e.faultString)
@@ -82,6 +91,10 @@ line_count_ERROR = 0
 for user in users:  
   print("\033[0;32m[INFO]\033[0m Procesando ", user)
   try:
+    if user['lang'] not in languages:
+      print(f'\t\033[0;31m[ERROR]\033[0m ({user["login"]}) {user["lang"]} no existe o no está activo en Atenea. Asignando idioma por defecto {languages[0]}.')
+      user['lang'] = languages[0]
+
     # Esta en Atenea pero esta inactivo
     odoo_user = next((item for item in inactive_users if item['login'] == user['login']), None)
 

@@ -1,3 +1,7 @@
 name,surname,email,lang,dep,type
-Oscar,López,or@g.com,en_US,Informática,profesor
-Eva,Garcia,ev@g.com,en_US,Secretaria,pas
+Oscar,Valero,ov@g.com,en_US,Informática,profesor
+Ana,García,ag@g.com,en_US,Turismo,profesor
+Xavi,Fernández,xf@g.com,en_US,Comercio,profesor
+Sara,Álvarez,sa@g.com,en_US,Administración,profesor
+Coordinador,Ciclos,cc@g.com,en_US,Informática,profesor
+Eva,Albert,ea@g.com,en_US,Secretaria,pas
