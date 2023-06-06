@@ -51,13 +51,18 @@ class Validation(models.Model):
   # y finalizarla parcialmente
   state = fields.Selection([
       ('0', 'Sin procesar'),
-      ('1', 'Subsanación'),
-      ('2', 'Instancia superior'),
-      ('3', 'Resuelta'),
-      ('4', 'Revisada'),
-      ('5', 'Finalizada'),
-      ('6', 'Finalizada parcialmente'),
-      ('7', 'En proceso'),
+      ('1', 'En proceso'),
+      ('2', 'Subsanación'),
+      ('3', 'Instancia superior'),
+      ('4', 'Resuelta'),
+      ('5', 'En proceso de revisión'),
+      ('6', 'En proceso de revisión (parcial)'), # algunas revisadas, otras aun resuletas y algunas elevadas a una instancia superior
+      ('7', 'Revisada'),
+      ('8', 'Revisada parcialmente'),
+      ('9', 'En proceso de finalización (parcial)'),
+      ('10', 'Finalizada parcialmente'),
+      ('11', 'En proceso de finalización'),
+      ('12', 'Finalizada'),
       ], string ='Estado de la convalidación', default = '0')
   
   # fecha de solicitud de la subsanación
@@ -86,6 +91,8 @@ class Validation(models.Model):
         string='Nombre del fichero',
         compute='_compute_documentation_filename'
     )
+  
+  info = fields.Char(string="Información", compute = '_compute_info')
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
@@ -144,10 +151,9 @@ class Validation(models.Model):
 
   @api.depends('validation_subjects_for_correction_ids')
   def _compute_validation_subjects_not(self):
-    #for validation in self:
-      self.ensure_one()
-      self.validation_subjects_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state == '1')
-      self.validation_subjects_not_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state != '1')
+    self.ensure_one()
+    self.validation_subjects_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state == '1')
+    self.validation_subjects_not_for_correction_ids = self.validation_subjects_ids.filtered(lambda t: t.state != '1')
 
   def _compute_documentation_filename(self):
     self.ensure_one()
@@ -157,6 +163,20 @@ class Validation(models.Model):
         self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
         self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
      
+  def _compute_info(self):
+    self.ensure_one()
+    if (int(self.state) > 4 \
+      and not self.env.user.has_group('atenea.group_ROOT') \
+      and not self.env.user.has_group('atenea.group_MNGT_FP') \
+      and not self.env.user.has_group('atenea.group_ADMIN')) \
+      or \
+      (int(self.state) > 10 \
+      and not self.env.user.has_group('atenea.group_ROOT') \
+      and not self.env.user.has_group('atenea.group_ADMIN')):
+      self.info = f'La convalidación se encuentra en proceso de {self.state[1]} y no puede ser modificada'
+    else:
+      self.info =''
+  
   def download_validation_action(self):
     """
     Descarga la última versión de la documentación

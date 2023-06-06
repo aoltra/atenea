@@ -349,6 +349,9 @@
       <field name="model">atenea.validation</field>
       <field name="arch" type="xml">
         <form>
+          <xpath expr="//style" position="after">
+            <link rel="stylesheet" href="/atenea/static/css/atenea_styles.css"/>
+          </xpath> 
           <group col='2'>
             <group>
               <field name="student_surname"/>
@@ -370,6 +373,10 @@
               <field name="documentation_filename" />
               <field name="attempt_number"/>
             </group>  
+          </group>
+          <group>
+            <field name="info" class="info"
+              attrs="{'invisible': [('info','=', '')] }" />
           </group>
           <!-- tiene que aparecer en al vista para que pueda trabajar con él en las dos
                visualizaciones parciales que se hacen a partir de ella.
