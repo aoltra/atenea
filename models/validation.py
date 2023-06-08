@@ -62,7 +62,8 @@ class Validation(models.Model):
       ('9', 'En proceso de finalización (parcial)'),
       ('10', 'Finalizada parcialmente'),
       ('11', 'En proceso de finalización'),
-      ('12', 'Finalizada'),
+      ('12', 'Finalizada'), # todas las convalidaciones finalizadas pero sin notificación al alumno
+      ('13', 'Cerrada'),
       ], string ='Estado de la convalidación', default = '0')
   
   # fecha de solicitud de la subsanación
@@ -165,17 +166,15 @@ class Validation(models.Model):
      
   def _compute_info(self):
     self.ensure_one()
-    if (int(self.state) > 4 \
-      and not self.env.user.has_group('atenea.group_ROOT') \
-      and not self.env.user.has_group('atenea.group_MNGT_FP') \
-      and not self.env.user.has_group('atenea.group_ADMIN')) \
-      or \
-      (int(self.state) > 10 \
-      and not self.env.user.has_group('atenea.group_ROOT') \
-      and not self.env.user.has_group('atenea.group_ADMIN')):
-      self.info = f'La convalidación se encuentra en proceso de {self.state[1]} y no puede ser modificada'
-    else:
-      self.info =''
+
+    self.info = f'La convalidación se encuentra en proceso de {dict(self._fields["state"].selection).get(self.state)} y no puede ser modificada'
+
+    if (self.env.user.has_group('atenea.group_ROOT')) or \
+       (self.env.user.has_group('atenea.group_ADMIN') and int(self.state) != 13) or \
+       (self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) < 11) or \
+       (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 5):
+      self.info =''  
+  
   
   def download_validation_action(self):
     """

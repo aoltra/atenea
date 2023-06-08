@@ -61,6 +61,8 @@ class ValidationSubject(models.Model):
     ], string ='Razón de la subsanación',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
   
+  is_read_only = fields.Boolean(store = False, compute = '_is_read_only')
+  
   """  # la nota tiene que estar entre 5 (tiene que esta aprobado) y 11
   @api.constrains('mark')
   def _check_mark(self):
@@ -68,34 +70,40 @@ class ValidationSubject(models.Model):
       if record.mark > 11 or record.mark < 5:
         raise ValidationError('El valor debe estar ente 5 y 11') """
       
-  """ 
-    # contrains via sql
-    _sql_constraints = [
-    ('mark', 'check(mark > 4 and mark < 12)', 'El valor debe estar ente 5 y 11'),
-  ] """
-
   def _populate_state(self):
     """
     Rellena el selection en función del grupo al que pertenece el usuario
     """
     choices = [('0', 'Sin procesar'),
-               ('1', 'Subsanación'),
-               ('2', 'Instancia superior'),
-               ('3', 'Resuelta'),    
-               ('4', 'Revisada'),
-               ('5', 'Por revisar'), # desde secretaria ven un error y la tiran para atrás
-               ('6', 'Finalizada')]
-    
+               ('1', 'Subsanación'), # hay que solicitar documentación
+               ('2', 'Instancia superior'), # no estás clara y los convalidadores la envian a instancia superior
+               ('3', 'Resuelta'), # los convalidadores la han resuelto
+               ('4', 'Revisada'), # jefatura la ha dado por buena
+               ('5', 'Por revisar'), # desde secretaria ven un error y la tiran para atrás (a jefatura)
+               ('6', 'Finalizada'), # Introducida en el expediente del alumno
+               ('7', 'Cerrada')] # no seleccionable (salvo por el root). Se asigna automáticamente cuando todas las 
+                                 # convalidaciones han sido finalizadas y el mensaje se ha enviado al alumno.
+                                 # La convalidación queda bloqueada (salvo para el root)
+
+    # no hay estado de devolución desde jefatura (coordinación) a los convalidadores.  Directamente resuelve jefatura o 
+    # se puede poner sin procesar ya que coordinación tiene acceso los estados previos.
+
+    # si está en solo lectura se cargan todas para poder visualizar el estado
+    """ if self.is_read_only == True:
+      return choices """
+
     # if ordenados por orden de grupos de más importante a menos
     if self.env.user.has_group('atenea.group_ROOT'): # root todas las opciones
       return choices
     
-    if self.env.user.has_group('atenea.group_MNGT_FP'): # coordinación de FP todas menos finalizar y por revisar
-      del choices[-2:]
-    elif self.env.user.has_group('atenea.group_VALID'): # convalidadores, todas menos las tres últimas
+    if self.env.user.has_group('atenea.group_MNGT_FP'): # coordinación de FP todas menos finalizar, por revisar y cerrar
       del choices[-3:]
-    elif self.env.user.has_group('atenea.group_ADMIN'): # Secretaria sólo las tres últimas
-      del choices[:-3]
+    elif self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) == 5 :  # coordinación de FP, en caso de que venga rebotada de secretaria
+      del choices[-2:]
+    elif self.env.user.has_group('atenea.group_VALID'): # convalidadores, todas menos las 4 últimas
+      del choices[-4:]
+    elif self.env.user.has_group('atenea.group_ADMIN'): # Secretaria sólo las tres penúltimas
+      del choices[-3:-1]
     else: # cualquier otro grupo no tiene opciones
       choices.clear()
 
@@ -172,6 +180,27 @@ class ValidationSubject(models.Model):
 
     return super(ValidationSubject, self).write(vals)
   
+  def _is_read_only(self):
+    """
+    Devuelve true o false en función de si la fila que se muestra en la lista
+    de convalidaciones es o no de solo lectura
+    """
+    for record in self:
+      record.is_read_only = True
+
+      if record.env.user.has_group('atenea.group_ROOT'):
+        record.is_read_only = False
+    
+      if int(record.state) < 7 and self.env.user.has_group('atenea.group_ADMIN'): 
+        record.is_read_only = False
+    
+      if int(record.state) < 6 and self.env.user.has_group('atenea.group_MNGT_FP'):
+        record.is_read_only = False
+
+      if int(record.state) < 4 and self.env.user.has_group('atenea.group_VALID'):
+        record.is_read_only = False
+
+
   def _create_validations(self):
     validations_path = self.env['res.config_parameter'].sudo().get_param('validation_path') or None
     if validations_path == None:

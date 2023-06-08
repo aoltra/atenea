@@ -381,18 +381,19 @@
           <!-- tiene que aparecer en al vista para que pueda trabajar con él en las dos
                visualizaciones parciales que se hacen a partir de ella.
                Para que no aparezca ponemos su display a none (hacerlo con attr 
-               implica que no se nevia al cliente) -->
+               implica que no se envia al cliente) -->
           <field name="validation_subjects_ids" style="display: none"/>
           <group> <!-- se incluyen dentro de un grupo para que aparezca el texto-->
             <field name="validation_subjects_not_for_correction_ids">
               <tree editable="top">
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
-                <field name="validation_type" />
-                <field name="accepted"/>
-                <field name="mark"/>
-                <field name="state"/>
-                <field name="validation_reason"/>
-                <field name="comments"/>
+                <field name="is_read_only" invisible="1"/>
+                <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="accepted" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="mark" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="state" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="validation_reason" attrs="{'readonly':[('is_read_only','=',True)]}" />
+                <field name="comments" attrs="{'readonly':[('is_read_only','=',True)]}"/>
               </tree>
             </field>
             <field name="validation_subjects_for_correction_ids">
