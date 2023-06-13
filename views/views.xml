@@ -333,7 +333,7 @@
       <field name="name">Lista de convalidaciones/aprobados con anterioridad solicitados</field>
       <field name="model">atenea.validation</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree banner_route="/validation/validation_banner">
           <field name="course_abbr"/>
           <field name="student_info"/>
           <field name="validation_subjects_info"/>
@@ -343,7 +343,7 @@
         </tree>
       </field>
     </record>
-
+  
     <record model="ir.ui.view" id="atenea.validation_form">
       <field name="name">validation.form.view</field>
       <field name="model">atenea.validation</field>
@@ -488,6 +488,10 @@
       <field name="name">Convalidaciones</field>
       <field name="res_model">atenea.validation</field>
       <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">Todavía no hay convalidaciones a resolver</p>
+        <p>Una vez vayan subiéndose a Aules aparecerán en esta página</p>
+      </field>
     </record>
 
     <record model="ir.actions.act_window" id="atenea.action_validation_subject">

@@ -1,0 +1,70 @@
+<odoo>
+  <data>
+  
+    
+    <!-- <i class="fa fa-fw o_button_icon fa-signal"></i><div class="o_field_widget o_stat_info">
+    <span class="o_stat_value"><div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4" data-original-title="" title="">
+    <span class="o_stat_value">0,00</span>
+    <span class="o_stat_text"></span>
+</div><span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name" data-original-title="" title="">Unidades</span></span><span class="o_stat_text">Vendido</span></div> -->
+
+    <template id="validation_banner_template">
+      <div class="container-fluid" style="padding-top: 1.8rem; padding-bottom: 0.8rem">
+        <div class="row">
+          <div class="col col-sm">
+        <div class="o_form_view">
+        <div class="o_not_full oe_button_box">
+              <t t-call="atenea.client_statinfo_template">
+                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
+                <t t-set="header" t-value="150" />
+              </t>
+                    <t t-call="atenea.client_statinfo_template">
+                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
+                <t t-set="header" t-value="150" />
+              </t>
+              </div>
+          </div>
+          </div>
+         <!--  <div class="col col-sm col-md-6">
+              <t t-call="atenea.client_statinfo_template">
+                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
+                <t t-set="header" t-value="150" />
+              </t>
+          </div>     -->
+        </div>
+      </div>
+      <!-- <div class="row" style="margin: 10px;">
+          <div class="col-sm-8">
+            <div class="progress">
+              <div class="bar bar-success" style="width: 35%;">35%</div>
+              <div class="bar bar-warning" style="width: 20%;"></div>
+              <div class="bar bar-danger" style="width: 10%;"></div>
+            </div>  
+          </div>
+      </div> -->
+    </template>
+
+  <!-- simula el widget statinfo pero para el lado del cliente -->
+  <template id="client_statinfo_template">
+      
+        
+          <button type="button" class="btn oe_stat_button" name="action_view_sales" 
+                  t-att-title="help">
+            <i class="fa fa-fw fa-solid fa-inbox o_button_icon"/>
+            <div class="o_field_widget o_stat_info">
+              <span class="o_stat_value">
+                <div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4">
+                  <span class="o_stat_value">150</span>
+                  <span class="o_stat_text">Solicitudes</span>
+                </div>
+              </span>
+              <span class="o_stat_text">Totales</span>
+            </div>
+          </button>
+        <!-- </div> -->
+      <!-- </div> -->
+    </template> 
+
+<!-- <span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name">Unidades</span> -->
+  </data>
+</odoo>
