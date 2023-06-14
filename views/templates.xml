@@ -9,28 +9,57 @@
 </div><span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name" data-original-title="" title="">Unidades</span></span><span class="o_stat_text">Vendido</span></div> -->
 
     <template id="validation_banner_template">
-      <div class="container-fluid" style="padding-top: 1.8rem; padding-bottom: 0.8rem">
+      <div class="container-fluid" style="padding-top: 2rem; padding-bottom: 0.8rem">
         <div class="row">
           <div class="col col-sm">
-        <div class="o_form_view">
-        <div class="o_not_full oe_button_box">
-              <t t-call="atenea.client_statinfo_template">
-                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
-                <t t-set="header" t-value="150" />
-              </t>
-                    <t t-call="atenea.client_statinfo_template">
-                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
-                <t t-set="header" t-value="150" />
-              </t>
+            <div class="o_form_view">
+              <div class="o_not_full oe_button_box">
+            
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Convalidaciones resueltas'" />
+                  <t t-set="icon" t-value="'fa-check'" />
+                  <t t-set="header" t-value="150" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Subsanaciones pendientes'" />
+                  <t t-set="text_sufix" t-value="'Subsanaciones'"/>
+                  <t t-set="icon" t-value="'fa-circle-xmark'" />
+                  <t t-set="value" t-value="7" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Convalidaciones revisadas'" />
+                  <t t-set="icon" t-value="'fa-angles-down'" />
+                  <t t-set="value" t-value="150" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Convalidaciones finalizadas'" />
+                  <t t-set="icon" t-value="'fa-flag-checkered'" />
+                  <t t-set="text_sufix" t-value="'Finalizadas'"/>
+                  <t t-set="value" t-value="248" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Convalidaciones rechazadas'" />
+                  <t t-set="icon" t-value="'fa-xmark-to-slot'" />
+                  <t t-set="value" t-value="150" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Solicitudes de convalidación para ser gestionadas por el usuario'" />
+                  <t t-set="icon" t-value="'fa-inbox'"/>
+                  <t t-set="text_sufix" t-value="'Solicitudes'"/>
+                  <t t-set="value" t-value="50" />
+                  <t t-set="text_subtitle" t-value="'Usuario'" />
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Solicitudes totales de convalidación'" />
+                  <t t-set="icon" t-value="'fa-inbox'"/>
+                  <t t-set="text_sufix" t-value="'Solicitudes'"/>
+                  <t t-set="style" t-value="'color: #4c2a85;'"/>
+                  <t t-set="value" t-value="426" />
+                  <t t-set="text_subtitle" t-value="'Totales'" />
+                </t>
               </div>
+            </div>
           </div>
-          </div>
-         <!--  <div class="col col-sm col-md-6">
-              <t t-call="atenea.client_statinfo_template">
-                <t t-set="help" t-value="'Solicitudes totales de convalidaciones'" />
-                <t t-set="header" t-value="150" />
-              </t>
-          </div>     -->
         </div>
       </div>
       <!-- <div class="row" style="margin: 10px;">
@@ -46,24 +75,29 @@
 
   <!-- simula el widget statinfo pero para el lado del cliente -->
   <template id="client_statinfo_template">
-      
-        
-          <button type="button" class="btn oe_stat_button" name="action_view_sales" 
-                  t-att-title="help">
-            <i class="fa fa-fw fa-solid fa-inbox o_button_icon"/>
-            <div class="o_field_widget o_stat_info">
-              <span class="o_stat_value">
-                <div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4">
-                  <span class="o_stat_value">150</span>
-                  <span class="o_stat_text">Solicitudes</span>
-                </div>
-              </span>
-              <span class="o_stat_text">Totales</span>
-            </div>
-          </button>
-        <!-- </div> -->
-      <!-- </div> -->
-    </template> 
+    <button type="button" class="btn oe_stat_button" name="action_view_sales" 
+            t-att-title="help">
+      <!-- attf permite mostrar format string, que son cadenas que permiten mezclar cotenido 
+      con contenido calculado. el contenido de {{ }} se interpreta como expresión -->
+      <i t-attf-class="fa fa-fw fa-solid o_button_icon {{ icon }}" 
+         t-att-style="style"/>
+      <div class="o_field_widget o_stat_info">
+        <span class="o_stat_value">
+          <div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4" t-att-style="style">
+            <span class="o_stat_value" t-att-style="style">
+              <t t-esc="value"/>
+            </span>
+            <span class="o_stat_text">
+              <t t-esc="text_sufix"/>
+            </span>
+          </div>
+        </span>
+        <span class="o_stat_text">
+          <t t-esc="text_subtitle"/>
+        </span>
+      </div>
+    </button>
+  </template> 
 
 <!-- <span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name">Unidades</span> -->
   </data>
