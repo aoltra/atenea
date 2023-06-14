@@ -12,32 +12,43 @@ class ValidationController(http.Controller):
     No se permite la llamada directa desde el navegador ya que el tipo es json, np http
     """
     user =  request.env.user
-    is_admin = False
-    is_valid = False
-
-    
+    is_coord = is_validator= is_root = is_admin = False
+     
     if user.has_group('atenea.group_VALID'):
-      is_valid = True
+      is_validator = True
+
+    if user.has_group('atenea.group_ADMIN'):
+      is_admin = True
+
+    if user.has_group('atenea.group_MNGT_FP'):
+      is_coord = True
+    
+    if user.has_group('atenea.group_ROOT'):
+      is_root = True
 
     courses = [rol.course_id.abbr for rol in user.employee_id.roles_ids]
     user_num_valid = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses)])
     user_num_resolved = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                ('state','=','3')])
 
-    if user.has_group('atenea.group_ADMIN'):
-      is_admin = True
 
     return {
       # hay que prefijar con el nombre del módulo, aunque el id del template no lo lleva
       'html': request.env.ref('atenea.validation_banner_template')._render({
-              'is_admin': is_admin,
+              'is_root': is_root,
               # es validador
-              'is_valid': is_valid,
+              'is_validator': is_validator,
               'user_num_valid': user_num_valid,
-              'user_num_resolved': user_num_resolved
+              'user_num_resolved': user_num_resolved,
+              'user_num_higher_level': 0,
               # es revisor
-              # user_num_correction:
-              # user_num_higher_level:
+              'is_coord': is_coord,
+              'num_correction': 0,
+              # es secretaría
+              'is_admin': is_admin,
+              'num_ended': 0,
+              'num_higher_level': 0,
+              'num_valid': 0,
             })
           } 
 

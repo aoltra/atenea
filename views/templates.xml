@@ -9,51 +9,83 @@
 </div><span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name" data-original-title="" title="">Unidades</span></span><span class="o_stat_text">Vendido</span></div> -->
 
     <template id="validation_banner_template">
+      <xpath expr="//style" position="after">
+        <link rel="stylesheet" href="/atenea/static/css/atenea_styles.css"/>
+      </xpath>
       <div class="container-fluid" style="padding-top: 2rem; padding-bottom: 0.8rem">
         <div class="row">
           <div class="col col-sm">
             <div class="o_form_view">
-              <div class="o_not_full oe_button_box">
-            
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Convalidaciones resueltas'" />
-                  <t t-set="icon" t-value="'fa-check'" />
-                  <t t-set="header" t-value="150" />
+              <div class="o_not_full oe_button_box" >
+                <t t-if="is_validator and user_num_higher_level > 0">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
+                    <t t-set="text_sufix" t-value="'Instancia superior'"/>
+                    <t t-set="icon" t-value="'fa-upload'" />
+                    <t t-set="style" t-value="'width: 21%'"/>
+                    <t t-set="value" t-value="user_num_higher_level" />
+                  </t>
                 </t>
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Subsanaciones pendientes'" />
-                  <t t-set="text_sufix" t-value="'Subsanaciones'"/>
-                  <t t-set="icon" t-value="'fa-circle-xmark'" />
-                  <t t-set="value" t-value="7" />
+                <t t-if="is_validator == False and num_higher_level > 0">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
+                    <t t-set="text_sufix" t-value="'Instancia superior'"/>
+                    <t t-set="icon" t-value="'fa-upload'" />
+                    <t t-set="style" t-value="'width: 21%'"/>
+                    <t t-set="value" t-value="num_higher_level" />
+                    <t t-set="text_subtitle" t-value="'Totales'" />
+                  </t>
                 </t>
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Convalidaciones revisadas'" />
-                  <t t-set="icon" t-value="'fa-angles-down'" />
-                  <t t-set="value" t-value="150" />
+                <t t-if="is_admin or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones rechazadas'" />
+                    <t t-set="icon" t-value="'fa-thumbs-down'" />
+                    <t t-set="text_sufix" t-value="'Rechazadas'"/>
+                    <t t-set="value" t-value="32" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones finalizadas'" />
+                    <t t-set="icon" t-value="'fa-flag-checkered'" />
+                    <t t-set="text_sufix" t-value="'Finalizadas'"/>
+                    <t t-set="value" t-value="248" />
+                  </t>
                 </t>
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Convalidaciones finalizadas'" />
-                  <t t-set="icon" t-value="'fa-flag-checkered'" />
-                  <t t-set="text_sufix" t-value="'Finalizadas'"/>
-                  <t t-set="value" t-value="248" />
+                <t t-if="is_coord or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones revisadas'" />
+                    <t t-set="icon" t-value="'fa-tags'" />
+                    <t t-set="text_sufix" t-value="'Revisadas'"/>
+                    <t t-set="style" t-value="'width: 21%'"/>
+                    <t t-set="value" t-value="150" />
+                  </t>
                 </t>
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Convalidaciones rechazadas'" />
-                  <t t-set="icon" t-value="'fa-xmark-to-slot'" />
-                  <t t-set="value" t-value="150" />
+                <t t-if="is_validator or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Subsanaciones pendientes'" />
+                    <t t-set="text_sufix" t-value="'Subsanaciones'"/>
+                    <t t-set="icon" t-value="'fa-exclamation-circle'" />
+                    <t t-set="value" t-value="7" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones resueltas'" />
+                    <t t-set="text_sufix" t-value="'Resueltas'"/>
+                    <t t-set="icon" t-value="'fa-tag'" />
+                    <t t-set="value" t-value="150" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Solicitudes de convalidación para ser gestionadas por el usuario'" />
+                    <t t-set="icon" t-value="'fa-inbox'"/>
+                    <t t-set="text_sufix" t-value="'Solicitudes'"/>
+                    <t t-set="value" t-value="50" />
+                    <t t-set="text_subtitle" t-value="'Usuario'" />
+                  </t>
                 </t>
-                <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Solicitudes de convalidación para ser gestionadas por el usuario'" />
-                  <t t-set="icon" t-value="'fa-inbox'"/>
-                  <t t-set="text_sufix" t-value="'Solicitudes'"/>
-                  <t t-set="value" t-value="50" />
-                  <t t-set="text_subtitle" t-value="'Usuario'" />
-                </t>
+               
                 <t t-call="atenea.client_statinfo_template">
                   <t t-set="help" t-value="'Solicitudes totales de convalidación'" />
                   <t t-set="icon" t-value="'fa-inbox'"/>
                   <t t-set="text_sufix" t-value="'Solicitudes'"/>
-                  <t t-set="style" t-value="'color: #4c2a85;'"/>
+                  <t t-set="style" t-value="'color: #4c2a85'"/>
                   <t t-set="value" t-value="426" />
                   <t t-set="text_subtitle" t-value="'Totales'" />
                 </t>
