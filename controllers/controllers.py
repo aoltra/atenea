@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from email.policy import default
 from odoo import http
 from odoo.http import request
 
 class ValidationController(http.Controller):
-    
 
   @http.route('/validation/validation_banner/', auth='user', type='json')
   def get_banner_data(self, **kw):
@@ -32,18 +32,26 @@ class ValidationController(http.Controller):
                                                                                ('state','=','3')])
     user_num_for_correction = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                      ('state','=','1')])  
+    user_num_higher_level = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+                                                                                     ('state','=','2')])
+    user_in_process = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+                                                                                     ('state','=','0')])  
+
+    num_valid = request.env['atenea.validation_subject'].search_count([])
 
 
     return {
       # hay que prefijar con el nombre del módulo, aunque el id del template no lo lleva
       'html': request.env.ref('atenea.validation_banner_template')._render({
               'is_root': is_root,
+              'num_valid': num_valid,
               # es validador
               'is_validator': is_validator,
               'user_num_valid': user_num_valid,
               'user_num_resolved': user_num_resolved,
               'user_num_for_correction': user_num_for_correction,
-              'user_num_higher_level': 0,
+              'user_num_higher_level': user_num_higher_level,
+              'user_in_process': user_in_process,
               # es revisor
               'is_coord': is_coord,
               'num_correction': 0,
@@ -51,64 +59,11 @@ class ValidationController(http.Controller):
               'is_admin': is_admin,
               'num_ended': 0,
               'num_higher_level': 0,
-              'num_valid': 0,
             })
           } 
 
 
-
-
-
   """   return {
-      'html': "
-      <div class="container-fluid" style="padding-top: 0.8rem; padding-bottom: 0.8rem">
-        <div class="row">
-          <div class="col col-sm col-md-5">
-            <div class="row"> <!-- estadística convalidador -->
-              <div class="col col-sm">
-                <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Resueltas</span>
-                <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">En proceso</span>
-                <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Subsanación</span>
-                <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Instancia superior</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col col-sm">
-                <div class="progress">
-                  <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
-                  <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
-                  <div class="progress-bar bg-info" style="width: 10%;"></div>  <!-- instancia superior -->
-                  <div class="progress-bar bg-danger" style="width: 10%;"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row"> <!-- estadística revisor -->
-              <div class="col col-sm">
-                <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Resueltas</span>
-                <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">En proceso</span>
-                <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Subsanación</span>
-                <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Instancia superior</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col col-sm">
-                <div class="progress">
-                  <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
-                  <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
-                  <div class="progress-bar bg-info" style="width: 10%;"></div>  <!-- instancia superior -->
-                  <div class="progress-bar bg-danger" style="width: 10%;"></div>
-                </div>
-              </div>
-            </div>
 
 
           </div>
@@ -136,21 +91,3 @@ class ValidationController(http.Controller):
              'object': http.request.env['atenea.validation'],
          }) 
   """    
-
-# class Atenea(http.Controller):
-#     @http.route('/atenea/atenea/', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
-
-#     @http.route('/atenea/atenea/objects/', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('atenea.listing', {
-#             'root': '/atenea/atenea',
-#             'objects': http.request.env['atenea.atenea'].search([]),
-#         })
-
-#     @http.route('/atenea/atenea/objects/<model("atenea.atenea"):obj>/', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('atenea.object', {
-#             'object': obj
-#         })
