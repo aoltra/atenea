@@ -1,13 +1,6 @@
 <odoo>
   <data>
   
-    
-    <!-- <i class="fa fa-fw o_button_icon fa-signal"></i><div class="o_field_widget o_stat_info">
-    <span class="o_stat_value"><div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4" data-original-title="" title="">
-    <span class="o_stat_value">0,00</span>
-    <span class="o_stat_text"></span>
-</div><span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name" data-original-title="" title="">Unidades</span></span><span class="o_stat_text">Vendido</span></div> -->
-
     <template id="validation_banner_template">
       <xpath expr="//style" position="after">
         <link rel="stylesheet" href="/atenea/static/css/atenea_styles.css"/>
@@ -22,7 +15,6 @@
                     <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
                     <t t-set="text_sufix" t-value="'Instancia superior'"/>
                     <t t-set="icon" t-value="'fa-upload'" />
-                    <t t-set="style" t-value="'width: 21%'"/>
                     <t t-set="value" t-value="user_num_higher_level" />
                   </t>
                 </t>
@@ -31,7 +23,6 @@
                     <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
                     <t t-set="text_sufix" t-value="'Instancia superior'"/>
                     <t t-set="icon" t-value="'fa-upload'" />
-                    <t t-set="style" t-value="'width: 21%'"/>
                     <t t-set="value" t-value="num_higher_level" />
                     <t t-set="text_subtitle" t-value="'Totales'" />
                   </t>
@@ -55,7 +46,6 @@
                     <t t-set="help" t-value="'Convalidaciones revisadas'" />
                     <t t-set="icon" t-value="'fa-tags'" />
                     <t t-set="text_sufix" t-value="'Revisadas'"/>
-                    <t t-set="style" t-value="'width: 21%'"/>
                     <t t-set="value" t-value="150" />
                   </t>
                 </t>
@@ -64,23 +54,22 @@
                     <t t-set="help" t-value="'Subsanaciones pendientes'" />
                     <t t-set="text_sufix" t-value="'Subsanaciones'"/>
                     <t t-set="icon" t-value="'fa-exclamation-circle'" />
-                    <t t-set="value" t-value="7" />
+                    <t t-set="value" t-value="user_num_for_correction" />
                   </t>
                   <t t-call="atenea.client_statinfo_template">
                     <t t-set="help" t-value="'Convalidaciones resueltas'" />
                     <t t-set="text_sufix" t-value="'Resueltas'"/>
                     <t t-set="icon" t-value="'fa-tag'" />
-                    <t t-set="value" t-value="150" />
+                    <t t-set="value" t-value="user_num_resolved" />
                   </t>
                   <t t-call="atenea.client_statinfo_template">
                     <t t-set="help" t-value="'Solicitudes de convalidación para ser gestionadas por el usuario'" />
                     <t t-set="icon" t-value="'fa-inbox'"/>
                     <t t-set="text_sufix" t-value="'Solicitudes'"/>
-                    <t t-set="value" t-value="50" />
+                    <t t-set="value" t-value="user_num_valid" />
                     <t t-set="text_subtitle" t-value="'Usuario'" />
                   </t>
                 </t>
-               
                 <t t-call="atenea.client_statinfo_template">
                   <t t-set="help" t-value="'Solicitudes totales de convalidación'" />
                   <t t-set="icon" t-value="'fa-inbox'"/>
@@ -93,43 +82,123 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <t t-if="is_root or (is_validator and is_coord)">
+            <t t-set="width" t-value="'col-md-4'"/>
+          </t>  
+          <t t-elif="not is_validator and is_coord">
+            <t t-set="width" t-value="'col-md-6'"/>
+          </t>
+          <t t-else="">
+            <t t-set="width" t-value="'col-md-6'"/>
+          </t>
+          <t t-if="is_validator or is_root"> 
+            <div t-attf-class="col col-sm {{ width }} ">
+              <div class="row" style="margin-bottom: 0.8rem"> 
+              <div class="col col-sm">
+                <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                <span style="margin-right: 1rem">Resueltas</span>
+                <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                <span style="margin-right: 1rem">En proceso</span>
+                <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                <span style="margin-right: 1rem">Subsanación</span>
+                <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                <span style="margin-right: 1rem">Instancia superior</span>
+              </div>
+              </div>
+              <div class="row" style="margin-bottom: 0.8rem">
+              <div class="col col-sm">
+                <div class="progress">
+                  <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
+                  <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
+                  <div class="progress-bar bg-info" style="width: 10%;"></div>  
+                  <div class="progress-bar bg-danger" style="width: 10%;"></div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </t>
+          <t t-if="is_validator or is_root"> 
+            <div t-attf-class="col col-sm {{ width }} ">
+              <div class="row" style="margin-bottom: 0.8rem">
+                <div class="col col-sm">
+                  <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Resueltas</span>
+                  <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">En proceso</span>
+                  <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Subsanación</span>
+                  <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Instancia superior</span>
+                </div>
+              </div>
+              <div class="row" style="margin-bottom: 0.8rem">
+                <div class="col col-sm">
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
+                    <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
+                    <div class="progress-bar bg-info" style="width: 10%;"></div>  
+                    <div class="progress-bar bg-danger" style="width: 10%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </t>
+          <t t-if="is_admin or is_root"> 
+            <div t-attf-class="col col-sm {{ width }} ">
+              <div class="row" style="margin-bottom: 0.8rem">
+                <div class="col col-sm">
+                  <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Resueltas</span>
+                  <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">En proceso</span>
+                  <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Subsanación</span>
+                  <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                  <span style="margin-right: 1rem">Instancia superior</span>
+                </div>
+              </div>
+              <div class="row" style="margin-bottom: 0.8rem">
+                <div class="col col-sm">
+                  <div class="progress">
+                    <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
+                    <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
+                    <div class="progress-bar bg-info" style="width: 10%;"></div> 
+                    <div class="progress-bar bg-danger" style="width: 10%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </t>
+        </div>
       </div>
-      <!-- <div class="row" style="margin: 10px;">
-          <div class="col-sm-8">
-            <div class="progress">
-              <div class="bar bar-success" style="width: 35%;">35%</div>
-              <div class="bar bar-warning" style="width: 20%;"></div>
-              <div class="bar bar-danger" style="width: 10%;"></div>
-            </div>  
-          </div>
-      </div> -->
     </template>
 
-  <!-- simula el widget statinfo pero para el lado del cliente -->
-  <template id="client_statinfo_template">
-    <button type="button" class="btn oe_stat_button" name="action_view_sales" 
-            t-att-title="help">
-      <!-- attf permite mostrar format string, que son cadenas que permiten mezclar cotenido 
-      con contenido calculado. el contenido de {{ }} se interpreta como expresión -->
-      <i t-attf-class="fa fa-fw fa-solid o_button_icon {{ icon }}" 
-         t-att-style="style"/>
-      <div class="o_field_widget o_stat_info">
-        <span class="o_stat_value">
-          <div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4" t-att-style="style">
-            <span class="o_stat_value" t-att-style="style">
-              <t t-esc="value"/>
-            </span>
-            <span class="o_stat_text">
-              <t t-esc="text_sufix"/>
-            </span>
-          </div>
-        </span>
-        <span class="o_stat_text">
-          <t t-esc="text_subtitle"/>
-        </span>
-      </div>
-    </button>
-  </template> 
+    <!-- simula el widget statinfo pero para el lado del cliente -->
+    <template id="client_statinfo_template">
+      <button type="button" class="btn oe_stat_button" name="action_view_sales" 
+              t-att-title="help">
+        <!-- attf permite mostrar format string, que son cadenas que permiten mezclar cotenido 
+        con contenido calculado. el contenido de {{ }} se interpreta como expresión -->
+        <i t-attf-class="fa fa-fw fa-solid o_button_icon {{ icon }}" 
+          t-att-style="style"/>
+        <div class="o_field_widget o_stat_info">
+          <span class="o_stat_value">
+            <div name="sales_count" class="o_field_widget o_stat_info o_readonly_modifier mr4" t-att-style="style">
+              <span class="o_stat_value" t-att-style="style">
+                <t t-esc="value"/>
+              </span>
+              <span class="o_stat_text">
+                <t t-esc="text_sufix"/>
+              </span>
+            </div>
+          </span>
+          <span class="o_stat_text">
+            <t t-esc="text_subtitle"/>
+          </span>
+        </div>
+      </button>
+    </template> 
 
 <!-- <span class="o_field_char o_field_widget o_readonly_modifier" name="uom_name">Unidades</span> -->
   </data>

@@ -30,6 +30,8 @@ class ValidationController(http.Controller):
     user_num_valid = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses)])
     user_num_resolved = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                ('state','=','3')])
+    user_num_for_correction = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+                                                                                     ('state','=','1')])  
 
 
     return {
@@ -40,6 +42,7 @@ class ValidationController(http.Controller):
               'is_validator': is_validator,
               'user_num_valid': user_num_valid,
               'user_num_resolved': user_num_resolved,
+              'user_num_for_correction': user_num_for_correction,
               'user_num_higher_level': 0,
               # es revisor
               'is_coord': is_coord,
