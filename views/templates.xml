@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="/atenea/static/css/atenea_styles.css"/>
       </xpath>
       <div class="container-fluid" style="padding-top: 2rem; padding-bottom: 0.8rem">
-        <div class="row">
+        <div class="row"> <!-- barra de estadísticas -->
           <div class="col col-sm">
             <div class="o_form_view">
               <div class="o_not_full oe_button_box" >
@@ -82,7 +82,7 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row"> <!-- barras de progreso -->
           <t t-if="is_root or (is_validator and is_coord)">
             <t t-set="width" t-value="'col-md-4'"/>
           </t>  
@@ -90,21 +90,23 @@
             <t t-set="width" t-value="'col-md-6'"/>
           </t>
           <t t-else="">
-            <t t-set="width" t-value="'col-md-6'"/>
+            <t t-set="width" t-value="'col-md-6 offset-md-6'"/>
           </t>
           <t t-if="is_validator or is_root"> 
             <div t-attf-class="col col-sm {{ width }} ">
               <div class="row" style="margin-bottom: 0.8rem"> 
-              <div class="col col-sm">
-                <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Resueltas</span>
-                <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">En proceso</span>
-                <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Subsanación</span>
-                <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                <span style="margin-right: 1rem">Instancia superior</span>
-              </div>
+                <div class="col col-sm d-flex justify-content-center">
+                  <div>
+                    <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Resueltas</span>
+                    <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">En proceso</span>
+                    <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Subsanación</span>
+                    <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Instancia superior</span>
+                  </div>
+                </div>
               </div>
               <div class="row" style="margin-bottom: 0.8rem">
               <div class="col col-sm">
@@ -118,18 +120,18 @@
               </div>
             </div>
           </t>
-          <t t-if="is_validator or is_root"> 
+          <t t-if="is_coord or is_root"> 
             <div t-attf-class="col col-sm {{ width }} ">
               <div class="row" style="margin-bottom: 0.8rem">
-                <div class="col col-sm">
-                  <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Resueltas</span>
-                  <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">En proceso</span>
-                  <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Subsanación</span>
-                  <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Instancia superior</span>
+                <div class="col col-sm d-flex justify-content-center">
+                  <div>
+                    <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Revisadas</span>
+                    <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Pendientes</span>
+                    <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Instancia superior</span>
+                  </div>
                 </div>
               </div>
               <div class="row" style="margin-bottom: 0.8rem">
@@ -138,7 +140,6 @@
                     <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
                     <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
                     <div class="progress-bar bg-info" style="width: 10%;"></div>  
-                    <div class="progress-bar bg-danger" style="width: 10%;"></div>
                   </div>
                 </div>
               </div>
@@ -147,15 +148,15 @@
           <t t-if="is_admin or is_root"> 
             <div t-attf-class="col col-sm {{ width }} ">
               <div class="row" style="margin-bottom: 0.8rem">
-                <div class="col col-sm">
-                  <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Resueltas</span>
-                  <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">En proceso</span>
-                  <span class="bg-danger" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Subsanación</span>
-                  <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
-                  <span style="margin-right: 1rem">Instancia superior</span>
+                <div class="col col-sm d-flex justify-content-center">
+                  <div>
+                    <span class="bg-success" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Finalizadas</span>
+                    <span class="bg-warning" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Pendientes</span>
+                    <span class="bg-info" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px; background-color: red"></span>
+                    <span style="margin-right: 1rem">Instancia superior</span>
+                  </div>
                 </div>
               </div>
               <div class="row" style="margin-bottom: 0.8rem">
@@ -163,7 +164,6 @@
                   <div class="progress">
                     <div class="progress-bar bg-success" role ="progressbar" style="width: 35%;">35%</div>
                     <div class="progress-bar bg-warning" style="width: 20%;">20%</div>
-                    <div class="progress-bar bg-info" style="width: 10%;"></div> 
                     <div class="progress-bar bg-danger" style="width: 10%;"></div>
                   </div>
                 </div>
