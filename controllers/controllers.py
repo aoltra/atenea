@@ -38,6 +38,12 @@ class ValidationController(http.Controller):
                                                                                      ('state','=','0')])  
 
     num_valid = request.env['atenea.validation_subject'].search_count([])
+    num_resolved = request.env['atenea.validation_subject'].search_count([('state','=','3')])
+    num_reviewed = request.env['atenea.validation_subject'].search_count([('state','=','4')])
+    num_higher_level = request.env['atenea.validation_subject'].search_count([('state','=','2')])
+    # el dominio se define mediante notación polaca
+    num_ended = request.env['atenea.validation_subject'].search_count(['|', ('state','=','6'), ('state','=','7')])
+    num_rejected = request.env['atenea.validation_subject'].search_count(['&', ('state','=','3'), ('accepted','=','2')])
 
 
     return {
@@ -54,11 +60,15 @@ class ValidationController(http.Controller):
               'user_in_process': user_in_process,
               # es revisor
               'is_coord': is_coord,
-              'num_correction': 0,
+              'num_resolved': num_resolved,
+              'num_reviewed_in_process': num_resolved - num_reviewed,
               # es secretaría
               'is_admin': is_admin,
-              'num_ended': 0,
-              'num_higher_level': 0,
+              'num_ended': num_ended,
+              'num_reviewed': num_reviewed,
+              'num_ended_in_process': num_reviewed - num_ended,
+              'num_higher_level': num_higher_level,
+              'num_rejected': num_rejected 
             })
           } 
 

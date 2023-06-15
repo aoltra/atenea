@@ -32,13 +32,13 @@
                     <t t-set="help" t-value="'Convalidaciones rechazadas'" />
                     <t t-set="icon" t-value="'fa-thumbs-down'" />
                     <t t-set="text_sufix" t-value="'Rechazadas'"/>
-                    <t t-set="value" t-value="32" />
+                    <t t-set="value" t-value="num_rejected" />
                   </t>
                   <t t-call="atenea.client_statinfo_template">
                     <t t-set="help" t-value="'Convalidaciones finalizadas'" />
                     <t t-set="icon" t-value="'fa-flag-checkered'" />
                     <t t-set="text_sufix" t-value="'Finalizadas'"/>
-                    <t t-set="value" t-value="248" />
+                    <t t-set="value" t-value="num_ended" />
                   </t>
                 </t>
                 <t t-if="is_coord or is_root">
@@ -46,7 +46,7 @@
                     <t t-set="help" t-value="'Convalidaciones revisadas'" />
                     <t t-set="icon" t-value="'fa-tags'" />
                     <t t-set="text_sufix" t-value="'Revisadas'"/>
-                    <t t-set="value" t-value="150" />
+                    <t t-set="value" t-value="num_reviewed" />
                   </t>
                 </t>
                 <t t-if="is_validator or is_root">
@@ -57,7 +57,7 @@
                     <t t-set="value" t-value="user_num_for_correction" />
                   </t>
                   <t t-call="atenea.client_statinfo_template">
-                    <t t-set="help" t-value="'Convalidaciones resueltas'" />
+                    <t t-set="help" t-value="'Convalidaciones resueltas por el usuario'" />
                     <t t-set="text_sufix" t-value="'Resueltas'"/>
                     <t t-set="icon" t-value="'fa-tag'" />
                     <t t-set="value" t-value="user_num_resolved" />
@@ -71,7 +71,7 @@
                   </t>
                 </t>
                 <t t-call="atenea.client_statinfo_template">
-                  <t t-set="help" t-value="'Solicitudes tooootales de convalidación'" />
+                  <t t-set="help" t-value="'Solicitudes totales de convalidación'" />
                   <t t-set="icon" t-value="'fa-inbox'"/>
                   <t t-set="text_sufix" t-value="'Solicitudes'"/>
                   <t t-set="style" t-value="'color: #4c2a85'"/>
@@ -92,7 +92,8 @@
           <t t-else="">
             <t t-set="width" t-value="'col-md-6 offset-md-6'"/>
           </t>
-          <t t-if="(is_validator or is_root) and user_num_valid > 0"> <!-- convalidador -->
+          <!-- convalidador -->
+          <t t-if="(is_validator or is_root) and user_num_valid > 0"> 
             <t t-call="atenea.progress_bar_template">
               <t t-set="reference_value" t-value="user_num_valid" />
               <t t-set="data" t-value="[('Resueltas','bg-success',user_num_resolved),('En proceso','bg-warning', user_in_process),
@@ -100,19 +101,22 @@
             </t>
           </t>
   
-          <t t-if="(is_coord or is_root) and num_valid > 0"> <!-- coordinador -->
+          <!-- coordinador -->
+          <t t-if="(is_coord or is_root) and num_resolved > 0"> 
             <t t-call="atenea.progress_bar_template">
-              <t t-set="reference_value" t-value="num_valid" />
-              <t t-set="data" t-value="[('Revisadas','bg-success',user_num_resolved),('Pendientes','bg-warning', user_in_process),
-                                        ('Instancia superior','bg-info', user_num_higher_level)]"/>
+              <t t-set="reference_value" t-value="num_resolved" />
+              <t t-set="data" t-value="[('Revisadas','bg-success',num_reviewed),
+                                        ('Pendientes','bg-warning', num_reviewed_in_process),
+                                        ('Instancia superior','bg-info', num_higher_level)]"/>
             </t>
           </t>
-
-          <t t-if="(is_admin or is_root) and num_valid > 0">  <!-- secretaria -->
+          
+          <!-- secretaria -->   
+          <t t-if="(is_admin or is_root) and num_reviewed > 0">  
             <t t-call="atenea.progress_bar_template">
-              <t t-set="reference_value" t-value="num_valid" />
-              <t t-set="data" t-value="[('Finalizadas','bg-success',user_num_resolved),('Pendientes','bg-warning', user_in_process),
-                                        ('Instancia superior','bg-info', user_num_higher_level)]"/>
+              <t t-set="reference_value" t-value="num_reviewed" />
+              <t t-set="data" t-value="[('Finalizadas','bg-success',num_ended),('Pendientes','bg-warning', num_ended_in_process),
+                                        ('Instancia superior','bg-info', num_higher_level)]"/>
             </t>
           </t>
         </div>
