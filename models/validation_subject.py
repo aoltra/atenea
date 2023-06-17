@@ -76,7 +76,7 @@ class ValidationSubject(models.Model):
     """
     choices = [('0', 'Sin procesar'),
                ('1', 'Subsanación'), # hay que solicitar documentación
-               ('2', 'Instancia superior'), # no estás clara y los convalidadores la envian a instancia superior
+               ('2', 'Instancia superior'), # no está clara y los convalidadores la envian a instancia superior
                ('3', 'Resuelta'), # los convalidadores la han resuelto
                ('4', 'Revisada'), # jefatura la ha dado por buena
                ('5', 'Por revisar'), # desde secretaria ven un error y la tiran para atrás (a jefatura)
@@ -154,8 +154,6 @@ class ValidationSubject(models.Model):
       vals['accepted'] = False
       vals['validation_reason'] = False
       vals['comments'] = ''
-
-      
 
     return super(ValidationSubject, self).write(vals)
   

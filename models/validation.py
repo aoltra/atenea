@@ -54,17 +54,19 @@ class Validation(models.Model):
       ('1', 'En proceso'),
       ('2', 'Subsanación'),
       ('3', 'Instancia superior'),
-      ('4', 'Resuelta'),
-      ('5', 'En proceso de revisión'),
-      ('6', 'En proceso de revisión (parcial)'), # algunas revisadas, otras aun resuletas y algunas elevadas a una instancia superior
-      ('7', 'Revisada'),
-      ('8', 'Revisada parcialmente'),
-      ('9', 'En proceso de finalización (parcial)'),
-      ('10', 'Finalizada parcialmente'),
-      ('11', 'En proceso de finalización'),
-      ('12', 'Finalizada'), # todas las convalidaciones finalizadas pero sin notificación al alumno
-      ('13', 'Cerrada'),
-      ], string ='Estado de la convalidación', default = '0')
+      ('4', 'Subsan. / Inst. superior'),
+      ('5', 'Resuelta'),
+      ('6', 'En proceso de revisión'),
+      ('7', 'En proceso de revisión (parcial)'), # algunas revisadas, otras aun resueltas y algunas elevadas a una instancia superior
+      ('8', 'Revisada'),
+      ('9', 'Revisada parcialmente'),
+      ('10', 'En proceso de finalización (parcial)'),
+      ('11', 'Finalizada parcialmente'),
+      ('12', 'En proceso de finalización'),
+      ('13', 'Finalizada'), # todas las convalidaciones finalizadas pero sin notificación al alumno
+      ('14', 'Cerrada'),
+      ], string ='Estado de la convalidación', default = '0',
+      compute = '_compute_state')
   
   # fecha de solicitud de la subsanación
   correction_date = fields.Date()
@@ -226,5 +228,93 @@ class Validation(models.Model):
         (self.id, filename.replace(' ','%20'))
     }
 
-  # TODO realizar un campo compute para actualizar el estado en función del estado de las convalidaciones de los modulos
+  def _compute_state(self):
+    for record in self:
+      all_noprocess = all(val.state == '0' for val in record.validation_subjects_ids)
+      any_noprocess = any(val.state == '0' for val in record.validation_subjects_ids)
+      any_correction = any(val.state == '1' for val in record.validation_subjects_ids)
+      any_higher_level = any(val.state == '2' for val in record.validation_subjects_ids)
+      any_resolved = any(val.state == '3' for val in record.validation_subjects_ids)
+      all_resolved = all(val.state == '3' for val in record.validation_subjects_ids)
+      all_reviewed = all(val.state == '4' for val in record.validation_subjects_ids)
+      any_reviewed = any(val.state == '4' for val in record.validation_subjects_ids)
+      any_ended = any(val.state == '6' for val in record.validation_subjects_ids)
+      all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
+      all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
+      
+      # si todas sin procesar -> sin procesar
+      if all_noprocess:
+        record.state = '0'
+        continue
+
+      # si todas resueltas -> resuelta
+      if all_resolved:
+        record.state = '5'
+        continue
+  
+      # si todas revisada -> revisada
+      if all_reviewed:
+        record.state = '8'
+        continue
+      
+      # si todas finalizadas -> finalizada
+      if all_ended:
+        record.state = '13'
+        continue
+
+      if all_closed:
+        record.state = '14'
+        continue
+
+
+      # si hay instancias superiores y subsanaciones -> subsanación/instancia superior
+      if any_higher_level and any_correction:
+        record.state = '4'
+
+      # si hay alguna en instancia superior -> instancia superior
+      if any_higher_level:
+        record.state = '3'
+        continue
+      
+      # si hay al menos una subsanación  -> subsanacion
+      if any_correction:
+        record.state = '2'
+        continue
+
+      # si hay alguna sin procesar y otras ya resueltas -> en proceso
+      if any_noprocess and any_resolved:
+        record.state = '1'
+        continue
+
+      # si hay alguna sin revisar y otras ya revisadas -> en proceso de revision (parcial)
+      if any_resolved and any_reviewed and any_higher_level:
+        record.state = '7'
+        continue
+
+      # si sólo hay revisadas y instancias superiores -> Revisada parcialmente
+      if any_reviewed and any_higher_level:
+        record.state = '9'
+        continue
+
+      # si hay alguna sin revisar y otras ya revisadas -> en proceso de revision
+      if any_resolved and any_reviewed:
+        record.state = '6'
+        continue
+
+      # si hay alguna sin finalizar y otras ya finalizadas -> en proceso de finalización (parcial)
+      if any_ended and any_reviewed and any_higher_level:
+        record.state = '10'
+        continue
+
+      # si sólo hay finalizadas e instancias superiores -> Finalizada parcialmente
+      if any_ended and any_higher_level:
+        record.state = '11'
+        continue
+
+      # si hay alguna sin finalizar y otras ya finalizadas -> en proceso de finalización
+      if any_ended and any_reviewed:
+        record.state = '12'
+        continue
+        
+      ('14', 'Cerrada'),
