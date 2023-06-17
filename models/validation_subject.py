@@ -125,58 +125,37 @@ class ValidationSubject(models.Model):
     Actualiza en la base de datos un registro
     """
     if 'state' in vals: # si cambia el estado
-      # si el estado es subsanación tiene que haber una razón
-      if vals['state'] == '1' and self._check_attribute_value('correction_reason', vals): 
-        raise ValidationError(f'La convalidación de {self.subject_id.name} tiene un estado de subsanación y no se ha definido la razón')
+      state = vals['state']
+    else:
+      state = self.state
 
-      # si el estado es instancia superior tiene que haber un comentario  
-      if vals['state'] == '2' and self._check_attribute_value('comments', vals): 
-        raise ValidationError(f'La convalidación de {self.subject_id.name} se ha escalado a un instancia superior y no se ha definido un comentario justificándolo')
-      
-      if int(vals['state']) > 2 and \
-        (self._check_attribute_value('mark', vals) or \
-         self._check_attribute_value('validation_reason', vals) or \
-         self._check_attribute_value('validation_type', vals) or \
-         self._check_attribute_value('accepted', vals) or \
-         self._check_attribute_value('comments', vals)):
-          raise ValidationError(f'La convalidación de {self.subject_id.name} no ha definido la nota y/o la razón y/o un comentario')
-      
-      # si no es subsanación se elimina la razon
-      if vals['state'] != '1':
-        vals['correction_reason'] = False
-      
-      if vals['state'] == '0':
-        vals['mark'] = False
-        vals['accepted'] = False
-        vals['validation_reason'] = False
-        vals['comments'] = ''
+    # si el estado es subsanación tiene que haber una razón
+    if state == '1' and self._check_attribute_value('correction_reason', vals): 
+      raise ValidationError(f'La convalidación de {self.subject_id.name} tiene un estado de subsanación y no se ha definido la razón')
+    
+    # si el estado es instancia superior tiene que haber un comentario  
+    if state == '2' and self._check_attribute_value('comments', vals): 
+      raise ValidationError(f'La convalidación de {self.subject_id.name} se ha escalado a un instancia superior y no se ha definido un comentario justificándolo')
+  
+    if int(state) > 2 and \
+      (self._check_attribute_value('mark', vals) or \
+        self._check_attribute_value('validation_reason', vals) or \
+        self._check_attribute_value('validation_type', vals) or \
+        self._check_attribute_value('accepted', vals) or \
+        self._check_attribute_value('comments', vals)):
+        raise ValidationError(f'La convalidación de {self.subject_id.name} no ha definido la nota y/o la razón y/o un comentario')
+    
+    # si no es subsanación se elimina la razon
+    if state != '1':
+      vals['correction_reason'] = False
+    
+    if state == '0':
+      vals['mark'] = False
+      vals['accepted'] = False
+      vals['validation_reason'] = False
+      vals['comments'] = ''
 
-    else:  
-      # si el estado es subsanación tiene que haber una razón
-      if self.state == '1' and self._check_attribute_value('correction_reason', vals): 
-        raise ValidationError(f'La convalidación de {self.subject_id.name} tiene un estado de subsanación y no se ha definido la razón')
       
-      # si el estado es instancia superior tiene que haber un comentario  
-      if self.state == '2' and self._check_attribute_value('comments', vals): 
-        raise ValidationError(f'La convalidación de {self.subject_id.name} se ha escalado a un instancia superior y no se ha definido un comentario justificándolo')
-   
-      if int(self.state) > 2 and \
-        (self._check_attribute_value('mark', vals) or \
-         self._check_attribute_value('validation_reason', vals) or \
-         self._check_attribute_value('validation_type', vals) or \
-         self._check_attribute_value('accepted', vals) or \
-         self._check_attribute_value('comments', vals)):
-          raise ValidationError(f'La convalidación de {self.subject_id.name} no ha definido la nota y/o la razón y/o un comentario')
-      
-      # si no es subsanación se elimina la razon
-      if self.state != '1':
-        vals['correction_reason'] = False
-      
-      if self.state == '0':
-        vals['mark'] = False
-        vals['accepted'] = False
-        vals['validation_reason'] = False
-        vals['comments'] = ''
 
     return super(ValidationSubject, self).write(vals)
   
