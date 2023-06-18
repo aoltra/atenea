@@ -25,6 +25,7 @@ class Classroom(models.Model):
 
   _name = 'atenea.classroom'
   _description = 'Aula virtual'
+  _rec_name = 'code'
 
   moodle_id = fields.Integer('Identificador Moodle', required = True)
   code = fields.Char('Código', required = True, help = 'Código del aula, por ejemplo SEG9_CEE_46025799_2022_854101_0498')
@@ -32,6 +33,8 @@ class Classroom(models.Model):
 
   subjects_ids = fields.One2many('atenea.subject', 'classroom_id', string = 'Módulos')
   tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que están conectadas con Atenea')
+
+  lang_id = fields.Many2one('res.lang', domain = [('active','=', True)])
 
   _sql_constraints = [ 
     ('unique_moodle_id', 'unique(moodle_id)', 'El identificador de moodle tiene que ser único.'),

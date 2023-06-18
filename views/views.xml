@@ -514,6 +514,12 @@
       <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.act_window" id="atenea.action_classroom">
+      <field name="name">Aulas virtuales</field>
+      <field name="res_model">atenea.classroom</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
 
 
     <!-- server action to the one above -->
@@ -564,6 +570,9 @@
               action="atenea.action_employee"/>
     <menuitem name="Curso" id="atenea.school_year" parent="atenea.school"
               action="atenea.action_school_year"/>
+    <menuitem name="Aulas virtuales" id="atenea.classroom" parent="atenea.school"
+              action="atenea.action_classroom"/>
+              
     <menuitem name="Estudiantes" id="atenea.school_student" parent="atenea.school"
               action="atenea.action_student"/>
     <menuitem name="Convalidaciones" id="atenea.validation" parent="atenea.school"
