@@ -364,7 +364,7 @@ class SchoolYear(models.Model):
       if record.date_2term2_ini == False:
         record.date_extraord2_exam_ini = ''
       else: 
-        record.date_extraord2_exam_ini = record.date_2term1_exam_ini - datetime.timedelta(weeks = 1)
+        record.date_extraord2_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 1)
 
   @api.constrains('date_extraord2_exam_ini')
   def _check_date_extraord2_exam_ini(self):
@@ -554,7 +554,7 @@ class SchoolYear(models.Model):
       if record.date_2term1_ini == False:
         record.date_ord1_exam_ini = ''
       else: 
-        record.date_ord1_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 2)
+        record.date_ord1_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 3)
 
   @api.constrains('date_ord1_exam_ini')
   def _check_date_ord1_exam_ini(self):
