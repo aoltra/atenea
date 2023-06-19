@@ -1,6 +1,6 @@
 <odoo>
   <!-- formatos de papel disponibles -->
-  <!-- -->  -->
+  <!-- -->
   <record id="paperformat_a4_report_custom" model="report.paperformat">
     <field name="name">A4 Atenea C1</field>
     <field name="format">A4</field>
