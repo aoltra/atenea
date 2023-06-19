@@ -3,18 +3,41 @@
     <!-- Roles -->
     <record model="atenea.rol" id="atenea.rol_JEFCF">
       <field name="rol">JFCF</field>
-      <field name="description">Jefe de Estudios de Ciclos Formativos</field>
+      <field name="description">Jefatura de Estudios de Ciclos Formativos</field>
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_COORDCF">
+      <field name="rol">CRDCF</field>
+      <field name="description">Coordinación Ciclos Formativos</field>
     </record>
 
     <record model="atenea.rol" id="atenea.rol_JEFDAFI">
       <field name="rol">JFDP</field>
-      <field name="description">Jefe de departamento de Administración</field>
+      <field name="description">Jefatura de departamento de Administración</field>
       <field name="departament_id" ref="atenea.departament_ADM" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_JEFDTUR">
+      <field name="rol">JFDP</field>
+      <field name="description">Jefatura de departamento de Turismo</field>
+      <field name="departament_id" ref="atenea.departament_TUR" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_JEFDCOM">
+      <field name="rol">JFDP</field>
+      <field name="description">Jefatura de departamento de Comercio</field>
+      <field name="departament_id" ref="atenea.departament_COM" />
+    </record>
+
+    <record model="atenea.rol" id="atenea.rol_JEFDFCT">
+      <field name="rol">JFDP</field>
+      <field name="description">Jefatura de departamento de FCT</field>
+      <field name="departament_id" ref="atenea.departament_FCT" />
     </record>
 
     <record model="atenea.rol" id="atenea.rol_JEFDINF">
       <field name="rol">JFDP</field>
-      <field name="description">Jefe de departamento de Informática</field>
+      <field name="description">Jefatura de departamento de Informática</field>
       <field name="departament_id" ref="atenea.departament_INF" />
     </record>
 
