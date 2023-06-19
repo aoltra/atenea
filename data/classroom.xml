@@ -9,7 +9,7 @@
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_TUT12">
       <field name="code">SEG9_CEE_46025799_2022_836104_TU02CF</field>
-      <field name="moodle_id">3</field>
+      <field name="moodle_id">2</field>
       <field name="description">Aula de tutoria de DAM</field>
       <!-- necesito referenciar a un elemento ya creado y del que no dispongo su id externo-->
       <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
@@ -33,6 +33,13 @@
       <field name="code">SEG9_CEE_46025799_2022_845104_0373</field>
       <field name="moodle_id">1978</field>
       <field name="description">Aula de Lenguaje de Marcas</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_ED">
+      <field name="code">SEG9_CEE_46025799_2022_845104_0375</field>
+      <field name="moodle_id">1982</field>
+      <field name="description">Aula de Entornos de Desarrollo</field>
       <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 

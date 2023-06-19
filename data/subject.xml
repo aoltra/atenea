@@ -37,6 +37,15 @@
       <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM') ])]"/>                            
     </record>
 
+    <record model="atenea.subject" id="atenea.subject_DAW_ED">
+      <field name="abbr">ED</field>
+      <field name="code">0487</field>
+      <field name="name">Entornos de Desarrollo</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_ED"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM') ])]"/>                            
+    </record>
+
     <record model="atenea.subject" id="atenea.subject_DAW_BD">
       <field name="abbr">BD</field>
       <field name="code">0484</field>
