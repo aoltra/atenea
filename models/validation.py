@@ -242,7 +242,6 @@ class Validation(models.Model):
       all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
       all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
-      
       # si todas sin procesar -> sin procesar
       if all_noprocess:
         record.state = '0'
@@ -267,23 +266,23 @@ class Validation(models.Model):
         record.state = '14'
         continue
 
-
       # si hay instancias superiores y subsanaciones -> subsanación/instancia superior
       if any_higher_level and any_correction:
         record.state = '4'
+        continue
 
-      # si hay alguna en instancia superior -> instancia superior
-      if any_higher_level:
+      # si hay alguna en instancia superior y no hay ninguna pendiente -> instancia superior
+      if any_higher_level and not any_noprocess:
         record.state = '3'
         continue
       
-      # si hay al menos una subsanación  -> subsanacion
-      if any_correction:
+      # si hay al menos una subsanación y no hay ninguna pendiente -> subsanacion
+      if any_correction and not any_noprocess:
         record.state = '2'
         continue
 
-      # si hay alguna sin procesar y otras ya resueltas -> en proceso
-      if any_noprocess and any_resolved:
+      # si hay alguna sin procesar y otras ya resueltas o pendientes de subsanación o a instancias superiores -> en proceso
+      if any_noprocess and (any_resolved or any_correction or any_higher_level):
         record.state = '1'
         continue
 
@@ -317,4 +316,6 @@ class Validation(models.Model):
         record.state = '12'
         continue
         
-      ('14', 'Cerrada'),
+      if all_closed:
+        record.state = '14'
+        continue
