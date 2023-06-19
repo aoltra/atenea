@@ -1,0 +1,36 @@
+@use './school_calendar_report_palette' as colors;
+@use './school_calendar_report_fonts' as fonts;
+
+@mixin legendComponent(){
+    /* LEGEND */
+  .legend-title-container{
+    text-align: center;
+  }
+  
+  .legend-title-container h2{
+    font-size: 1.25rem;
+  }
+  
+  .legend .row{
+    padding-top: 1rem;
+    text-align: left;
+  }
+  
+  .legend-square{
+    $height: 20px;
+
+    width: 20px;
+    height: $height;
+    line-height: $height;
+
+    &.H-type{
+        font-size: fonts.$calendar-font-size - 1pt;
+        color: colors.$holidays_back_color;
+    }
+
+    span{
+        display: inline-block;
+        line-height: $height;
+    }
+  }
+}

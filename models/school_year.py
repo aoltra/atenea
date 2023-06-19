@@ -1278,3 +1278,23 @@ class SchoolYear(models.Model):
       'desc': self._fields['date_waiver_extraord1'].string, 
       'type': 'P',
     }
+
+    for holiday in self.holidays_ids:
+      holidayDto = { 
+        'date': holiday.date,
+        'desc': holiday.description,
+        'type': 'H'
+      }
+
+      holidayEndDto = { 
+        'date': holiday.date_end,
+        'desc': holiday.description,
+        'type': 'H'
+      }
+
+      if(holiday.date != holiday.date_end):
+        holidayDto['dur'] = holiday.date_end - holiday.date
+        holidayEndDto['dur'] = holiday.date - holiday.date_end
+
+      self.dates[holiday.description] = holidayDto
+      self.dates[holiday.description] = holidayEndDto

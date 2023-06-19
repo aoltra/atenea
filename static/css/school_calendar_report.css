@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* wkthmltopdf no soporta grid :( 
 .calendar {
   display: grid;
@@ -6,30 +7,26 @@
 
   justify-items: center;
 }*/
-
 /* wkhtmltopdf soporta flex pero tiene un bug con flex-wrap, bug
    que también afecta a bootstrap 
-.calendar {
-  display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
+.calendar {display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap
 } */
-
 /* debug */
 /* .calendar > div {
   border: 2px solid red;
 } */
-
-.pt-5{
+.pt-5 {
   padding: 0 !important;
 }
 
-.page{
+.page {
   padding-top: 3rem;
 }
 
-.calendar{
+.calendar {
   margin-top: 1rem;
 }
 
@@ -55,7 +52,7 @@
 .grid-month:nth-child(1),
 .grid-month:nth-child(4),
 .grid-month:nth-child(7),
-.grid-month:nth-child(10){
+.grid-month:nth-child(10) {
   padding-left: 0 !important;
 }
 
@@ -63,7 +60,7 @@
 .grid-month:nth-child(3),
 .grid-month:nth-child(6),
 .grid-month:nth-child(9),
-.grid-month:nth-child(12){
+.grid-month:nth-child(12) {
   border-right: none;
   padding-right: 0 !important;
 }
@@ -74,11 +71,11 @@
 .grid-month .thu,
 .grid-month .fri,
 .grid-month .sat,
-.grid-month .sun{
+.grid-month .sun {
   font-size: 8pt;
 }
 
-.grid-month:nth-child(n+4){
+.grid-month:nth-child(n+4) {
   height: 6.7cm;
   margin-top: 0.5cm;
 }
@@ -88,14 +85,14 @@
   margin-left: 4%;
 }
 
-table.description{
+table.description {
   width: 100%;
 }
 
 .description td {
   padding-left: 2px;
   padding-right: 4px;
-  vertical-align:top;
+  vertical-align: top;
   font-size: 8.5pt;
 }
 
@@ -111,7 +108,7 @@ table.description{
 /* cuerpo de la descripción */
 .description tr td.description {
   text-align: left;
-  padding: 0; 
+  padding: 0;
   margin: 0;
   width: 200px;
   font-size: 9pt;
@@ -125,64 +122,63 @@ Color palette
 --zomp: #43aa8bff;
 --sage: #b2b09bff;
 */
+.day.G-type, .day.G-type ~ td {
+  color: #B2B09B;
+}
+.day.P-type, .day.day.P-type ~ td {
+  color: #370000;
+}
+.day.S-type, .day.S-type ~ td {
+  color: #254441;
+}
+
 .month .G-type,
 .legend-square.G-type {
   background-color: #B2B09B;
 }
 
-.day.G-type,
-.day.G-type ~ td  {
-  color: #B2B09B;
-}
-
 .month .P-type,
 .legend-square.P-type {
-  background-color: #254441
-}
-
-.day.P-type,
-.day.P-type ~ td {
-  color: #254441
+  background-color: #370000;
 }
 
 .month .S-type,
 .legend-square.S-type {
-  background-color: #DB504A;
-}
-
-.day.S-type,
-.day.S-type ~ td {
-  color: #DB504A;
-}
-
-.month .sun, .sat {
-  color: #FF6F59
-}
-
-.month .H-type {
-  color: #FC2F00
+  background-color: #254441;
 }
 
 .month .S-type,
-.month .P-type{
+.month .P-type {
   color: white;
+}
+.month .sun, .month .sat, .month .H-type {
+  color: #ff867a;
 }
 
 /* LEGEND */
-.legend-title-container{
+.legend-title-container {
   text-align: center;
 }
 
-.legend-title-container h2{
+.legend-title-container h2 {
   font-size: 1.25rem;
 }
 
-.legend .row{
+.legend .row {
   padding-top: 1rem;
   text-align: left;
 }
 
-.legend-square{
+.legend-square {
   width: 20px;
   height: 20px;
+  line-height: 20px;
 }
+.legend-square.H-type {
+  font-size: 7pt;
+  color: #ff867a;
+}
+.legend-square span {
+  display: inline-block;
+  line-height: 20px;
+}/*# sourceMappingURL=school_calendar_report.css.map */
