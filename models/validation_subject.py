@@ -110,12 +110,13 @@ class ValidationSubject(models.Model):
     return choices 
   
   def _check_attribute_value(self, field_name, vals) -> bool:
-    if isinstance(self._fields[field_name], fields.Char):
-      return ((field_name in vals and vals[field_name] == '') or \
-              (field_name not in vals and self[field_name] == ''))
+    if isinstance(self._fields[field_name], fields.Char) or \
+       isinstance(self._fields[field_name], fields.Text):
+      return not ((field_name in vals and (vals[field_name] == '' or vals[field_name] == False)) or \
+              (field_name not in vals and (self[field_name] == '' or self[field_name] == False)))
     
     if isinstance(self._fields[field_name], fields.Selection):
-      return ((field_name in vals and vals[field_name] == False) or \
+      return not ((field_name in vals and vals[field_name] == False) or \
               (field_name not in vals and self[field_name] == False))
     
     return False
@@ -130,20 +131,33 @@ class ValidationSubject(models.Model):
       state = self.state
 
     # si el estado es subsanación tiene que haber una razón
-    if state == '1' and self._check_attribute_value('correction_reason', vals): 
+    if state == '1' and not self._check_attribute_value('correction_reason', vals): 
       raise ValidationError(f'La convalidación de {self.subject_id.name} tiene un estado de subsanación y no se ha definido la razón')
     
     # si el estado es instancia superior tiene que haber un comentario  
-    if state == '2' and self._check_attribute_value('comments', vals): 
+    if state == '2' and not self._check_attribute_value('comments', vals): 
       raise ValidationError(f'La convalidación de {self.subject_id.name} se ha escalado a un instancia superior y no se ha definido un comentario justificándolo')
   
     if int(state) > 2 and \
-      (self._check_attribute_value('mark', vals) or \
-        self._check_attribute_value('validation_reason', vals) or \
-        self._check_attribute_value('validation_type', vals) or \
-        self._check_attribute_value('accepted', vals) or \
-        self._check_attribute_value('comments', vals)):
+      not self._check_attribute_value('accepted', vals):
+        raise ValidationError(f'No se ha definido si la convalidación de {self.subject_id.name} está aceptada o no.')
+    
+    if 'accepted' in vals: # si cambia el estado
+      accepted = vals['accepted']
+    else:
+      accepted = self.accepted
+
+    if int(state) > 2 and accepted == '1' and \
+      (not self._check_attribute_value('mark', vals) or \
+        not self._check_attribute_value('validation_reason', vals) or \
+        not self._check_attribute_value('validation_type', vals) or \
+        not self._check_attribute_value('accepted', vals) or \
+        not self._check_attribute_value('comments', vals)):
         raise ValidationError(f'La convalidación de {self.subject_id.name} no ha definido la nota y/o la razón y/o un comentario')
+    
+    if int(state) > 2 and accepted == '2' and \
+      not self._check_attribute_value('comments', vals):
+        raise ValidationError(f'La convalidación de {self.subject_id.name} está rechazada pero no se ha definido un comentario')
     
     # si no es subsanación se elimina la razon
     if state != '1':
