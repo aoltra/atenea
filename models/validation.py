@@ -184,7 +184,10 @@ class Validation(models.Model):
     """
     self.ensure_one() # esta función sólo puede ser llamada por un único registro, no por un recordset
 
-    validations_path = self.env['ir.config_parameter'].get_param('atenea.validations_path') or None
+    # el acceso a ir.config_parameter sólo es posible desde el administrador. 
+    # para que un usuario no admin (por ejemplo un convalidador) pueda acceder a descargar la documuentación
+    # se utiliza la función sudo() para saltar los reglas de acceso
+    validations_path = self.env['ir.config_parameter'].sudo().get_param('atenea.validations_path') or None
     if validations_path == None:
       _logger.error('La ruta de almacenamiento de convalidaciones no está definida')
       return
