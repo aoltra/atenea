@@ -2,7 +2,7 @@
   <data>
     <!-- Departamentos -->
     <record model="atenea.departament" id="atenea.departament_ADM">
-      <field name="name">Administración</field>
+      <field name="name">Administración y Finanzas</field>
     </record>
 
     <record model="atenea.departament" id="atenea.departament_INF">
@@ -19,6 +19,10 @@
 
     <record model="atenea.departament" id="atenea.departament_FCT">
       <field name="name">Formación en Centros de Trabajo</field>
+    </record>
+
+    <record model="atenea.departament" id="atenea.departament_SCRT">
+      <field name="name">Secretaría</field>
     </record>
   </data>
 </odoo>

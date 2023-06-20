@@ -59,7 +59,7 @@ for dep in departaments_output:
   departaments[dep['name']] = dep['id']
 
 print(f'\033[0;32m[INFO]\033[0m Departamentos:')
-print(departaments)
+print(f'   {departaments}')
 
 # idiomas activos
 languages_output = models.execute_kw(db, uid, password, 'res.lang', 'search_read', [[['active','=', True]]], { 'fields': ['code']})
@@ -68,7 +68,26 @@ for lang in languages_output:
   languages.append(lang['code'])
 
 print(f'\033[0;32m[INFO]\033[0m Idiomas:')
-print(languages_output)
+print(f'   {languages_output}')
+
+# obtengo la categoria atenea
+atenea_id_category = models.execute_kw(db, uid, password, 'ir.module.category', 'search_read', [[['name','=', 'Atenea']]], { 'fields': ['id']})
+# obtengo todos los grupos
+teacher_group = models.execute_kw(db, uid, password, 'res.groups', 'search_read', 
+                                  [[['category_id','=', atenea_id_category[0]['id']], 
+                                    ['name','=', 'Profesorado']]]) 
+admin_group = models.execute_kw(db, uid, password, 'res.groups', 'search_read', 
+                                [[['category_id','=', atenea_id_category[0]['id']], 
+                                  ['name','=', 'Administración (secretaria)']]]) 
+
+print(f'\033[0;32m[INFO]\033[0m Grupos:')
+print(f'   Profesorado: ', teacher_group[0]['id'])
+print(f'   Secretaría: ', admin_group[0]['id'])
+
+groups = {}
+groups['profesor'] = teacher_group[0]
+groups['pas'] = admin_group[0]
+
 """ 
 
 user_id=models.execute_kw(db, uid, password, 'res.users', 'create', 
@@ -78,7 +97,7 @@ user_id=models.execute_kw(db, uid, password, 'res.users', 'create',
 try:
   inactive_users = models.execute_kw(db, uid, password, 'res.users', 'search_read', [[['active','=', False]]], { 'fields': ['id', 'login']})
   print(f'\033[0;32m[INFO]\033[0m Usuarios inactivos:')
-  print(inactive_users)
+  print(f'   {inactive_users}')
 except (xmlrpc.client.Fault) as e:
   print('\033[0;31m[ERROR]\033[0m ' + e.faultString)
   print(f'\033[0;32m[INFO]\033[0m Saliendo...')
@@ -92,30 +111,35 @@ for user in users:
   print("\033[0;32m[INFO]\033[0m Procesando ", user)
   try:
     if user['lang'] not in languages:
-      print(f'\t\033[0;31m[ERROR]\033[0m ({user["login"]}) {user["lang"]} no existe o no está activo en Atenea. Asignando idioma por defecto {languages[0]}.')
+      print(f'   \033[0;31m[ERROR]\033[0m ({user["login"]}) {user["lang"]} no existe o no está activo en Atenea. Asignando idioma por defecto {languages[0]}.')
       user['lang'] = languages[0]
 
     # Esta en Atenea pero esta inactivo
     odoo_user = next((item for item in inactive_users if item['login'] == user['login']), None)
-
+    
     if odoo_user == None: # no está inactivo en Atenea 
       # se crea. En caso de que ya exista salta una excepción
       id = models.execute_kw(db, uid, password, 'res.users', 'create', [user])
       employees[user['login']]['user_id'] = id
       employees[user['login']]['departament_ids'] = [(4, departaments[employees[user['login']]['departament_ids']])]
       models.execute_kw(db, uid, password, 'atenea.employee', 'create', [employees[user['login']]])
+
+      models.execute_kw(db, uid, password, 'res.users', 'write', [id, {'groups_id': [(4, groups[employees[user['login']]['employee_type']]['id'])] }])
+
     else: # está pero inactivo
-      print(f'\t\033[0;32m[INFO]\033[0m {user["name"]} ({user["login"]}) ya existe en Atenea. Activandolo')
+      print(f'   \033[0;32m[INFO]\033[0m {user["name"]} ({user["login"]}) ya existe en Atenea. Activandolo')
       models.execute_kw(db, uid, password, 'res.users', 'write', [[odoo_user['id']], {'active': True}])
+      models.execute_kw(db, uid, password, 'res.users', 'write', [[odoo_user['id']], {'groups_id': [(4, groups[employees[user['login']]['employee_type']]['id'])] }])
+
    
     line_count_OK += 1
   except (xmlrpc.client.Fault) as e:
-    print('\t\033[0;31m[ERROR]\033[0m ' + e.faultString)
+    print('   \033[0;31m[ERROR]\033[0m ' + e.faultString)
     line_count_ERROR += 1
   except KeyError:
-    print('\t\033[0;31m[ERROR]\033[0m Clave no encontrada. Posiblemente el departamento no existe')
+    print('   \033[0;31m[ERROR]\033[0m Clave no encontrada. Posiblemente el departamento no existe')
     line_count_ERROR += 1
-  
+
 print(f'\033[0;32m[INFO]\033[0m Procesados {line_count_OK} usuarios / Errores: {line_count_ERROR}.')
 
 
