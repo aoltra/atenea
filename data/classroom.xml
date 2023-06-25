@@ -43,5 +43,19 @@
       <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
+    <record model="atenea.classroom" id="atenea.classroom_DAW_PRG">
+      <field name="code">SEG9_CEE_46025799_2022_845104_0485</field>
+      <field name="moodle_id">1987</field>
+      <field name="description">Aula de Programación</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAM_SGE">
+      <field name="code">SEG9_CEE_46025799_2022_845104_0491</field>
+      <field name="moodle_id">1988</field>
+      <field name="description">Aula de Sistemas de Gestión Empresarial</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
   </data>
 </odoo>

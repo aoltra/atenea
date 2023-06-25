@@ -64,6 +64,32 @@
       <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR') ])]"/>                            
     </record>
 
+    <record model="atenea.subject" id="atenea.subject_DAW_INGTECI">
+      <field name="abbr">ITC1</field>
+      <field name="code">CV0003</field>
+      <field name="name">Inglés Técnico 1</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_SIN"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>          
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_PRG">
+      <field name="abbr">PRG</field>
+      <field name="code">0485</field>
+      <field name="name">Programación</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_DAW_PRG"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>          
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_SGE">
+      <field name="abbr">SGE</field>
+      <field name="code">0491</field>
+      <field name="name">Sistemas de Gestión Empresarial</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_DAM_SGE"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>          
+    </record>
 
   </data>
 </odoo>
