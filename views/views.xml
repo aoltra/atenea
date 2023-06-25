@@ -338,6 +338,7 @@
           <field name="student_info"/>
           <field name="validation_subjects_info"/>
           <field name="state"/>
+          <field name="situation"/>
           <field name="correction_date"/>
           <field name="correction_reason"/>
         </tree>

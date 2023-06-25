@@ -21,7 +21,7 @@ class Validation(models.Model):
 
   school_year_id = fields.Many2one('atenea.school_year', string = 'Curso escolar')
   
-  student_id = fields.Many2one('atenea.student', string = 'Estudiante')
+  student_id = fields.Many2one('atenea.student', string = 'Estudiante', required = True)
   student_name = fields.Char(related = 'student_id.name') 
   student_surname = fields.Char(related = 'student_id.surname') 
   student_nia = fields.Char(related = 'student_id.nia') 
@@ -45,7 +45,17 @@ class Validation(models.Model):
     compute = '_compute_validation_subjects', readonly = False)
      
   validation_subjects_info = fields.Char(string = 'Resueltas / Solicitadas', compute = '_compute_validation_subjects_info')
-  
+
+  # aporta información extra sobre el estado de la convalidación  
+  situation = fields.Selection([
+      ('0', ''),
+      ('1', 'Pendiente de notificación al alumno'),
+      ('2', 'Notificación enviada'),
+      ('3', 'Nuevo envio de documentación'),
+      ('4', 'Subsanación fuera de plazo'),
+      ], string ='Información extra', default = '0',
+      readonly = True)
+
   # TODO que hacer con instancia superior si tardan en responder??
   # una opción es pasado un tiempo enviar el mail de confirmación al alumno
   # y finalizarla parcialmente
@@ -69,19 +79,26 @@ class Validation(models.Model):
       compute = '_compute_state')
   
   # fecha de solicitud de la subsanación
-  correction_date = fields.Date()
+  correction_date = fields.Date(string = 'Fecha subsanación', 
+                                help = 'Fecha de publicación de la subsanación')
+  
+  correction_date_end = fields.Date(string = 'Fecha fin subsanación', 
+                                    help = 'Fin de plazo de la subsanación',
+                                    compute = '_compute_correction_date_end')
 
+  # subsanación por razones de forma. Hace referencia a la entrega en si, no a 
+  # cada uno de los módulos
   correction_reason = fields.Selection([
-    ('---', ''),   # no hay pendiente ninguna subsanación
     ('MFL', 'Sólo se admite la entrega de un único fichero.'),
     ('NZP', 'La documentación aportada no se encuentra en un único fichero zip comprimido.'),
     ('NNX', 'No se encuentra un fichero llamado anexo o hay más de uno.'),
     ('ANC', 'Anexo no cumplimentado correctamente. Campos obligatorios no rellenados.'),
     ('ANP', 'Anexo no cumplimentado correctamente. Tipo (convalidación/aprobado con anterioridad) no indicado.'),
     ('SNF', 'Documento no firmado digitalmente'),
-    ('RL', 'No se aporta curso de riesgo laborales > 30h'),
-    ('EXP', 'No se aporta expediente académico'),
-    ], string ='Razón de la subsanación', default = '---',
+    # ('RL', 'No se aporta curso de riesgo laborales > 30h'),
+    # ('EXP', 'No se aporta expediente académico'),
+    ('INT', 'Ver convalidaciones módulos'), # subsanaciones específicas de módulos
+    ], string ='Razón de la subsanación', 
     help = 'Permite indicar el motivo por el que se solicita la subsanación')
   
   # numeración basada en 1: 1,2,3,4...
@@ -102,9 +119,10 @@ class Validation(models.Model):
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
 
-  def create_correction(self, reason, comment = ''):
+  def create_correction(self, reason, comment = '') -> str:
     """
     Modifica la convalidación asignando los parámetros de subsanación
+    Devuelve la notificación en formato HTML
     """
     if reason == None:
       raise Exception('Es necesario definir una razón para la subsanación')
@@ -113,7 +131,7 @@ class Validation(models.Model):
     
     self.write({ 
       'correction_reason': reason,
-      'state': '1',
+      'state': '2',
       'correction_date': self.correction_date
     })
 
@@ -122,16 +140,40 @@ class Validation(models.Model):
       <p>Se abre un periodo de subsanación de 15 días naturales a contar desde el día de publicación de este mensaje. \
          Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
       <p><strong>Fin de período de subsanación</strong>: {0}</p>
-      """.format(self.correction_date + datetime.timedelta(days = 15))
+      """.format(self.correction_date_end)
 
-    body = """
-        <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
-        <p style="padding-left: 1rem">(01) {0}</p>
-        """.format(dict(self._fields['correction_reason'].selection).get(reason))
+    # las causas viene definidas en cada uno de los módulos
+    if reason == 'INT':
+      body = """
+          <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p><ul>"""
+      
+      val_for_correction = [ val for val in self.validation_subjects_ids if val.state == '1']
+
+      for val in val_for_correction:
+        body += """
+          <li>{0}
+        """.format(dict(val._fields['correction_reason'].selection).get(val.correction_reason))
+
+      body += """</ul>"""
+
+    else:
+      body = """
+          <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
+          <p style="padding-left: 1rem">(01) {0}</p>
+          """.format(dict(self._fields['correction_reason'].selection).get(reason))
 
     feedback = body + comment + footer
 
     return feedback
+
+  @api.depends('correction_date')
+  def _compute_correction_date_end(self):
+    for record in self:
+      if record.correction_date == False:
+        record.correction_date_end = False
+      else:
+        record.correction_date_end = record.correction_date + datetime.timedelta(days = 15)
+
 
   def _compute_full_student_info(self):
     for record in self:
@@ -245,6 +287,8 @@ class Validation(models.Model):
       all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
       all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
+      record.situation = '0'
+
       # si todas sin procesar -> sin procesar
       if all_noprocess:
         record.state = '0'
@@ -272,6 +316,7 @@ class Validation(models.Model):
       # si hay instancias superiores y subsanaciones -> subsanación/instancia superior
       if any_higher_level and any_correction:
         record.state = '4'
+        record.situation = '1'
         continue
 
       # si hay alguna en instancia superior y no hay ninguna pendiente -> instancia superior
@@ -282,6 +327,7 @@ class Validation(models.Model):
       # si hay al menos una subsanación y no hay ninguna pendiente -> subsanacion
       if any_correction and not any_noprocess:
         record.state = '2'
+        record.situation = '1'
         continue
 
       # si hay alguna sin procesar y otras ya resueltas o pendientes de subsanación o a instancias superiores -> en proceso
