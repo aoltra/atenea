@@ -55,7 +55,9 @@
         'data/course.xml',
         'data/subject.xml',
         'data/task_moodle.xml',
-        'data/rol.xml',
+        'data/roles/headquarters.xml',
+        'data/roles/tutors.xml',
+        'data/roles/validations.xml',
         # reports
         'reports/custom_footer.xml',
         'reports/school_calendar.xml',
