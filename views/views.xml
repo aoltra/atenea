@@ -1,7 +1,6 @@
 <odoo>
   <data>
     <!-- explicit list view definition -->
-
     <record model="ir.ui.view" id="atenea.course_tree">
       <field name="name">Lista de Ciclos Formativos</field>
       <field name="model">atenea.course</field>
@@ -13,7 +12,6 @@
         </tree>
       </field>
     </record>
-
 
     <record model="ir.ui.view" id="atenea.subject_tree">
       <field name="name">Lista de Módulos</field>
@@ -521,8 +519,6 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
-
     <!-- server action to the one above -->
 <!--
     <record model="ir.actions.server" id="atenea.action_server">
@@ -538,6 +534,18 @@
       </field>
     </record>
 -->
+
+   <record model="ir.actions.server" id="action_unlock_notificated_correction">
+       <field name="name">Desbloquear/bloquear edición</field>
+       <field name="type">ir.actions.server</field>
+       <field name="model_id" ref="model_atenea_validation"/>
+       <field name="binding_model_id" ref="model_atenea_validation"/>
+       <field name="binding_view_types">form</field>
+       <field name="state">code</field>
+       <field name="code">
+          record._unlock_edition()
+       </field>
+   </record>
 
     <record model="ir.actions.server" id="atenea.action_server">
       <field name="name">atenea server</field>

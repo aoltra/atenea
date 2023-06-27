@@ -133,5 +133,13 @@
       <field name="domain_force">[('course_abbr','in',[rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id is not None])]</field>
     </record>
 
+    <!-- Regla para ver solo las convalidcionese estado de resueltas para el convalidador -->
+    <record id="atenea.validation_coordfp_rol_rule" model="ir.rule">
+      <field name="name">Acceso de los revisores sólo a las convalidaciones en estado de revisión</field>
+      <field name="model_id" ref="model_atenea_validation"/>
+      <field name="groups" eval="[(4, ref('atenea.group_MNGT_FP'))]"/>
+      <field name="domain_force">[('state','in',['','','')]</field>
+    </record>
+
   </data>
 </odoo>

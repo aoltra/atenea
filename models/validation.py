@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessDenied
+
 import datetime
 import logging
 import base64
@@ -95,8 +96,6 @@ class Validation(models.Model):
     ('ANC', 'Anexo no cumplimentado correctamente. Campos obligatorios no rellenados.'),
     ('ANP', 'Anexo no cumplimentado correctamente. Tipo (convalidación/aprobado con anterioridad) no indicado.'),
     ('SNF', 'Documento no firmado digitalmente'),
-    # ('RL', 'No se aporta curso de riesgo laborales > 30h'),
-    # ('EXP', 'No se aporta expediente académico'),
     ('INT', 'Ver convalidaciones módulos'), # subsanaciones específicas de módulos
     ], string ='Razón de la subsanación', 
     help = 'Permite indicar el motivo por el que se solicita la subsanación')
@@ -112,12 +111,46 @@ class Validation(models.Model):
         compute='_compute_documentation_filename'
     )
   
-  info = fields.Char(string="Información", compute = '_compute_info')
+  info = fields.Text(string="Información", compute = '_compute_info')
+
+  unlocked = fields.Boolean(default = False, store = True)
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
+  
+  def _unlock_edition(self):
+    self.ensure_one()
+    if not(self.state == '2' and self.situation == '2'):
+      raise AccessDenied('Esta acción sólo puede ejecutarse sobre convalidaciones en estado de subsanación ya notificadas al estudiante')
+    
+    self.unlocked = not self.unlocked
+  
+  
+  @api.onchange('validation_subjects_ids')
+  def _check_notify_correction_done(self):
+    self.ensure_one()
+    if self.situation == '2' and self.state == '2':
+      for val in self.validation_subjects_ids:
+        old_val = next((old_vali for old_vali in self._origin.validation_subjects_ids if old_vali.id == val._origin.id), None)
+        if old_val == None:
+          return
+        if not self.unlocked and \
+           ((old_val.state == '1' and val.state != '1') or \
+           (old_val.state != '1' and val.state == '1') or \
+           (old_val.state == '1' and (old_val.correction_reason != val.correction_reason or old_val.comments != val.comments))):
+            val.state = old_val.state
+            val.correction_reason = old_val.correction_reason
+            val.comments = old_val.comments
+        elif self.unlocked and \
+           ((old_val.state == '1' and val.state != '1') or \
+           (old_val.state != '1' and val.state == '1') or \
+           (old_val.state == '1' and (old_val.correction_reason != val.correction_reason or old_val.comments != val.comments))):
+            return { 'warning': {
+              'title': "¡Atención!", 
+              'message': "Este cambio modifica el contenido de la notificación enviada al estudiante. Una vez guardada se le notificará de manera inmediata el cambio"
+              }}
 
   def create_correction(self, reason, comment = '') -> str:
     """
@@ -174,7 +207,6 @@ class Validation(models.Model):
       else:
         record.correction_date_end = record.correction_date + datetime.timedelta(days = 15)
 
-
   def _compute_full_student_info(self):
     for record in self:
       if record.student_nia == False:
@@ -208,8 +240,18 @@ class Validation(models.Model):
         self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
         self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
      
+  @api.depends('unlocked')
   def _compute_info(self):
     self.ensure_one()
+
+    unlocked_info = ''
+
+    if self.unlocked:
+      unlocked_info = '\n¡IMPORTANTE! La convalidación ha sido desbloqueada para ser modificada. Si se modifica y se graba el estudiante será notificado de manera inmediata'
+
+    if int(self.state) == 2 and self.situation == '2':
+      self.info = 'La convalidación está en estado de subsanación y ya ha sido notificada al estudiante.' + unlocked_info
+      return
 
     self.info = f'La convalidación se encuentra en proceso de {dict(self._fields["state"].selection).get(self.state)} y no puede ser modificada'
 
@@ -218,8 +260,7 @@ class Validation(models.Model):
        (self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) < 11) or \
        (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 5):
       self.info =''  
-  
-  
+   
   def download_validation_action(self):
     """
     Descarga la última versión de la documentación
@@ -274,7 +315,7 @@ class Validation(models.Model):
     }
 
   def _compute_state(self):
-    for record in self:
+    for record in self:  
       all_noprocess = all(val.state == '0' for val in record.validation_subjects_ids)
       any_noprocess = any(val.state == '0' for val in record.validation_subjects_ids)
       any_correction = any(val.state == '1' for val in record.validation_subjects_ids)
@@ -287,6 +328,12 @@ class Validation(models.Model):
       all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
       all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
+      # si está ya notificado al estudiante o estaba en subsanación o finalizada
+      # si hay alguna subsanación es que es subsanación
+      if record.situation == '2' and any_correction:
+        record.state = '2'
+        return
+ 
       record.situation = '0'
 
       # si todas sin procesar -> sin procesar

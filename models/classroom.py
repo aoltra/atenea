@@ -562,4 +562,6 @@ class Classroom(models.Model):
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('INT'))
         submission.set_extension_due_date(to = new_timestamp)
         # TODO comprobar que la nota se haya almacenado correctamente en Moodle
-        validation.situation = '2'
+        self.env['atenea.validation'].write({
+          'situation': '2'  
+        })
