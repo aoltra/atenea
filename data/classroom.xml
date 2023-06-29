@@ -13,7 +13,6 @@
       <field name="moodle_id">0617</field>
       <field name="description">Aula Formación y Orientación Laboral DAW</field>
       <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
-      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_PROY">
@@ -55,96 +54,112 @@
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_FOL</field>
       <field name="moodle_id">0617</field>
       <field name="description">Aula Formación y Orientación Laboral DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_PROY">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_PROY</field>
       <field name="moodle_id">0616</field>
       <field name="description">Aula Proyecto de desarrollo de aplicaciones web DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_EIE">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_EIE</field>
       <field name="moodle_id">0618</field>
       <field name="description">Aula Empresa e iniciativa emprendedora DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_DWEC">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DWEC</field>
       <field name="moodle_id">0612</field>
       <field name="description">Aula Desarrollo web en entorno cliente DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_DWES">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DWES</field>
       <field name="moodle_id">0613</field>
       <field name="description">Aula Desarrollo web en entorno servidor DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_DAW">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DAW</field>
       <field name="moodle_id">0614</field>
       <field name="description">Aula Despliegue de aplicaciones web DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_DIW">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DIW</field>
       <field name="moodle_id">0615</field>
       <field name="description">Aula Diseño de interfaces web DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
     <!-- Aulas virtuales DAM -->
     <record model="atenea.classroom" id="atenea.classroom_DAM_TUT12">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_TUT12</field>
       <field name="moodle_id">2089</field>
       <field name="description">Aula Tutoría de DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_FOL">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_FOL</field>
       <field name="moodle_id">0493</field>
       <field name="description">Aula Formación y Orientación Laboral DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_EIE">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_EIE</field>
       <field name="moodle_id">0494</field>
       <field name="description">Aula Empresa e iniciativa emprendedora DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_PROY">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_PROY</field>
       <field name="moodle_id">0492</field>
       <field name="description">Aula Proyecto de desarrollo de aplicaciones multiplataforma DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_AD">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_AD</field>
       <field name="moodle_id">0486</field>
       <field name="description">Aula Acceso a datos DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_DI">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_DI</field>
       <field name="moodle_id">0488</field>
       <field name="description">Aula Desarrollo de interfaces DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_PMDM">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_PMDM</field>
       <field name="moodle_id">0489</field>
       <field name="description">Aula Programación multimedia y dispositivos móviles DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_PSP">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_PSP</field>
       <field name="moodle_id">0490</field>
       <field name="description">Aula Programación de servicios y procesos DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAM_SGE">
       <field name="code">SEG9_CEE_46025799_2022_836104_DAM_SGE</field>
       <field name="moodle_id">0491</field>
       <field name="description">Aula Sistemas de gestión empresarial DAM</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <!-- Aulas virtuales ASIR --> 
@@ -152,78 +167,91 @@
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_TUT1</field>
       <field name="moodle_id">2087</field>
       <field name="description">Aula Tutoría de ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_PAR">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_PAR</field>
       <field name="moodle_id">0370</field>
       <field name="description">Aula Planificación y administración de redes ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_ASO">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_ASO</field>
       <field name="moodle_id">0374</field>
       <field name="description">Aula Administración de sistemas operativos ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_ISO">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_ISO</field>
       <field name="moodle_id">0369</field>
       <field name="description">Aula Implantación de sistemas operativos ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_SRI">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_SRI</field>
       <field name="moodle_id">0375</field>
       <field name="description">Aula Servicios de red e Internet ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_HW">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_HW</field>
       <field name="moodle_id">0371</field>
       <field name="description">Aula Fundamentos de hardware ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_GBD">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_GBD</field>
       <field name="moodle_id">0372</field>
       <field name="description">Aula Gestión de bases de datos ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_SAD">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_SAD</field>
       <field name="moodle_id">0378</field>
       <field name="description">Aula Seguridad y alta disponibilidad ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_FOL">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_FOL</field>
       <field name="moodle_id">0380</field>
       <field name="description">Aula Formación y orientación laboral ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_EIE">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_EIE</field>
       <field name="moodle_id">0381</field>
       <field name="description">Aula Empresa e iniciativa emprendedora ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_IAW">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_IAW</field>
       <field name="moodle_id">0376</field>
       <field name="description">Aula Implantación de aplicaciones web ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_SGBD">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_SGBD</field>
       <field name="moodle_id">0377</field>
       <field name="description">Aula Administración de sistemas gestores de bases de datos ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_ASIR_PROY">
       <field name="code">SEG9_CEE_46025799_2022_836104_ASIR_PROY</field>
       <field name="moodle_id">0379</field>
       <field name="description">Aula Proyecto de administración de sistemas informáticos en red ASIR</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <!-- Aulas virtuales MIXTAS -->
@@ -231,30 +259,35 @@
       <field name="code">SEG9_CEE_46025799_2022_0483_MIX_SIN</field>
       <field name="moodle_id">0483</field>
       <field name="description">Aula Sistemas Informáticos</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_LM">
       <field name="code">SEG9_CEE_46025799_2022_0373_MIX_LM</field>
       <field name="moodle_id">0373</field>
       <field name="description">Aula Lenguajes de marcas y sistemas de gestión de información</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_BD">
       <field name="code">SEG9_CEE_46025799_2022_0484_MIX_BD</field>
       <field name="moodle_id">0484</field>
       <field name="description">Aula Bases de Datos</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_PROG">
       <field name="code">SEG9_CEE_46025799_2022_0485_MIX_PROG</field>
       <field name="moodle_id">0485</field>
       <field name="description">Aula Programación</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_ED">
       <field name="code">SEG9_CEE_46025799_2022_0487_MIX_ED</field>
       <field name="moodle_id">0487</field>
       <field name="description">Aula Entornos de desarrollo</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_INGI">
@@ -268,6 +301,7 @@
       <field name="code">SEG9_CEE_46025799_2022_CV0004_MIX_INGII</field>
       <field name="moodle_id">CV0004</field>
       <field name="description">Aula Inglés Técnico II-S</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
   </data>
