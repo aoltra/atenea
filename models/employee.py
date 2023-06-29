@@ -88,11 +88,25 @@ class Employee(models.Model):
     Actualiza en la base de datos un registro
     """
     roles_validators = self.env['atenea.rol'].search([('rol','=','CONV')])
+    roles_head_CF = self.env['atenea.rol'].search([('rol','=','JFCF')])
+    roles_coord_CF = self.env['atenea.rol'].search([('rol','=','CRDCF')])
+
     if 'roles_ids' in vals:
       if any([rol.id in vals['roles_ids'][0][2] for rol in roles_validators]): # es validador
         self.env.ref('atenea.group_VALID').write({'users': [(4, self.user_id.id, 0)]})
       else: # no lo es
         self.env.ref('atenea.group_VALID').write({'users': [(3, self.user_id.id, 0)]})
+
+      if any([rol.id in vals['roles_ids'][0][2] for rol in roles_head_CF]): # es Jefatura de ciclos
+        self.env.ref('atenea.group_MNGT_FP').write({'users': [(4, self.user_id.id, 0)]})
+      else: # no lo es
+        self.env.ref('atenea.group_MNGT_FP').write({'users': [(3, self.user_id.id, 0)]})
+
+      if any([rol.id in vals['roles_ids'][0][2] for rol in roles_coord_CF]): # es coord ciclos
+        self.env.ref('atenea.group_MNGT_FP').write({'users': [(4, self.user_id.id, 0)]})
+      else: # no lo es
+        self.env.ref('atenea.group_MNGT_FP').write({'users': [(3, self.user_id.id, 0)]})
+        
 
     return super(Employee, self).write(vals)
 

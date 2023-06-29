@@ -1,0 +1,185 @@
+<odoo>
+  <data>
+  
+    <template id="validation_banner_template">
+      <xpath expr="//style" position="after">
+        <link rel="stylesheet" href="/atenea/static/css/atenea_styles.css"/>
+      </xpath>
+      <div class="container-fluid" style="padding-top: 2rem; padding-bottom: 0.8rem">
+        <div class="row"> <!-- barra de estadísticas -->
+          <div class="col col-sm">
+            <div class="o_form_view">
+              <div class="o_not_full oe_button_box" >
+                <t t-if="is_validator and user_num_higher_level > 0">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
+                    <t t-set="text_sufix" t-value="'Instancia superior'"/>
+                    <t t-set="icon" t-value="'fa-upload'" />
+                    <t t-set="value" t-value="user_num_higher_level" />
+                  </t>
+                </t>
+                <t t-if="is_validator == False and num_higher_level > 0">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones enviadas a instancia superior'" />
+                    <t t-set="text_sufix" t-value="'Instancia superior'"/>
+                    <t t-set="icon" t-value="'fa-upload'" />
+                    <t t-set="value" t-value="num_higher_level" />
+                    <t t-set="text_subtitle" t-value="'Totales'" />
+                  </t>
+                </t>
+                <t t-if="is_admin or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones rechazadas'" />
+                    <t t-set="icon" t-value="'fa-thumbs-down'" />
+                    <t t-set="text_sufix" t-value="'Rechazadas'"/>
+                    <t t-set="value" t-value="num_rejected" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones finalizadas'" />
+                    <t t-set="icon" t-value="'fa-flag-checkered'" />
+                    <t t-set="text_sufix" t-value="'Finalizadas'"/>
+                    <t t-set="value" t-value="num_ended" />
+                  </t>
+                </t>
+                <t t-if="is_coord or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones revisadas'" />
+                    <t t-set="icon" t-value="'fa-tags'" />
+                    <t t-set="text_sufix" t-value="'Revisadas'"/>
+                    <t t-set="value" t-value="num_reviewed" />
+                  </t>
+                </t>
+                <t t-if="is_validator or is_root">
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Subsanaciones pendientes'" />
+                    <t t-set="text_sufix" t-value="'Subsanaciones'"/>
+                    <t t-set="icon" t-value="'fa-exclamation-circle'" />
+                    <t t-set="value" t-value="user_num_for_correction" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Convalidaciones resueltas por el usuario'" />
+                    <t t-set="text_sufix" t-value="'Resueltas'"/>
+                    <t t-set="icon" t-value="'fa-tag'" />
+                    <t t-set="value" t-value="user_num_resolved" />
+                  </t>
+                  <t t-call="atenea.client_statinfo_template">
+                    <t t-set="help" t-value="'Solicitudes de convalidación para ser gestionadas por el usuario'" />
+                    <t t-set="icon" t-value="'fa-inbox'"/>
+                    <t t-set="text_sufix" t-value="'Solicitudes'"/>
+                    <t t-set="value" t-value="user_num_valid" />
+                    <t t-set="text_subtitle" t-value="'Usuario'" />
+                  </t>
+                </t>
+                <t t-call="atenea.client_statinfo_template">
+                  <t t-set="help" t-value="'Solicitudes totales de convalidación'" />
+                  <t t-set="icon" t-value="'fa-inbox'"/>
+                  <t t-set="text_sufix" t-value="'Solicitudes'"/>
+                  <t t-set="style" t-value="'color: #4c2a85'"/>
+                  <t t-set="value" t-value="num_valid" />
+                  <t t-set="text_subtitle" t-value="'Totales'" />
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row"> <!-- barras de progreso -->
+          <t t-if="is_root or (is_validator and is_coord)">
+            <t t-set="width" t-value="'col-md-4'"/>
+          </t>  
+          <t t-elif="not is_validator and is_coord">
+            <t t-set="width" t-value="'col-md-6'"/>
+          </t>
+          <t t-else="">
+            <t t-set="width" t-value="'col-md-6 offset-md-6'"/>
+          </t>
+          <!-- convalidador -->
+          <t t-if="(is_validator or is_root) and user_num_valid > 0"> 
+            <t t-call="atenea.progress_bar_template">
+              <t t-set="reference_value" t-value="user_num_valid" />
+              <t t-set="data" t-value="[('Resueltas','bg-success',user_num_resolved),('En proceso','bg-warning', user_in_process),
+                                        ('Subsanación','bg-danger',user_num_for_correction),('Instancia superior','bg-info', user_num_higher_level)]"/>
+            </t>
+          </t>
+  
+          <!-- coordinador -->
+          <t t-if="(is_coord or is_root) and num_resolved > 0"> 
+            <t t-call="atenea.progress_bar_template">
+              <t t-set="reference_value" t-value="num_resolved" />
+              <t t-set="data" t-value="[('Revisadas','bg-success',num_reviewed),
+                                        ('Pendientes','bg-warning', num_reviewed_in_process),
+                                        ('Instancia superior','bg-info', num_higher_level)]"/>
+            </t>
+          </t>
+          
+          <!-- secretaria -->   
+          <t t-if="(is_admin or is_root) and num_reviewed > 0">  
+            <t t-call="atenea.progress_bar_template">
+              <t t-set="reference_value" t-value="num_reviewed" />
+              <t t-set="data" t-value="[('Finalizadas','bg-success',num_ended),('Pendientes','bg-warning', num_ended_in_process),
+                                        ('Instancia superior','bg-info', num_higher_level)]"/>
+            </t>
+          </t>
+        </div>
+      </div>
+    </template>
+
+    <!-- simula el widget statinfo pero para el lado del cliente -->
+    <template id="client_statinfo_template">
+      <button type="button" class="btn oe_stat_button"
+              t-att-title="help">
+        <!-- attf permite mostrar format string, que son cadenas que permiten mezclar cotenido 
+        con contenido calculado. el contenido de {{ }} se interpreta como expresión -->
+        <i t-attf-class="fa fa-fw fa-solid o_button_icon {{ icon }}" 
+          t-att-style="style"/>
+        <div class="o_field_widget o_stat_info">
+          <span class="o_stat_value">
+            <div class="o_field_widget o_stat_info o_readonly_modifier mr4" t-att-style="style">
+              <span class="o_stat_value" t-att-style="style">
+                <t t-esc="value"/>
+              </span>
+              <span class="o_stat_text">
+                <t t-esc="text_sufix"/>
+              </span>
+            </div>
+          </span>
+          <span class="o_stat_text">
+            <t t-esc="text_subtitle"/>
+          </span>
+        </div>
+      </button>
+    </template> 
+
+    <!-- barra de progreso -->
+    <template id="progress_bar_template">
+      <div t-attf-class="col col-sm {{ width }} ">
+        <div class="row" style="margin-bottom: 0.8rem"> 
+          <div class="col col-sm d-flex justify-content-center">
+            <div>
+              <t t-foreach="data" t-as="item">
+                <span t-att-class="item[1]" style="display: inline-block; width: 10px; height: 10px; border-radius: 5px"></span>
+                <span style="margin-right: 1rem">
+                  <t t-esc="item[0]"/>
+                </span>
+              </t>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-bottom: 0.8rem">
+          <div class="col col-sm">
+            <div class="progress">
+              <t t-foreach="data" t-as="item">
+                <div t-attf-class="progress-bar {{ item[1] }}" role ="progressbar" 
+                     t-attf-style="width: {{ item[2]*100/reference_value }}%;">
+                  <t t-if="item[2] != 0">
+                    <t t-esc="round(item[2]*100/reference_value,1)"/>%
+                  </t>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template> 
+  
+  </data>
+</odoo>

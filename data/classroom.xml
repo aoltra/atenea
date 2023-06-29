@@ -5,6 +5,50 @@
       <field name="code">SEG9_CEE_46025799_2022_845104_TU01CF</field>
       <field name="moodle_id">2088</field>
       <field name="description">Aula de tutoria de DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_FOL">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_FOL</field>
+      <field name="moodle_id">0617</field>
+      <field name="description">Aula Formación y Orientación Laboral DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_PROY">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_PROY</field>
+      <field name="moodle_id">0616</field>
+      <field name="description">Aula Proyecto de desarrollo de aplicaciones web DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_EIE">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_EIE</field>
+      <field name="moodle_id">0618</field>
+      <field name="description">Aula Empresa e iniciativa emprendedora DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_DWEC">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DWEC</field>
+      <field name="moodle_id">0612</field>
+      <field name="description">Aula Desarrollo web en entorno cliente DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_DWES">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DWES</field>
+      <field name="moodle_id">0613</field>
+      <field name="description">Aula Desarrollo web en entorno servidor DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
+    </record>
+
+    <record model="atenea.classroom" id="atenea.classroom_DAW_DAW">
+      <field name="code">SEG9_CEE_46025799_2022_836104_DAW_DAW</field>
+      <field name="moodle_id">0614</field>
+      <field name="description">Aula Despliegue de aplicaciones web DAW</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_DAW_FOL">
@@ -217,6 +261,7 @@
       <field name="code">SEG9_CEE_46025799_2022_CV0003_MIX_INGI</field>
       <field name="moodle_id">CV0003</field>
       <field name="description">Aula Inglés Técnico I-S</field>
+      <field name="lang_id" model="res.lang" search="[('code','=','es_ES')]" />
     </record>
 
     <record model="atenea.classroom" id="atenea.classroom_MIX_INGII">

@@ -6,8 +6,8 @@
         <field name="active" eval="True" />
         <field name="smtp_host">smtp.gmail.com</field>
         <field name="smtp_port">465</field>
-        <field name="smtp_user">myuser@gmail.com</field>    
-        <field name="smtp_pass">mypassword</field>
+        <field name="smtp_user">alfredo.ptcf@gmail.com</field>    
+        <field name="smtp_pass">Granada09</field>
         <field name="smtp_encryption">ssl</field>    
     </record>
 </odoo>

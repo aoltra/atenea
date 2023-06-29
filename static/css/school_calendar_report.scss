@@ -1,0 +1,175 @@
+/* wkthmltopdf no soporta grid :( 
+.calendar {
+  display: grid;
+  grid-template-columns: [first] 6cm [line2] 6cm [line3] 6cm [end];
+  grid-template-rows: 7cm 7cm 7cm 7cm;
+
+  justify-items: center;
+}*/
+
+/* wkhtmltopdf soporta flex pero tiene un bug con flex-wrap, bug
+   que también afecta a bootstrap 
+.calendar {display: -webkit-box; /* wkhtmltopdf usa esta terminologia 
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap
+} */
+
+/* debug */
+/* .calendar > div {
+  border: 2px solid red;
+} */
+
+@use './_school_calendar_report_palette.scss' as colors;
+@use './_school_calendar_report_fonts.scss' as fonts;
+@use './_school_calendar_legend.scss' as legend;
+
+.pt-5{
+    padding: 0 !important;
+  }
+  
+  .page{
+    padding-top: 3rem;
+  }
+  
+  .calendar{
+    margin-top: 1rem;
+  }
+  
+  .month {
+    margin: 0 auto;
+  }
+  
+  .month td {
+    padding: 0cm 0.225cm;
+  }
+  
+  /* se opta por float que es soportado sin problemas */
+  .grid-month {
+    width: 7.3cm;
+    height: 6.2cm;
+    text-align: center;
+    border-right: 2px solid black;
+    float: left;
+    font-size: 10pt;
+    padding: 0 10px;
+  }
+  
+  .grid-month:nth-child(1),
+  .grid-month:nth-child(4),
+  .grid-month:nth-child(7),
+  .grid-month:nth-child(10){
+    padding-left: 0 !important;
+  }
+  
+  /* 3: november, 6: february, 9: may, 11: legend */
+  .grid-month:nth-child(3),
+  .grid-month:nth-child(6),
+  .grid-month:nth-child(9),
+  .grid-month:nth-child(12){
+    border-right: none;
+    padding-right: 0 !important;
+  }
+  
+  .grid-month{
+    .mon,
+    .tue,
+    .wed,
+    .thu,
+    .fri,
+    .sat,
+    .sun{
+      font-size: fonts.$calendar-font-size;
+    }
+  }
+  
+  .grid-month:nth-child(n+4){
+    height: 6.7cm;
+    margin-top: 0.5cm;
+  }
+  
+  .description {
+    margin-top: 0.5cm;
+    margin-left: 4%;
+  }
+  
+  table.description{
+    width: 100%;
+  }
+  
+  .description td {
+    padding-left: 2px;
+    padding-right: 4px;
+    vertical-align:top;
+    font-size: 8.5pt;
+  }
+  
+  /* día del mes */
+  .description tr td.day {
+    text-align: right;
+    padding: 0;
+    margin: 0;
+    width: auto;
+    width: 31px;
+  }
+  
+  /* cuerpo de la descripción */
+  .description tr td.description {
+    text-align: left;
+    padding: 0; 
+    margin: 0;
+    width: 200px;
+    font-size: 9pt;
+  }
+  
+  /*
+  Color palette
+  --jasper: #db504aff;
+  --bittersweet: #ff6f59ff;
+  --dark-slate-gray: #254441ff;
+  --zomp: #43aa8bff;
+  --sage: #b2b09bff;
+  */
+  .day{
+    &.G-type,
+    &.G-type ~ td{
+        color: colors.$G_type;
+    }
+
+    &.P-type,
+    &.day.P-type ~ td {
+        color: colors.$P_type;
+    }
+
+    &.S-type,
+    &.S-type ~ td {
+        color: colors.$S_type;
+    }
+  }
+  .month .G-type,
+  .legend-square.G-type {
+    background-color: colors.$G_type;
+  }
+
+  .month .P-type,
+  .legend-square.P-type {
+    background-color: colors.$P_type
+  }
+
+  .month .S-type,
+  .legend-square.S-type {
+    background-color: colors.$S_type;
+  }
+
+  .month{
+    .S-type,
+    .P-type{
+      color: white;
+    }
+
+    .sun, .sat, .H-type{
+        color: colors.$holidays_back_color;
+    }
+  }
+
+@include legend.legendComponent();

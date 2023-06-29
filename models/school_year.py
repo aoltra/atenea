@@ -364,7 +364,7 @@ class SchoolYear(models.Model):
       if record.date_2term2_ini == False:
         record.date_extraord2_exam_ini = ''
       else: 
-        record.date_extraord2_exam_ini = record.date_2term1_exam_ini - datetime.timedelta(weeks = 1)
+        record.date_extraord2_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 1)
 
   @api.constrains('date_extraord2_exam_ini')
   def _check_date_extraord2_exam_ini(self):
@@ -554,7 +554,7 @@ class SchoolYear(models.Model):
       if record.date_2term1_ini == False:
         record.date_ord1_exam_ini = ''
       else: 
-        record.date_ord1_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 2)
+        record.date_ord1_exam_ini = record.date_2term1_exam_ini + datetime.timedelta(weeks = 3)
 
   @api.constrains('date_ord1_exam_ini')
   def _check_date_ord1_exam_ini(self):
@@ -992,9 +992,28 @@ class SchoolYear(models.Model):
             #'code': 'model._cron_download_validations({},{},"{}")'
             #  .format(2094,183989,course.abbr),
           }) 
-      
+
           cron_ids.append(task)
- 
+      
+          ## NOTIFICACIONES ALUMNADO
+          task = (0, 0, {
+            'model_id': record.env.ref('atenea.model_atenea_classroom'),
+            'name': 'Notifica estado convalidaciones {} en Aules {}'.format(course.abbr, 
+              '/{}'.format(subject.year) if len(list(distinct_subject_tut)) > 1 else ''),
+            'active': True,
+            'interval_number': 1,
+            'interval_type': 'days',
+            'numbercall': 60,     # número de veces que será ejecutada la tarea
+            'doall': 1,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+            'nextcall': '2023-03-02 00:27:59',
+            'state': 'code',
+            'code': 'model.cron_notify_validations({}, {}, {})'
+              .format(subject.classroom_id.moodle_id,
+                subject.classroom_id.get_task_id_by_key('validation'),
+                course.id),
+          })
+
+          cron_ids.append(task)
 
       _logger.info(cron_ids)
     
@@ -1278,3 +1297,23 @@ class SchoolYear(models.Model):
       'desc': self._fields['date_waiver_extraord1'].string, 
       'type': 'P',
     }
+
+    for holiday in self.holidays_ids:
+      holiday_dto = { 
+        'date': holiday.date,
+        'desc': holiday.description,
+        'type': 'H'
+      }
+
+      holiday_end_dto = { 
+        'date': holiday.date_end,
+        'desc': holiday.description,
+        'type': 'H'
+      }
+
+      if(holiday.date != holiday.date_end):
+        holiday_dto['dur'] = holiday.date_end - holiday.date
+        holiday_end_dto['dur'] = holiday.date - holiday.date_end
+
+      self.dates[holiday.description] = holiday_dto
+      self.dates[holiday.description] = holiday_end_dto

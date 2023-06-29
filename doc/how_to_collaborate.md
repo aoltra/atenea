@@ -10,7 +10,7 @@
 
 ## Configuración
 
-1. Instalar Odoodock. Para ello hay que seguir los pasos indicados [aquí](https://github.com/aoltra/odoodock#readme) hasta el paso 8.
+1. Instalar [Odoodock](https://github.com/aoltra/odoodock). Para ello hay que seguir los pasos indicados [aquí](https://github.com/aoltra/odoodock#c%C3%B3mo-empezar) hasta el paso 8.
 
 2. Modificar el _.env_ para configurar los siguente valores:
 
@@ -23,15 +23,32 @@
 
 3. Modificar el _.services_ descomentando el servicio _moodle_.
 
-4. Continuar las instalación de Odoodock hasta el final.
+4. Continuar la instalación de _Odoodock_ hasta el final.
 
 5. Clonar el repo de _Atenea_ desde [github](https://github.com/aoltra/atenea). Para ello la mejor opción es el uso de script _create-module.sh_, opción O2, tal y como se explica [aquí](https://github.com/aoltra/odoodock#usando-el-script-create-modulesh)
 
    ```
    $ ./create-module.sh -g https://github.com/aoltra/atenea.git
    ```
+6. Instalar los paquetes Python necesarios. Para ello, desde odoodock ejecutar:
 
-TODO: Requirements, aula moodle, contraseñas usuarios, key moodle, modificacion odoo.conf, ajuste id aulas y tareas, configuracion correo, creación de usuarios
+   ```
+   $ docker exec -it odoodock-web-1 bash
+   > cd /mnt/extra-addons/atenea
+   > pip3 install -r requirements-dev.txt
+   ```
+   Aunque dependiendo del sistema puede no ser necesario, es aconsejable reiniciar los servicios (al menos el _web_):
+
+   ```
+   $ docker compose down
+   $ ./up.sh
+   ```
+7. Para comprobar que todo ha ido correctamente, acceder desde un navegador a _localhost:8069_, configurar los datos del sistema (Base de datos, usuario administrador y contraseña) y posteriormente instalar el módulo _Atenea_. 
+
+   > Nota: En caso de que el módulo no aparezca en el listado de aplicaciones, hay que actualizar la lista de aplicaciones. Para ello es necesario tener activo el modo desarrollador (la opción más sencilla es usando una extensión para [Firefox](https://addons.mozilla.org/es/firefox/addon/odoo-debug/reviews/?score=5&utm_content=addons-manager-reviews-link&utm_medium=firefox-browser&utm_source=firefox-browser) o [Chrome](https://chrome.google.com/webstore/detail/odoo-debug/hmdmhilocobgohohpdpolmibjklfgkbi?hl=es_PR))
+
+
+TODO:  aula moodle, contraseñas usuarios, key moodle, modificacion odoo.conf, ajuste id aulas y tareas, configuracion correo, creación de usuarios
 
 
 ## Cómo trabajar
@@ -66,7 +83,7 @@ Para cada una de las tareas a realizar hay que crearse un rama, en la que irán 
 
 ## Pull Request
 
-Una vez finalizada la tarea hay que solicitar un pull request para que el código se incluya en la rama _main_ del repo.
+Una vez finalizada la tarea hay que solicitar un pull request para que el código se incluya en la rama _dev_ del repo.
 
 1. Hacer un _push_ de la rama a _origin_
 
@@ -113,7 +130,6 @@ Para testear y aprobar el código del PR, los pasos son:
    ```
 
 3. Hacer las pruebas
-
 
 En caso que querer modificar el código del PR, se pueden realizar todos los commits que se consideren y posteriormente subirlos 
 

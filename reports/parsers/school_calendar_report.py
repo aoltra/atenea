@@ -28,6 +28,8 @@ class SchoolCalendarReport(models.AbstractModel):
 
     table_tr = ''
     for dt in date_month:
+      if dt['type'] == 'H':
+        continue
       if 'dur' in dt:
         if dt['date'] < dt['date'] + dt['dur']:
           day = '%s-%s' % (dt['date'].day, str((dt['date'] + dt['dur']).day))

@@ -23,7 +23,7 @@
     <record id="atenea.group_MNGT" model="res.groups">
       <field name="name">Equipo Directivo</field>
       <field name="category_id" ref="atenea.category_group"/>
-      <field name="implied_ids" eval="[(4,ref('atenea.group_VALID')), (4,ref('atenea.group_ADMIN'))]"/>
+      <field name="implied_ids" eval="[(4,ref('atenea.group_ADMIN'))]"/>
     </record>
 
     <record id="atenea.group_MNGT_FP" model="res.groups">

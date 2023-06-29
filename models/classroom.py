@@ -25,6 +25,7 @@ class Classroom(models.Model):
 
   _name = 'atenea.classroom'
   _description = 'Aula virtual'
+  _rec_name = 'code'
 
   moodle_id = fields.Integer('Identificador Moodle', required = True)
   code = fields.Char('Código', required = True, help = 'Código del aula, por ejemplo SEG9_CEE_46025799_2022_854101_0498')
@@ -32,6 +33,8 @@ class Classroom(models.Model):
 
   subjects_ids = fields.One2many('atenea.subject', 'classroom_id', string = 'Módulos')
   tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que están conectadas con Atenea')
+
+  lang_id = fields.Many2one('res.lang', domain = [('active','=', True)])
 
   _sql_constraints = [ 
     ('unique_moodle_id', 'unique(moodle_id)', 'El identificador de moodle tiene que ser único.'),
@@ -395,7 +398,7 @@ class Classroom(models.Model):
 
         # es el nombre del módulo
         if key.startswith('C_Modulo') and len(key) < 12:
-          code = fields[key][0][:4]
+          code = fields[key][0][:(fields[key][0].find(' -'))]
           validation_type = fields[key + 'AACO'][0][:2].lower()
           
           if len(code) == 0:
@@ -451,8 +454,7 @@ class Classroom(models.Model):
   
 
     return
-  
-  
+   
   @api.model
   def cron_enrol_students(self, validation_classroom_id, course_id, subject_id):
     """
@@ -481,3 +483,85 @@ class Classroom(models.Model):
 
     for user in users:
       self._enrol_student(user, subject_id, course_id)
+
+  @api.model
+  def cron_notify_validations(self, validation_classroom_id, validation_task_id, course_id):
+    """
+    Publica notificaciones sobre las convalidaciones 
+    """
+    # comprobaciones iniciales
+    if validation_classroom_id == None:
+      _logger.error("CRON: validation_classroom_id no definido")
+      return
+    
+    if validation_task_id == None:
+      _logger.error("CRON: validation_task_id no definido")
+      return
+    
+    if course_id == None:
+      _logger.error("CRON: course no definido")
+      return
+    try:
+      conn = AteneaMoodleConnection( 
+        moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
+        moodle_host = self.env['ir.config_parameter'].get_param('atenea.moodle_url')) 
+    except Exception:
+      raise Exception('No es posible realizar la conexión con Moodle')
+    
+    current_sy = (self.env['atenea.school_year'].search([('state', '=', 1)])) # curso escolar actual  
+
+    if len(current_sy) == 0:
+      raise AteneaException(
+          _logger, 
+          'No se ha definido un curso actual',
+          50, # critical
+          comments = '''Es posible que no se haya marcado como actual ningún curso escolar''')
+    else:
+      current_school_year = current_sy[0]
+        
+    # obtención de las tareas entregadas
+    assignments = AteneaMoodleAssignments(conn, 
+      course_filter=[validation_classroom_id], 
+      assignment_filter=[validation_task_id])
+    
+    if len(assignments) == 0:
+      raise AteneaException(
+          _logger, 
+          'No se ha encontrado la tarea para convalidaciones (moodle_id: {})'.format(validation_task_id),
+          50, # critical
+          comments = '''Es posible que la tarea con moodle_id:{} no exista en moodle o no
+                      exista dentro del curso con moodle_id: {}. 
+                      Es posible que se haya creado un nuevo curso escolar y no se haya
+                      actualizado los moodle_id dentro de atenea'''.
+                      format(validation_task_id, validation_classroom_id))
+    
+    validations = self.env['atenea.validation'].search([('course_id', '=', course_id)])
+    today = date.today()
+
+    # en caso de subsanación se abre un perido de 15 dias naturales
+    new_due_date = today + timedelta(days = 15)
+    new_timestamp = int(datetime(year = new_due_date.year, 
+                      month = new_due_date.month,
+                      day = new_due_date.day,
+                      hour = 23,
+                      minute = 59,
+                      second = 59).timestamp())     
+    
+    submissions = assignments[0].submissions()
+    
+    for validation in validations:
+
+      # obtengo la primera entrega que tenga como estudiante al que se indica en la convalidación
+      submission = next((sub for sub in submissions if sub.userid == int(validation.student_id.moodle_id)), None)
+      if submission == None:
+        _logger.error(f'No es posible encontrar en la tarea de Moodle {validation_task_id} la entrega del usuario id A{submission.user_id}:A{validation.student_id}')
+        continue
+
+      # está en estado de subsanación y el alumno no ha sido avisado
+      if validation.state == '2' and validation.situation == '1':
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('INT'))
+        submission.set_extension_due_date(to = new_timestamp)
+        # TODO comprobar que la nota se haya almacenado correctamente en Moodle
+        self.env['atenea.validation'].write({
+          'situation': '2'  
+        })

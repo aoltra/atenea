@@ -65,6 +65,15 @@
                     <span>Fechas <strong>Generales</strong></span>
                   </div>
                 </div>
+
+                <div class="row">
+                  <div class="offset-2 col-2">
+                    <div class="legend-square H-type"><span>1-31</span></div>
+                  </div>
+                  <div class="col-8">
+                    <span>Fechas <strong>No lectivos</strong></span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

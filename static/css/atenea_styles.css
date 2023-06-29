@@ -1,3 +1,14 @@
 .info {
   color: #dc143c
 }
+
+/* statinfo widget en cliente */
+@media (min-width: 1200px) {
+ .o_form_view .oe_button_box > .btn.oe_stat_button, .o_form_view .oe_button_box > .o_dropdown_more {
+  width: 10%;
+ }
+}
+
+.o_form_view .oe_button_box .btn.oe_stat_button > .o_button_icon {
+  width: 23%;
+}

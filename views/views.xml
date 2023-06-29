@@ -1,7 +1,6 @@
 <odoo>
   <data>
     <!-- explicit list view definition -->
-
     <record model="ir.ui.view" id="atenea.course_tree">
       <field name="name">Lista de Ciclos Formativos</field>
       <field name="model">atenea.course</field>
@@ -13,7 +12,6 @@
         </tree>
       </field>
     </record>
-
 
     <record model="ir.ui.view" id="atenea.subject_tree">
       <field name="name">Lista de Módulos</field>
@@ -333,17 +331,18 @@
       <field name="name">Lista de convalidaciones/aprobados con anterioridad solicitados</field>
       <field name="model">atenea.validation</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree banner_route="/validation/validation_banner">
           <field name="course_abbr"/>
           <field name="student_info"/>
           <field name="validation_subjects_info"/>
           <field name="state"/>
+          <field name="situation"/>
           <field name="correction_date"/>
           <field name="correction_reason"/>
         </tree>
       </field>
     </record>
-
+  
     <record model="ir.ui.view" id="atenea.validation_form">
       <field name="name">validation.form.view</field>
       <field name="model">atenea.validation</field>
@@ -488,6 +487,10 @@
       <field name="name">Convalidaciones</field>
       <field name="res_model">atenea.validation</field>
       <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">Todavía no hay convalidaciones a resolver</p>
+        <p>Una vez vayan subiéndose a Aules aparecerán en esta página</p>
+      </field>
     </record>
 
     <record model="ir.actions.act_window" id="atenea.action_validation_subject">
@@ -510,7 +513,11 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
+    <record model="ir.actions.act_window" id="atenea.action_classroom">
+      <field name="name">Aulas virtuales</field>
+      <field name="res_model">atenea.classroom</field>
+      <field name="view_mode">tree,form</field>
+    </record>
 
     <!-- server action to the one above -->
 <!--
@@ -527,6 +534,18 @@
       </field>
     </record>
 -->
+
+   <record model="ir.actions.server" id="action_unlock_notificated_correction">
+       <field name="name">Desbloquear/bloquear edición</field>
+       <field name="type">ir.actions.server</field>
+       <field name="model_id" ref="model_atenea_validation"/>
+       <field name="binding_model_id" ref="model_atenea_validation"/>
+       <field name="binding_view_types">form</field>
+       <field name="state">code</field>
+       <field name="code">
+          record._unlock_edition()
+       </field>
+   </record>
 
     <record model="ir.actions.server" id="atenea.action_server">
       <field name="name">atenea server</field>
@@ -560,6 +579,9 @@
               action="atenea.action_employee"/>
     <menuitem name="Curso" id="atenea.school_year" parent="atenea.school"
               action="atenea.action_school_year"/>
+    <menuitem name="Aulas virtuales" id="atenea.classroom" parent="atenea.school"
+              action="atenea.action_classroom"/>
+              
     <menuitem name="Estudiantes" id="atenea.school_student" parent="atenea.school"
               action="atenea.action_student"/>
     <menuitem name="Convalidaciones" id="atenea.validation" parent="atenea.school"
