@@ -362,7 +362,7 @@
               <field name="course_id" options="{'no_open': True}" readonly="1" />
             </group>
           </group>
-          <group col='2'>            
+          <group col='3'>            
             <group>      
               <button name="download_validation_action" icon="fa-download" 
                 string="Descarga documentación" class="oe_highlight"
@@ -371,7 +371,11 @@
             <group>  
               <field name="documentation_filename" />
               <field name="attempt_number"/>
-            </group>  
+            </group>      
+            <group>
+              <field name="state"/>
+              <field name="situation"/>
+            </group>
           </group>
           <group>
             <field name="info" class="info"
@@ -380,13 +384,13 @@
           <!-- tiene que aparecer en al vista para que pueda trabajar con él en las dos
                visualizaciones parciales que se hacen a partir de ella.
                Para que no aparezca ponemos su display a none (hacerlo con attr 
-               implica que no se envia al cliente) -->
+               implica que no se envia al cliente)   -->
           <field name="validation_subjects_ids" style="display: none"/>
           <group> <!-- se incluyen dentro de un grupo para que aparezca el texto-->
             <field name="validation_subjects_not_for_correction_ids">
               <tree editable="top">
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
-                <field name="is_read_only" invisible="1"/>
+                <field name="is_read_only" string="Bloqueada" attrs="{'column_invisible': ['!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
                 <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="accepted" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="mark" attrs="{'readonly':[('is_read_only','=',True)]}"/>
@@ -395,14 +399,15 @@
                 <field name="comments" attrs="{'readonly':[('is_read_only','=',True)]}"/>
               </tree>
             </field>
-            <field name="validation_subjects_for_correction_ids">
-              <!-- Quiero que los campos a mostrar sean diferentes a los de la vista trre del modelo validation_subject
+            <field name="validation_subjects_for_correction_ids"> 
+              <!-- Quiero que los campos a mostrar sean diferentes a los de la vista tree del modelo validation_subject
                    así que redefindo de manera local la vista -->
               <tree editable="top"> 
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
-                <field name="validation_type" />
-                <field name="state"/>
-                <field name="correction_reason"/>
+                <field name="is_read_only" string="Bloqueada" attrs="{'column_invisible': ['!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
+                <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="state" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="correction_reason" attrs="{'readonly':[('is_read_only','=',True)]}"/>
               </tree>
             </field>
           </group>
@@ -417,6 +422,7 @@
         <tree editable="top">
           <field name="subject_id" options="{'no_open': True}" readonly="1"/>
           <field name="validation_type" />
+          <field name="is_read_only" invisible="0"/>
           <field name="accepted"/>
           <field name="mark"/>
           <field name="state"/>
@@ -534,18 +540,6 @@
       </field>
     </record>
 -->
-
-   <record model="ir.actions.server" id="action_unlock_notificated_correction">
-       <field name="name">Desbloquear/bloquear edición</field>
-       <field name="type">ir.actions.server</field>
-       <field name="model_id" ref="model_atenea_validation"/>
-       <field name="binding_model_id" ref="model_atenea_validation"/>
-       <field name="binding_view_types">form</field>
-       <field name="state">code</field>
-       <field name="code">
-          record._unlock_edition()
-       </field>
-   </record>
 
     <record model="ir.actions.server" id="atenea.action_server">
       <field name="name">atenea server</field>

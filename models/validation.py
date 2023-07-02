@@ -2,6 +2,7 @@
 
 from odoo import api, models, fields
 from odoo.exceptions import AccessDenied
+from lxml import etree 
 
 import datetime
 import logging
@@ -54,7 +55,7 @@ class Validation(models.Model):
       ('2', 'Notificación enviada'),
       ('3', 'Nuevo envio de documentación'),
       ('4', 'Subsanación fuera de plazo'),
-      ], string ='Información extra', default = '0',
+      ], string = 'Situación', default = '0',
       readonly = True)
 
   # TODO que hacer con instancia superior si tardan en responder??
@@ -76,8 +77,8 @@ class Validation(models.Model):
       ('12', 'En proceso de finalización'),
       ('13', 'Finalizada'), # todas las convalidaciones finalizadas pero sin notificación al alumno
       ('14', 'Cerrada'),
-      ], string ='Estado de la convalidación', default = '0',
-      compute = '_compute_state')
+      ], string ='Estado', help = 'Estado de la convalidación', 
+      default = '0', compute = '_compute_state')
   
   # fecha de solicitud de la subsanación
   correction_date = fields.Date(string = 'Fecha subsanación', 
@@ -111,31 +112,29 @@ class Validation(models.Model):
         compute='_compute_documentation_filename'
     )
   
-  info = fields.Text(string="Información", compute = '_compute_info')
+  info = fields.Text(string = "Observaciones", compute = '_compute_info')
 
-  unlocked = fields.Boolean(default = False, store = True)
+  def _default_locked(self):
+    if self.state == '2' and self.situation == '2': 
+      return True
+    else:
+      return False
+    
+  locked = fields.Boolean(default = _default_locked, store = False, readonly = True)
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
   
-  def _unlock_edition(self):
-    self.ensure_one()
-    if not(self.state == '2' and self.situation == '2'):
-      raise AccessDenied('Esta acción sólo puede ejecutarse sobre convalidaciones en estado de subsanación ya notificadas al estudiante')
-    
-    self.unlocked = not self.unlocked
-  
-  
-  @api.onchange('validation_subjects_ids')
+  """ @api.onchange('validation_subjects_ids')
   def _check_notify_correction_done(self):
     self.ensure_one()
     if self.situation == '2' and self.state == '2':
       for val in self.validation_subjects_ids:
         old_val = next((old_vali for old_vali in self._origin.validation_subjects_ids if old_vali.id == val._origin.id), None)
         if old_val == None:
-          return
+         return
         if not self.unlocked and \
            ((old_val.state == '1' and val.state != '1') or \
            (old_val.state != '1' and val.state == '1') or \
@@ -150,7 +149,7 @@ class Validation(models.Model):
             return { 'warning': {
               'title': "¡Atención!", 
               'message': "Este cambio modifica el contenido de la notificación enviada al estudiante. Una vez guardada se le notificará de manera inmediata el cambio"
-              }}
+              }} """
 
   def create_correction(self, reason, comment = '') -> str:
     """
@@ -240,16 +239,15 @@ class Validation(models.Model):
         self.student_surname.upper() if self.student_surname is not None else 'SIN-APELLIDOS', 
         self.student_name.upper() if self.student_name is not None else 'SIN-NOMBRE')
      
-  @api.depends('unlocked')
+  @api.depends('validation_subjects_not_for_correction_ids.is_read_only')
   def _compute_info(self):
     self.ensure_one()
 
-    unlocked_info = ''
-
-    if self.unlocked:
-      unlocked_info = '\n¡IMPORTANTE! La convalidación ha sido desbloqueada para ser modificada. Si se modifica y se graba el estudiante será notificado de manera inmediata'
-
     if int(self.state) == 2 and self.situation == '2':
+      unlocked_info = ''
+      if any(val.is_read_only == False for val in self.validation_subjects_ids):
+        unlocked_info = '\n¡IMPORTANTE! Alguna convalidación ha sido desbloqueada para ser modificada. Si se modifica y se graba el estudiante será notificado de manera inmediata del nuevo estado de la convalidación'
+      
       self.info = 'La convalidación está en estado de subsanación y ya ha sido notificada al estudiante.' + unlocked_info
       return
 
@@ -314,6 +312,7 @@ class Validation(models.Model):
         (self.id, filename.replace(' ','%20'))
     }
 
+  @api.depends('validation_subjects_ids')
   def _compute_state(self):
     for record in self:  
       all_noprocess = all(val.state == '0' for val in record.validation_subjects_ids)

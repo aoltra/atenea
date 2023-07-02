@@ -61,14 +61,7 @@ class ValidationSubject(models.Model):
     ], string ='Razón de la subsanación',
     help = "Permite indicar el motivo por el que se solicita la subsanación")
   
-  is_read_only = fields.Boolean(store = False, compute = '_is_read_only')
-  
-  """  # la nota tiene que estar entre 5 (tiene que esta aprobado) y 11
-  @api.constrains('mark')
-  def _check_mark(self):
-    for record in self:
-      if record.mark > 11 or record.mark < 5:
-        raise ValidationError('El valor debe estar ente 5 y 11') """
+  is_read_only = fields.Boolean(store = False, compute = '_is_read_only', readonly = False)
       
   def _populate_state(self):
     """
@@ -109,6 +102,18 @@ class ValidationSubject(models.Model):
 
     return choices 
   
+  @api.onchange('state', 'correction_reason', 'comments')
+  def _change_notified_validation(self):
+    if self.is_read_only == False and self.validation_id.state == '2' and self.validation_id.situation == '2':
+      if ((self._origin.state == '1' and self.state != '1') or \
+           (self._origin.state != '1' and self.state == '1') or \
+           (self._origin.state == '1' and 
+              (self._origin.correction_reason != self.correction_reason or self._origin.comments != self.comments))):
+        return { 'warning': {
+              'title': "¡Atención!", 
+              'message': "Esta convalidación ya ha sido notificada al estudiante. Cambiar su contenido implica la notificación del cambio en cuanto se realice la grabación"
+              }}
+      
   def _check_attribute_value(self, field_name, vals) -> bool:
     if isinstance(self._fields[field_name], fields.Char) or \
        isinstance(self._fields[field_name], fields.Text):
@@ -176,9 +181,14 @@ class ValidationSubject(models.Model):
     Devuelve true o false en función de si la fila que se muestra en la lista
     de convalidaciones es o no de solo lectura
     """
+     
     for record in self:
+      if self.validation_id.locked:
+        record.is_read_only = True
+        continue
+    
       record.is_read_only = True
-
+      
       if record.env.user.has_group('atenea.group_ROOT'):
         record.is_read_only = False
     
@@ -189,7 +199,7 @@ class ValidationSubject(models.Model):
         record.is_read_only = False
 
       if int(record.state) < 4 and self.env.user.has_group('atenea.group_VALID'):
-        record.is_read_only = False
+        record.is_read_only = False 
 
 
   def _create_validations(self):
