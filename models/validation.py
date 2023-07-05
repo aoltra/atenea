@@ -9,6 +9,7 @@ import logging
 import base64
 import os
 
+from ..support.helper import create_HTML_list_from_list
 from ..support.atenea_logger.exceptions import AteneaException
 
 _logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ class Validation(models.Model):
       ('2', 'Notificación enviada'),
       ('3', 'Nuevo envio de documentación'),
       ('4', 'Subsanación fuera de plazo'),
+      ('5', 'Notificación rectificada (pendiente envio)'),
       ], string = 'Situación', default = '0',
       readonly = True)
 
@@ -98,6 +100,8 @@ class Validation(models.Model):
     ('ANP', 'Anexo no cumplimentado correctamente. Tipo (convalidación/aprobado con anterioridad) no indicado.'),
     ('SNF', 'Documento no firmado digitalmente'),
     ('INT', 'Ver convalidaciones módulos'), # subsanaciones específicas de módulos
+    ('ERR1', 'Error al notificar una subsanación que no era'), 
+    ('ERR2', 'Error al notificar los detalles de una subsanación'), 
     ], string ='Razón de la subsanación', 
     help = 'Permite indicar el motivo por el que se solicita la subsanación')
   
@@ -115,7 +119,7 @@ class Validation(models.Model):
   info = fields.Text(string = "Observaciones", compute = '_compute_info')
 
   def _default_locked(self):
-    if self.state == '2' and self.situation == '2': 
+    if (self.state == '2' and self.situation == '2') or self.situation == '5': 
       return True
     else:
       return False
@@ -161,33 +165,42 @@ class Validation(models.Model):
     
     self.correction_date = datetime.datetime.today()
     
+    footer = """
+      <br>\
+      <p>Se abre un periodo de subsanación de 15 días naturales a contar desde el día de publicación de este mensaje para reenviar \
+        a través de esta misma tarea la documentación necesaria para corregir los errores. \
+          Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
+      <p>Recuerde enviar de nuevo TODA la documentación, incluso la ya entregada en envios previos</p>   
+      <p><strong>Fin de período de subsanación</strong>: {0}</p>
+      """.format(self.correction_date_end)
+
+    # si la notificación previa es erronea
+    prebody = ''
+    if reason[:3] == 'ERR':
+      prebody = """
+          <p><strong>ATENCIÓN:</strong> La notificación previa fue enviada de manera errónea debido a un error administrativo. Esta notificación sustituye a la anterior. Disculpe las molestias</p>"""
+
+    if reason == 'ERR1':
+      body = prebody + '<p>Su convalidación se encuentra en estado: <strong>EN PROCESO</strong></p>.'
+
+      self.write({ 
+        'correction_reason': False,
+        'state': '1',
+        'correction_date': False
+      })
+
+      return body
+    
     self.write({ 
       'correction_reason': reason,
       'state': '2',
       'correction_date': self.correction_date
     })
-
-    footer = """
-      <br>\
-      <p>Se abre un periodo de subsanación de 15 días naturales a contar desde el día de publicación de este mensaje. \
-         Si pasado este periodo no se subsana el error, la(s) convalidación(es) afectadas se considerarán rechazadas.</p>
-      <p><strong>Fin de período de subsanación</strong>: {0}</p>
-      """.format(self.correction_date_end)
-
+    
     # las causas viene definidas en cada uno de los módulos
-    if reason == 'INT':
-      body = """
-          <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p><ul>"""
-      
-      val_for_correction = [ val for val in self.validation_subjects_ids if val.state == '1']
-
-      for val in val_for_correction:
-        body += """
-          <li>{0}
-        """.format(dict(val._fields['correction_reason'].selection).get(val.correction_reason))
-
-      body += """</ul>"""
-
+    if reason in ('INT', 'ERR2'): 
+      val_for_correction = [(dict(val._fields['correction_reason'].selection).get(val.correction_reason)) for val in self.validation_subjects_ids if val.state == '1']
+      body = prebody + create_HTML_list_from_list(val_for_correction, 'No es posible realizar la convalidación solicitada por los siguientes motivos:')
     else:
       body = """
           <p>No es posible realizar la convalidación solicitada por los siguientes motivos:</p>
@@ -327,12 +340,49 @@ class Validation(models.Model):
       all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
       all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
-      # si está ya notificado al estudiante o estaba en subsanación o finalizada
-      # si hay alguna subsanación es que es subsanación
-      if record.situation == '2' and any_correction:
-        record.state = '2'
-        return
- 
+      # si está ya notificado al estudiante o estaba en subsanación o finalizada o instancia superior
+      if record.situation == '2':
+        # si hay alguna subsanación/instancia superior es que es subsanación/instancia superior
+        if any_correction and any_higher_level:
+          record.state = '4'
+          return
+        
+        # si hay alguna subsanación es que es subsanación
+        if any_correction:
+          record.state = '2'
+          return
+      
+        # si hay alguna instancia superior es que es instancia superior
+        if any_higher_level:
+          record.state = '3'
+          return
+
+      # con notificación enviada se han realizado cambios
+      if record.situation == '5':
+        # alguno se ha pasado a no procesada (solo lo puede hacer admin)
+        if any_noprocess:
+          record.state = '1' # En proceso
+          return
+
+        # si hay instancias superiores y subsanaciones -> subsanación/instancia superior
+        if any_higher_level and any_correction:
+          record.state = '4'
+          continue
+
+        # si hay alguna en instancia superior -> instancia superior
+        if any_higher_level:
+          record.state = '3'
+          continue
+    
+        # si hay al menos una subsanación  -> subsanacion
+        if any_correction:
+          record.state = '2'
+          continue
+      
+        if all_resolved:
+          record.state = '5' # Resuelta
+          continue
+      
       record.situation = '0'
 
       # si todas sin procesar -> sin procesar

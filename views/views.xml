@@ -390,7 +390,11 @@
             <field name="validation_subjects_not_for_correction_ids">
               <tree editable="top">
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
-                <field name="is_read_only" string="Bloqueada" attrs="{'column_invisible': ['!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
+                <field name="is_read_only" string="Bloqueada" 
+                   attrs="{'column_invisible': [
+                                      '&amp;',
+                                      '!', ('parent.situation', '=', '5'),
+                                      '!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
                 <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="accepted" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="mark" attrs="{'readonly':[('is_read_only','=',True)]}"/>
@@ -404,7 +408,11 @@
                    así que redefindo de manera local la vista -->
               <tree editable="top"> 
                 <field name="subject_id" options="{'no_open': True}" readonly="1"/>
-                <field name="is_read_only" string="Bloqueada" attrs="{'column_invisible': ['!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
+                <field name="is_read_only" string="Bloqueada" 
+                   attrs="{'column_invisible': [
+                                      '&amp;',
+                                      '!', ('parent.situation', '=', '5'),
+                                      '!','&amp;',('parent.state', '=', '2'), ('parent.situation', '=', '2')]}"/>
                 <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="state" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="correction_reason" attrs="{'readonly':[('is_read_only','=',True)]}"/>

@@ -88,6 +88,10 @@ class ValidationSubject(models.Model):
     # if ordenados por orden de grupos de más importante a menos
     if self.env.user.has_group('atenea.group_ROOT'): # root todas las opciones
       return choices
+
+    # si ya se ha enviado notificación no puede volver a en proceso
+    if self.validation_id.situation == '2' or self.validation_id.situation == '5':
+      del choices[0]
     
     if self.env.user.has_group('atenea.group_MNGT_FP'): # coordinación de FP todas menos finalizar, por revisar y cerrar
       del choices[-3:]
@@ -104,11 +108,13 @@ class ValidationSubject(models.Model):
   
   @api.onchange('state', 'correction_reason', 'comments')
   def _change_notified_validation(self):
-    if self.is_read_only == False and self.validation_id.state == '2' and self.validation_id.situation == '2':
+    if self.is_read_only == False and self.validation_id.state == '2' and \
+                (self.validation_id.situation == '2' or self.validation_id.situation == '5'):
       if ((self._origin.state == '1' and self.state != '1') or \
            (self._origin.state != '1' and self.state == '1') or \
            (self._origin.state == '1' and 
               (self._origin.correction_reason != self.correction_reason or self._origin.comments != self.comments))):
+        self._origin.validation_id.situation = '5'
         return { 'warning': {
               'title': "¡Atención!", 
               'message': "Esta convalidación ya ha sido notificada al estudiante. Cambiar su contenido implica la notificación del cambio en cuanto se realice la grabación"

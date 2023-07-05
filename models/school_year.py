@@ -1015,6 +1015,26 @@ class SchoolYear(models.Model):
 
           cron_ids.append(task)
 
+          ## NOTIFICACIONES INMEDIATAS (60') ALUMNO
+          task = (0, 0, {
+            'model_id': record.env.ref('atenea.model_atenea_classroom'),
+            'name': 'Notifica estado convalidaciones erroneas {} en Aules {}'.format(course.abbr, 
+              '/{}'.format(subject.year) if len(list(distinct_subject_tut)) > 1 else ''),
+            'active': True,
+            'interval_number': 1,
+            'interval_type': 'hours',
+            'numbercall': 60,     # número de veces que será ejecutada la tarea
+            'doall': 0,           # si el servidor cae, cuado se reinicie lanzar las tareas no ejecutadas
+            'nextcall': '2023-03-02 00:27:59',
+            'state': 'code',
+            'code': 'model.cron_notify_validations({}, {}, {}, correction_notification = True)'
+              .format(subject.classroom_id.moodle_id,
+                subject.classroom_id.get_task_id_by_key('validation'),
+                course.id),
+          })
+
+          cron_ids.append(task)
+
       _logger.info(cron_ids)
     
       # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 

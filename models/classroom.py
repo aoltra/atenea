@@ -485,9 +485,10 @@ class Classroom(models.Model):
       self._enrol_student(user, subject_id, course_id)
 
   @api.model
-  def cron_notify_validations(self, validation_classroom_id, validation_task_id, course_id):
+  def cron_notify_validations(self, validation_classroom_id, validation_task_id, course_id, correction_notification =  False):
     """
     Publica notificaciones sobre las convalidaciones 
+    correction notification indica si es una notificación para realizar una corrección sobre una notificación anterior
     """
     # comprobaciones iniciales
     if validation_classroom_id == None:
@@ -501,6 +502,15 @@ class Classroom(models.Model):
     if course_id == None:
       _logger.error("CRON: course no definido")
       return
+    
+    if not correction_notification:
+      validations = self.env['atenea.validation'].search([('course_id', '=', course_id)])
+    else:
+      validations = self.env['atenea.validation'].search([('course_id', '=', course_id), ('situation','=', '5')])
+
+    if len(validations) == 0:
+      return
+    
     try:
       conn = AteneaMoodleConnection( 
         moodle_user = self.env['ir.config_parameter'].get_param('atenea.moodle_user'), 
@@ -535,7 +545,6 @@ class Classroom(models.Model):
                       actualizado los moodle_id dentro de atenea'''.
                       format(validation_task_id, validation_classroom_id))
     
-    validations = self.env['atenea.validation'].search([('course_id', '=', course_id)])
     today = date.today()
 
     # en caso de subsanación se abre un perido de 15 dias naturales
@@ -562,6 +571,24 @@ class Classroom(models.Model):
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('INT'))
         submission.set_extension_due_date(to = new_timestamp)
         # TODO comprobar que la nota se haya almacenado correctamente en Moodle
-        self.env['atenea.validation'].write({
+        validation.write({
+          'situation': '2'  
+        })
+
+      # está en estado de proceso, instancia superior o resuelto y el alumno había sido notificado de una subsanación
+      if validation.state in ('1','3','5') and validation.situation == '5':
+        submission.save_grade(2, new_attempt = False, feedback = validation.create_correction('ERR1'))
+        # submission.set_extension_due_date(to = new_timestamp)
+        # TODO comprobar que la nota se haya almacenado correctamente en Moodle
+        validation.write({
+          'situation': '0'  
+        })
+
+       # está en estado de subsanación o subsanacion/instancia superior y el alumno había sido notificado de una subsanación
+      if validation.state in('2','4') and validation.situation == '5':
+        submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ERR2'))
+        submission.set_extension_due_date(to = new_timestamp)
+        # TODO comprobar que la nota se haya almacenado correctamente en Moodle
+        validation.write({
           'situation': '2'  
         })
