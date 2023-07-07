@@ -13,7 +13,7 @@ VALIDATION_PERIOD_OPEN = 0
 PDF_VALIDATION_FIELDS_MANDATORY = [ 
       ('A_Apellidos', 'Apellidos'),
       ('A_Nombre', 'Nombre'),
-      ('A_NIA', 'NIA, Número de Identificacion del Alumno/a'),
+      ('A_NIA', 'NIA' , 'Número de Identificacion del Alumno/a'),
       ('A_DNI', 'DNI', 'Documento Nacional de Identidad o Número de Identidad de Extranjero/a'),
       (('B_Requisito1', 'B_Requisito2', 'B_Requisito3', 'B_Requisito4', 'B_Requisito5'), 'Requisitos reunidos'),
       (('C_Docu1', 'C_Docu2', 'C_Docu3', 'C_Docu4', 'C_Docu5'), 'Documentación aportada'),
