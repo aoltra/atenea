@@ -426,6 +426,7 @@ class Validation(models.Model):
       # si todas resueltas -> resuelta
       if all_resolved:
         record.state = '5'
+        record.correction_reason = False
         continue
   
       # si todas revisada -> revisada
