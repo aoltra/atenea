@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, models, fields
+from odoo.exceptions import ValidationError
+
 from odoo.exceptions import AccessDenied
 from lxml import etree 
 
@@ -154,6 +156,33 @@ class Validation(models.Model):
               'title': "¡Atención!", 
               'message': "Este cambio modifica el contenido de la notificación enviada al estudiante. Una vez guardada se le notificará de manera inmediata el cambio"
               }} """
+  
+  def write(self, vals):
+    """
+    Actualiza en la base de datos un registro
+    """
+    # impide que se realice más de una subsanación (INT)
+    if self.situation == '3':
+      if 'validation_subjects_ids' in vals and \
+         'validation_subjects_for_correction_ids' in vals:
+        
+        # comprobación de que no haya ningún estado nuevo diferente de resulto o instancia superior
+        for val in vals['validation_subjects_ids']:
+          if val[2] != False and 'state' in val[2] and (val[2]['state'] =='0' or val[2]['state'] =='1'):
+            raise ValidationError('Sólo se permite una subsanación. Todas las convalidaciones tienen, por tanto, que estar resueltas o enviadas a una instancia superior')
+        
+        # comprobación de que no quede ninguna en estado de subsanación. Si quedase al menos 1 
+        # implicaria volver a realizar el proceso de subsanación y sólo se permite una vez
+        for vfc in vals['validation_subjects_for_correction_ids']:
+          val = next((vl for vl in vals['validation_subjects_ids'] if vl[1] == vfc[1]), None)
+          if val[2] == False:
+            raise ValidationError('Sólo se permite una subsanación. Todas las convalidaciones tienen, por tanto, que estar resueltas o enviadas a una instancia superior')
+
+        
+        vals['situation'] = '0'
+
+    return super(Validation, self).write(vals)
+
 
   def create_correction(self, reason, comment = '') -> str:
     """
@@ -263,13 +292,13 @@ class Validation(models.Model):
       
       self.info = 'La convalidación está en estado de subsanación y ya ha sido notificada al estudiante.' + unlocked_info
       return
-
+    
     self.info = f'La convalidación se encuentra en proceso de {dict(self._fields["state"].selection).get(self.state)} y no puede ser modificada'
 
     if (self.env.user.has_group('atenea.group_ROOT')) or \
        (self.env.user.has_group('atenea.group_ADMIN') and int(self.state) != 13) or \
        (self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) < 11) or \
-       (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 5):
+       (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 6):
       self.info =''  
    
   def download_validation_action(self):
@@ -345,17 +374,17 @@ class Validation(models.Model):
         # si hay alguna subsanación/instancia superior es que es subsanación/instancia superior
         if any_correction and any_higher_level:
           record.state = '4'
-          return
+          continue
         
         # si hay alguna subsanación es que es subsanación
         if any_correction:
           record.state = '2'
-          return
+          continue
       
         # si hay alguna instancia superior es que es instancia superior
         if any_higher_level:
           record.state = '3'
-          return
+          continue
 
       # con notificación enviada se han realizado cambios
       if record.situation == '5':
@@ -383,6 +412,10 @@ class Validation(models.Model):
           record.state = '5' # Resuelta
           continue
       
+      if record.situation == '3':
+        record.state = '2'
+        continue
+
       record.situation = '0'
 
       # si todas sin procesar -> sin procesar

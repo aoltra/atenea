@@ -336,7 +336,7 @@
           <field name="student_info"/>
           <field name="validation_subjects_info"/>
           <field name="state"/>
-          <field name="situation"/>
+          <field name="situation" decoration-warning="situation == '3'"/>
           <field name="correction_date"/>
           <field name="correction_reason"/>
         </tree>
@@ -374,7 +374,7 @@
             </group>      
             <group>
               <field name="state"/>
-              <field name="situation"/>
+              <field name="situation" decoration-warning="situation == '3'"/>
             </group>
           </group>
           <group>

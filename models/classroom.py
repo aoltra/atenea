@@ -219,6 +219,8 @@ class Classroom(models.Model):
         _logger.info("No hay ficheros en la entrega")
         continue
 
+      new_documentation = False
+
       _logger.info("Entrega usuario moodle {}".format(submission.userid))   
       user = AteneaMoodleUser.from_userid(conn, submission.userid)   # usuario moodle
       a_user =  self._enrol_student(user, subject_id, course_id)  # usuario atenea
@@ -244,7 +246,8 @@ class Classroom(models.Model):
           # el caso de que sean diferentes por problemas de sincronización entre Moodle y Atenea:
           # si el registro desaparece de atenea => se iguala al de Moodle (en la creación de la convalidación)
           # si el registro desaparece en Moodle => Atenea se igual al de Moodle
-          validation.attempt_number = submission.attemptnumber + 1  
+          validation.attempt_number = submission.attemptnumber + 1
+          new_documentation = True
  
       ############                     ############
       ##### comprobación de errores a subsanar ####
@@ -452,6 +455,8 @@ class Classroom(models.Model):
       # ha pasado los filtros iniciales => cambio el estado a en proceso
       submission.save_grade(2)
   
+      if new_documentation:
+        validation.situation = '3'
 
     return
    
