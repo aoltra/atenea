@@ -5,6 +5,8 @@ from odoo.exceptions import ValidationError
 import logging
 import os
 
+from datetime import date
+
 _logger = logging.getLogger(__name__)
 
 class ValidationSubject(models.Model):
@@ -16,7 +18,13 @@ class ValidationSubject(models.Model):
 
   validation_id = fields.Many2one('atenea.validation', string = 'Convalidación', required = True)
   subject_id = fields.Many2one('atenea.subject', string = 'Módulo', required = True)
-  teacher_id = fields.Many2one('atenea.employee', string = 'Resuelta por')
+
+  validator_id = fields.Many2one('atenea.employee', string = 'Resuelta por')
+  validation_date_id = fields.Date(string = 'Fecha resolución') 
+  reviewer_id = fields.Many2one('atenea.employee', string = 'Revisada por')
+  review_date_id = fields.Date(string = 'Fecha revisión') 
+  finisher_id = fields.Many2one('atenea.employee', string = 'Finalizada por')
+  end_date_id = fields.Date(string = 'Fecha finalización') 
   
   validation_type = fields.Selection([
       ('aa', 'Aprobado con Anterioridad'),
@@ -180,6 +188,36 @@ class ValidationSubject(models.Model):
       vals['validation_reason'] = False
       vals['comments'] = ''
 
+    # datos parala traza de la convalidación
+    if 'state' in vals: # si cambia el estado
+      state = vals['state']
+
+    if int(state) < 3:
+      vals['validator_id'] = False
+      vals['validation_date_id'] = False
+      vals['reviewer_id'] = False
+      vals['review_date_id'] = False
+      vals['finisher_id'] = False
+      vals['end_date_id'] = False
+
+    today = date.today()
+    current_employee = self.env.user.employee_id
+    if int(state) == 3:
+      vals['validator_id'] = current_employee
+      vals['validation_date_id'] = today
+
+    if int(state) == 4:
+      vals['reviewer_id'] = current_employee
+      vals['review_date_id'] = today
+
+    if int(state) == 5:
+      vals['reviewer_id'] = False
+      vals['review_date_id'] = False
+
+    if int(state) == 6:
+      vals['finisher_id'] = current_employee
+      vals['end_date_id'] = today
+      
     return super(ValidationSubject, self).write(vals)
   
   def _is_read_only(self):
