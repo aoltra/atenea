@@ -11,6 +11,7 @@ class Employee(models.Model):
   _name = 'atenea.employee'
   _description = 'Empleado del centro (profesor o administrativo)'
   _order = 'surname'
+  _rec_name = 'employee_info' 
 
   # simulación de un One2one
   # en user hay un many2one y aqui un one2many
@@ -26,6 +27,7 @@ class Employee(models.Model):
   surname = fields.Char(string = 'Apellidos', required = True)
   phone_extension = fields.Char(string = "Extensión", size = 6)
   work_email = fields.Char(string = 'Email', related = 'user_id.email')
+  employee_info = fields.Char(string = 'Nombre completo', compute = '_compute_full_employee_info')
 
   employee_type = fields.Selection([
         ('profesor', 'Profesor/a'),
@@ -83,6 +85,10 @@ class Employee(models.Model):
       # set new reference
       record.replaced_by_id.replaces_id = record
 
+  def _compute_full_employee_info(self):
+    for record in self:
+      record.employee_info = record.surname + ', ' + record.name
+  
   def write(self, vals):
     """
     Actualiza en la base de datos un registro
