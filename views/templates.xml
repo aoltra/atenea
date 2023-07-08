@@ -38,7 +38,7 @@
                     <t t-set="help" t-value="'Convalidaciones finalizadas'" />
                     <t t-set="icon" t-value="'fa-flag-checkered'" />
                     <t t-set="text_sufix" t-value="'Finalizadas'"/>
-                    <t t-set="value" t-value="num_ended" />
+                    <t t-set="value" t-value="num_finished" />
                   </t>
                 </t>
                 <t t-if="is_coord or is_root">
@@ -115,7 +115,7 @@
           <t t-if="(is_admin or is_root) and num_reviewed > 0">  
             <t t-call="atenea.progress_bar_template">
               <t t-set="reference_value" t-value="num_reviewed" />
-              <t t-set="data" t-value="[('Finalizadas','bg-success',num_ended),('Pendientes','bg-warning', num_ended_in_process),
+              <t t-set="data" t-value="[('Finalizadas','bg-success',num_finished),('Pendientes','bg-warning', num_finished_in_process),
                                         ('Instancia superior','bg-info', num_higher_level)]"/>
             </t>
           </t>

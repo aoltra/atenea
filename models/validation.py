@@ -365,8 +365,8 @@ class Validation(models.Model):
       all_resolved = all(val.state == '3' for val in record.validation_subjects_ids)
       all_reviewed = all(val.state == '4' for val in record.validation_subjects_ids)
       any_reviewed = any(val.state == '4' for val in record.validation_subjects_ids)
-      any_ended = any(val.state == '6' for val in record.validation_subjects_ids)
-      all_ended = all(val.state == '6' for val in record.validation_subjects_ids)
+      any_finished = any(val.state == '6' for val in record.validation_subjects_ids)
+      all_finished = all(val.state == '6' for val in record.validation_subjects_ids)
       all_closed = all(val.state == '7' for val in record.validation_subjects_ids)
 
       # si está ya notificado al estudiante o estaba en subsanación o finalizada o instancia superior
@@ -434,7 +434,7 @@ class Validation(models.Model):
         continue
       
       # si todas finalizadas -> finalizada
-      if all_ended:
+      if all_finished:
         record.state = '13'
         continue
 
@@ -480,17 +480,17 @@ class Validation(models.Model):
         continue
 
       # si hay alguna sin finalizar y otras ya finalizadas -> en proceso de finalización (parcial)
-      if any_ended and any_reviewed and any_higher_level:
+      if any_finished and any_reviewed and any_higher_level:
         record.state = '10'
         continue
 
       # si sólo hay finalizadas e instancias superiores -> Finalizada parcialmente
-      if any_ended and any_higher_level:
+      if any_finished and any_higher_level:
         record.state = '11'
         continue
 
       # si hay alguna sin finalizar y otras ya finalizadas -> en proceso de finalización
-      if any_ended and any_reviewed:
+      if any_finished and any_reviewed:
         record.state = '12'
         continue
         
