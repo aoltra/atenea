@@ -427,11 +427,15 @@ class Validation(models.Model):
       if all_resolved:
         record.state = '5'
         record.correction_reason = False
+        record.correction_date = False
         continue
   
       # si todas revisada -> revisada
       if all_reviewed:
         record.state = '8'
+        # podria ser revisada sin ser resuelta (resuelve un revisor)
+        record.correction_reason = False
+        record.correction_date = False
         continue
       
       # si todas finalizadas -> finalizada

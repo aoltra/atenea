@@ -336,8 +336,9 @@
           <field name="student_info"/>
           <field name="validation_subjects_info"/>
           <field name="state"/>
-          <field name="situation" decoration-warning="situation == '3'"/>
+          <field name="situation" decoration-warning="situation == '3'" decoration-danger="situation == '4'"/>
           <field name="correction_date"/>
+          <field name="correction_date_end" widget="remaining_days"/>
           <field name="correction_reason"/>
         </tree>
       </field>

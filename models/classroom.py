@@ -557,9 +557,9 @@ class Classroom(models.Model):
     new_timestamp = int(datetime(year = new_due_date.year, 
                       month = new_due_date.month,
                       day = new_due_date.day,
-                      hour = 23,
-                      minute = 59,
-                      second = 59).timestamp())     
+                      hour = 0,
+                      minute = 1,
+                      second = 0).timestamp())     
     
     submissions = assignments[0].submissions()
     
@@ -596,4 +596,15 @@ class Classroom(models.Model):
         # TODO comprobar que la nota se haya almacenado correctamente en Moodle
         validation.write({
           'situation': '2'  
+        })
+
+  @api.model
+  def cron_check_deadline_validations(self, course_id):
+    today = date.today()
+    validations = self.env['atenea.validation'].search([('course_id', '=', course_id)])
+
+    for val in validations:
+      if today > val.correction_date_end:
+        val.write({
+          'situation': '4'  
         })
