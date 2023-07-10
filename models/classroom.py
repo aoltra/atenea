@@ -386,6 +386,12 @@ class Classroom(models.Model):
 
       # TODO comprobación de firma digital
 
+      # obtengo el NIA del formulario
+      # aunque el login del alumno es su NIA, a dia de hoy Aules no me lo proporciona
+      a_user.write({
+        'nia': fields['A_NIA'][0]
+      })
+
       # asignacion de módulos a CO/AA
       validation_subjects = []
       validation_subjects_code_previous = {}
