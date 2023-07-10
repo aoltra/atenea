@@ -28,6 +28,17 @@
       <field name="perm_unlink">0</field>
     </record>
 
+    <!-- permisos revisores -->
+    <record id="atenea.validation_reviewer_rol_access" model="ir.model.access">
+      <field name="name">Acceso de revisores a validation</field>
+      <field name="model_id" ref="model_atenea_validation"/>
+      <field name="group_id" ref="atenea.group_MNGT_FP"/>
+      <field name="perm_read">1</field>
+      <field name="perm_create">0</field>
+      <field name="perm_write">1</field>
+      <field name="perm_unlink">0</field>
+    </record>
+
     <!-- permisos Secretaria -->
     <record id="atenea.validation_admin_access" model="ir.model.access">
       <field name="name">Acceso de Secretaria a validation</field>
@@ -62,7 +73,7 @@
     </record>
 
     <!-- ************************************************************************* -->
-    <!-- permisos sobre el modelo de convalidaciones de temas (validation_subject) -->
+    <!-- permisos sobre el modelo de convalidaciones de modulos (validation_subject) -->
     <!-- ************************************************************************* -->
 
     <!-- permisos usuarios generales -->
@@ -98,6 +109,18 @@
       <field name="perm_unlink">0</field>
     </record>
 
+    <!-- permisos revisores -->
+    <record id="atenea.validation_subject_reviewer_rol_access" model="ir.model.access">
+      <field name="name">Acceso de revisores a validation_subject</field>
+      <field name="model_id" ref="model_atenea_validation_subject"/>
+      <field name="group_id" ref="atenea.group_MNGT_FP"/>
+      <field name="perm_read">1</field>
+      <field name="perm_create">0</field>
+      <field name="perm_write">1</field>
+      <field name="perm_unlink">0</field>
+    </record>
+
+
     <!-- permisos dirección -->
     <record id="atenea.validation_subject_mngt_rol_access" model="ir.model.access">
       <field name="name">Acceso de equipo directivo a validation_subject</field>
@@ -125,21 +148,24 @@
          Se ejecutan registro por registro                                         -->
     <!-- ************************************************************************* -->
 
-    <!-- Regla para ver solo las convalidciones que le corresponden al convalidador -->
-    <record id="atenea.validation_validator_rol_rule" model="ir.rule">
-      <field name="name">Acceso de los validadores solo a las convalidaciones de sus ciclos</field>
-      <field name="model_id" ref="model_atenea_validation"/>
-      <field name="groups" eval="[(4, ref('atenea.group_VALID'))]"/>
-      <field name="domain_force">[('course_abbr','in',[rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id is not None])]</field>
-    </record>
-
-    <!-- Regla para ver solo las convalidcionese estado de resueltas para el convalidador -->
+    <!-- Regla para ver solo las convalidaciones que le corresponden al convalidador -->
+    <!-- Regla para ver solo las convalidaciones resueltas -->
     <record id="atenea.validation_coordfp_rol_rule" model="ir.rule">
       <field name="name">Acceso de los revisores sólo a las convalidaciones en estado de revisión</field>
       <field name="model_id" ref="model_atenea_validation"/>
       <field name="groups" eval="[(4, ref('atenea.group_MNGT_FP'))]"/>
-      <field name="domain_force">[('state','in',['','','')]</field>
+      <field name="domain_force">[('state','in',['5','6','7','8','9'])]</field>
     </record>
+
+    <record id="atenea.validation_validator_rol_rule" model="ir.rule">
+      <field name="name">Acceso de los validadores solo a las convalidaciones de sus ciclos</field>
+      <field name="model_id" ref="model_atenea_validation"/>
+      <field name="groups" eval="[(4, ref('atenea.group_VALID'))]"/>
+      <field name="domain_force">[('course_abbr','in',[rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id.abbr is not False])]</field>
+    </record>
+
+<!--  -->
+    
 
   </data>
 </odoo>

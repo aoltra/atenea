@@ -26,16 +26,20 @@ class ValidationController(http.Controller):
     if user.has_group('atenea.group_ROOT'):
       is_root = True
 
-    courses = [rol.course_id.abbr for rol in user.employee_id.roles_ids]
-    user_num_valid = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses)])
-    user_num_resolved = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+    courses = [rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id.abbr is not False]
+
+    if len(courses)>0:
+      user_num_valid = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses)])
+      user_num_resolved = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                ('state','=','3')])
-    user_num_for_correction = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+      user_num_for_correction = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                      ('state','=','1')])  
-    user_num_higher_level = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+      user_num_higher_level = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                      ('state','=','2')])
-    user_in_process = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
+      user_in_process = request.env['atenea.validation_subject'].search_count([('validation_id.course_id.abbr', 'in', courses),
                                                                                      ('state','=','0')])  
+    else:
+      user_num_valid = user_num_resolved = user_num_for_correction = user_num_higher_level = user_in_process = 0
 
     num_valid = request.env['atenea.validation_subject'].search_count([])
     num_resolved = request.env['atenea.validation_subject'].search_count([('state','=','3')])

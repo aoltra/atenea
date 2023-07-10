@@ -49,7 +49,7 @@ class Validation(models.Model):
     domain = [('state', '=', '1')],
     compute = '_compute_validation_subjects', readonly = False)
      
-  validation_subjects_info = fields.Char(string = 'Resueltas / Solicitadas', compute = '_compute_validation_subjects_info')
+  validation_subjects_info = fields.Char(string = 'Res. / Rev. / Fin. / Sol.', compute = '_compute_validation_subjects_info')
 
   # aporta información extra sobre el estado de la convalidación  
   situation = fields.Selection([
@@ -82,7 +82,7 @@ class Validation(models.Model):
       ('13', 'Finalizada'), # todas las convalidaciones finalizadas pero sin notificación al alumno
       ('14', 'Cerrada'),
       ], string ='Estado', help = 'Estado de la convalidación', 
-      default = '0', compute = '_compute_state')
+      default = '0', compute = '_compute_state', store = True)
   
   # fecha de solicitud de la subsanación
   correction_date = fields.Date(string = 'Fecha subsanación', 
@@ -257,8 +257,10 @@ class Validation(models.Model):
 
   def _compute_validation_subjects_info(self):
     for record in self:
-        num_resolved = len([val for val in record.validation_subjects_ids if val.state == '3'])
-        record.validation_subjects_info = f'{num_resolved} / {len(record.validation_subjects_ids)}'
+        num_resolved = len([val for val in record.validation_subjects_ids if int(val.state) >= 3])
+        num_reviewed = len([val for val in record.validation_subjects_ids if int(val.state) == 4 or int(val.state) >= 6])
+        num_finished = len([val for val in record.validation_subjects_ids if int(val.state) >= 6])
+        record.validation_subjects_info = f'{num_resolved} / {num_reviewed} / {num_finished} / {len(record.validation_subjects_ids)}'
 
   @api.depends('validation_subjects_not_for_correction_ids')
   def _compute_validation_subjects(self):
