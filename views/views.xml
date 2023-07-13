@@ -387,6 +387,7 @@
                Para que no aparezca ponemos su display a none (hacerlo con attr 
                implica que no se envia al cliente)   -->
           <field name="validation_subjects_ids" style="display: none"/>
+          <field name="is_state_read_only" style="display: none"/>
           <group> <!-- se incluyen dentro de un grupo para que aparezca el texto-->
             <field name="validation_subjects_not_for_correction_ids">
               <tree editable="top">
@@ -399,7 +400,11 @@
                 <field name="validation_type" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="accepted" attrs="{'readonly':[('is_read_only','=',True)]}"/>
                 <field name="mark" attrs="{'readonly':[('is_read_only','=',True)]}"/>
-                <field name="state" attrs="{'readonly':[('is_read_only','=',True)]}"/>
+                <field name="state" attrs="{'readonly':[('is_read_only','=',True)],
+                                            'column_invisible': [('parent.is_state_read_only', '=', True)]}"/>
+                <field name="state_read_only" attrs="{ 'readonly': True,
+                                            'column_invisible': [('parent.is_state_read_only', '=', False)]}"/>
+
                 <field name="validation_reason" attrs="{'readonly':[('is_read_only','=',True)]}" />
                 <field name="comments" attrs="{'readonly':[('is_read_only','=',True)]}"/>
               </tree>

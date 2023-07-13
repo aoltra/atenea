@@ -127,36 +127,14 @@ class Validation(models.Model):
       return False
     
   locked = fields.Boolean(default = _default_locked, store = False, readonly = True)
+
+  is_state_read_only = fields.Boolean(compute = '_compute_is_state_read_only')
   
   _sql_constraints = [ 
     ('unique_validation', 'unique(school_year_id, student_id, course_id)', 
        'Sólo puede haber una convalidación por estudiante, ciclo y curso escolar.'),
   ]
-  
-  """ @api.onchange('validation_subjects_ids')
-  def _check_notify_correction_done(self):
-    self.ensure_one()
-    if self.situation == '2' and self.state == '2':
-      for val in self.validation_subjects_ids:
-        old_val = next((old_vali for old_vali in self._origin.validation_subjects_ids if old_vali.id == val._origin.id), None)
-        if old_val == None:
-         return
-        if not self.unlocked and \
-           ((old_val.state == '1' and val.state != '1') or \
-           (old_val.state != '1' and val.state == '1') or \
-           (old_val.state == '1' and (old_val.correction_reason != val.correction_reason or old_val.comments != val.comments))):
-            val.state = old_val.state
-            val.correction_reason = old_val.correction_reason
-            val.comments = old_val.comments
-        elif self.unlocked and \
-           ((old_val.state == '1' and val.state != '1') or \
-           (old_val.state != '1' and val.state == '1') or \
-           (old_val.state == '1' and (old_val.correction_reason != val.correction_reason or old_val.comments != val.comments))):
-            return { 'warning': {
-              'title': "¡Atención!", 
-              'message': "Este cambio modifica el contenido de la notificación enviada al estudiante. Una vez guardada se le notificará de manera inmediata el cambio"
-              }} """
-  
+   
   def write(self, vals):
     """
     Actualiza en la base de datos un registro
@@ -182,7 +160,6 @@ class Validation(models.Model):
         vals['situation'] = '0'
 
     return super(Validation, self).write(vals)
-
 
   def create_correction(self, reason, comment = '') -> str:
     """
@@ -292,16 +269,16 @@ class Validation(models.Model):
       if any(val.is_read_only == False for val in self.validation_subjects_ids):
         unlocked_info = '\n¡IMPORTANTE! Alguna convalidación ha sido desbloqueada para ser modificada. Si se modifica y se graba el estudiante será notificado de manera inmediata del nuevo estado de la convalidación'
       
-      self.info = 'La convalidación está en estado de subsanación y ya ha sido notificada al estudiante.' + unlocked_info
+      self.info = 'La convalidación está en estado de \'Subsanación\' y ya ha sido notificada al estudiante.' + unlocked_info
       return
     
-    self.info = f'La convalidación se encuentra en proceso de {dict(self._fields["state"].selection).get(self.state)} y no puede ser modificada'
+    self.info = f'La convalidación se encuentra en estado de \'{dict(self._fields["state"].selection).get(self.state)}\' y no puede ser modificada'
 
     if (self.env.user.has_group('atenea.group_ROOT')) or \
        (self.env.user.has_group('atenea.group_ADMIN') and int(self.state) != 13) or \
        (self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) < 11) or \
        (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 6):
-      self.info =''  
+      self.info = ''  
    
   def download_validation_action(self):
     """
@@ -504,3 +481,13 @@ class Validation(models.Model):
       if all_closed:
         record.state = '14'
         continue
+
+
+  def _compute_is_state_read_only(self):
+    for record in self:
+      record.is_state_read_only = False
+
+      if int(record.state) >= 6 and \
+        self.env.user.has_group('atenea.group_VALID') and \
+        not self.env.user.has_group('atenea.group_MNGT_FP'):
+          record.is_state_read_only = True

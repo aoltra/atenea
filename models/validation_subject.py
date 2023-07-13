@@ -9,6 +9,21 @@ from datetime import date
 
 _logger = logging.getLogger(__name__)
 
+VALIDATION_SUBJECTS_STATES = [
+          ('0', 'Sin procesar'),
+          ('1', 'Subsanación'), # hay que solicitar documentación
+          ('2', 'Instancia superior'), # no está clara y los convalidadores la envian a instancia superior
+          ('3', 'Resuelta'), # los convalidadores la han resuelto
+          ('4', 'Revisada'), # jefatura la ha dado por buena
+          ('5', 'Por revisar'), # desde secretaria ven un error y la tiran para atrás (a jefatura)
+          ('6', 'Finalizada'), # Introducida en el expediente del alumno
+          ('7', 'Cerrada')] # no seleccionable (salvo por el root). Se asigna automáticamente cuando todas las 
+                                 # convalidaciones han sido finalizadas y el mensaje se ha enviado al alumno.
+                                 # La convalidación queda bloqueada (salvo para el root)
+
+    # no hay estado de devolución desde jefatura (coordinación) a los convalidadores.  Directamente resuelve jefatura o 
+    # se puede poner sin procesar ya que coordinación tiene acceso los estados previos. 
+
 class ValidationSubject(models.Model):
   """
   Define los módulos a convalidar
@@ -53,6 +68,11 @@ class ValidationSubject(models.Model):
   state = fields.Selection(selection = '_populate_state', 
                            string ='Estado de la convalidación', default = '0')
   
+  # almacena los mismos datos de state, pero permite visualizar (sin cambiar), de manera que
+  # aunque el usuario no tenga permisos para poner ese estado, si podrá verlo
+  state_read_only = fields.Selection(VALIDATION_SUBJECTS_STATES, 
+                           string ='Estado de la convalidación', compute = '_compute_state_read_only')
+  
   validation_reason = fields.Selection([
       ('FOLRL', 'Ciclo LOGSE + RL (>30h)'),
       ('B2', 'Título B2'),
@@ -70,24 +90,12 @@ class ValidationSubject(models.Model):
     help = "Permite indicar el motivo por el que se solicita la subsanación")
   
   is_read_only = fields.Boolean(store = False, compute = '_is_read_only', readonly = False)
-      
+    
   def _populate_state(self):
     """
     Rellena el selection en función del grupo al que pertenece el usuario
     """
-    choices = [('0', 'Sin procesar'),
-               ('1', 'Subsanación'), # hay que solicitar documentación
-               ('2', 'Instancia superior'), # no está clara y los convalidadores la envian a instancia superior
-               ('3', 'Resuelta'), # los convalidadores la han resuelto
-               ('4', 'Revisada'), # jefatura la ha dado por buena
-               ('5', 'Por revisar'), # desde secretaria ven un error y la tiran para atrás (a jefatura)
-               ('6', 'Finalizada'), # Introducida en el expediente del alumno
-               ('7', 'Cerrada')] # no seleccionable (salvo por el root). Se asigna automáticamente cuando todas las 
-                                 # convalidaciones han sido finalizadas y el mensaje se ha enviado al alumno.
-                                 # La convalidación queda bloqueada (salvo para el root)
-
-    # no hay estado de devolución desde jefatura (coordinación) a los convalidadores.  Directamente resuelve jefatura o 
-    # se puede poner sin procesar ya que coordinación tiene acceso los estados previos.
+    choices = VALIDATION_SUBJECTS_STATES.copy()
 
     # si está en solo lectura se cargan todas para poder visualizar el estado
     """ if self.is_read_only == True:
@@ -114,6 +122,11 @@ class ValidationSubject(models.Model):
 
     return choices 
   
+  @api.depends('state')
+  def _compute_state_read_only(self):
+    for record in self:
+      record.state_read_only = record.state
+
   @api.onchange('state', 'correction_reason', 'comments')
   def _change_notified_validation(self):
     if self.is_read_only == False and self.validation_id.state == '2' and \
@@ -242,9 +255,8 @@ class ValidationSubject(models.Model):
       if int(record.state) < 6 and self.env.user.has_group('atenea.group_MNGT_FP'):
         record.is_read_only = False
 
-      if int(record.state) < 4 and self.env.user.has_group('atenea.group_VALID'):
+      if int(record.state) < 4 and int(record.validation_id.state) < 6 and self.env.user.has_group('atenea.group_VALID'):
         record.is_read_only = False 
-
 
   def _create_validations(self):
     validations_path = self.env['res.config_parameter'].sudo().get_param('validation_path') or None
