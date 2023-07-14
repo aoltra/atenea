@@ -154,7 +154,7 @@
       <field name="name">Acceso de los revisores sólo a las convalidaciones en estado de revisión</field>
       <field name="model_id" ref="model_atenea_validation"/>
       <field name="groups" eval="[(4, ref('atenea.group_MNGT_FP'))]"/>
-      <field name="domain_force">[('state','in',['5','6','7','8','9'])]</field>
+      <field name="domain_force">[('state','in',['5','6','7','8','9','10','11','12','13','14'])]</field>
     </record>
 
     <record id="atenea.validation_validator_rol_rule" model="ir.rule">
@@ -164,8 +164,12 @@
       <field name="domain_force">[('course_abbr','in',[rol.course_id.abbr for rol in user.employee_id.roles_ids if rol.course_id.abbr is not False])]</field>
     </record>
 
-<!--  -->
-    
+    <record id="atenea.validation_administration_rol_rule" model="ir.rule">
+      <field name="name">Acceso de secretaria sólo a las convalidaciones en estado de revisióm</field>
+      <field name="model_id" ref="model_atenea_validation"/>
+      <field name="groups" eval="[(4, ref('atenea.group_ADMIN'))]"/>
+      <field name="domain_force">[('state','in',['8','9','10','11','12','13','14'])]</field>
+    </record>
 
   </data>
 </odoo>

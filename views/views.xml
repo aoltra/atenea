@@ -508,8 +508,7 @@
       <field name="res_model">atenea.validation</field>
       <field name="view_mode">tree,form</field>
       <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">Todavía no hay convalidaciones a resolver</p>
-        <p>Una vez vayan subiéndose a Aules aparecerán en esta página</p>
+        <p class="o_view_nocontent_smiling_face">Todavía no hay convalidaciones pendientes</p>
       </field>
     </record>
 

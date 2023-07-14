@@ -109,14 +109,16 @@ class ValidationSubject(models.Model):
     if self.validation_id.situation == '2' or self.validation_id.situation == '5':
       del choices[0]
     
-    if self.env.user.has_group('atenea.group_MNGT_FP'): # coordinación de FP todas menos finalizar, por revisar y cerrar
-      del choices[-3:]
-    elif self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) == 5 :  # coordinación de FP, en caso de que venga rebotada de secretaria
+    if self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) == 5 :  # coordinación de FP, en caso de que venga rebotada de secretaria
       del choices[-2:]
+    elif self.env.user.has_group('atenea.group_MNGT_FP'): # coordinación de FP todas menos finalizar, por revisar y cerrar
+      del choices[0]  # no se puede asignar el estado sin procesar
+      del choices[-3:]
     elif self.env.user.has_group('atenea.group_VALID'): # convalidadores, todas menos las 4 últimas
       del choices[-4:]
     elif self.env.user.has_group('atenea.group_ADMIN'): # Secretaria sólo las tres penúltimas
-      del choices[-3:-1]
+      del choices[:-4]
+      del choices[-1]
     else: # cualquier otro grupo no tiene opciones
       choices.clear()
 
