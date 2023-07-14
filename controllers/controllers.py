@@ -42,8 +42,8 @@ class ValidationController(http.Controller):
       user_num_valid = user_num_resolved = user_num_for_correction = user_num_higher_level = user_in_process = 0
 
     num_valid = request.env['atenea.validation_subject'].search_count([])
-    num_resolved = request.env['atenea.validation_subject'].search_count([('state','=','3')])
-    num_reviewed = request.env['atenea.validation_subject'].search_count([('state','=','4')])
+    num_resolved = request.env['atenea.validation_subject'].search_count([('state','>=','3')])
+    num_reviewed = request.env['atenea.validation_subject'].search_count([('state','>=','4'),('state','!=','5')])
     num_higher_level = request.env['atenea.validation_subject'].search_count([('state','=','2')])
     # el dominio se define mediante notación polaca
     num_finished = request.env['atenea.validation_subject'].search_count(['|', ('state','=','6'), ('state','=','7')])
