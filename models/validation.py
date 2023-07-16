@@ -217,6 +217,37 @@ class Validation(models.Model):
 
     return feedback
 
+  def create_finished_notification_message(self) -> str:
+    """
+    Crea el mensaje de notificación de resolución de la convalidación
+    Devuelve la notificación en formato HTML
+    """
+    body = '<p>El proceso de convalidación solicitado ya ha sido finalizado con la siguiente resolución:</p>'
+
+    table = '<table><thead><tr><th>Código</th><th>Módulo</th><th>Tipo</th><th>Aceptada</th><th>Calificación</th></tr></thead><tbody>'
+    
+    for val in self.validation_subjects_ids:
+      row = '<tr>'
+      row += f'<td>{val.subject_id.code}</td>'
+      row += f'<td style="padding-left:1rem">{val.subject_id.name}</td>'
+      row += f'<td style="padding-left:1rem">{dict(val._fields["validation_type"].selection).get(val.validation_type)}</td>'
+      row += f'<td style="text-align: center">{dict(val._fields["accepted"].selection).get(val.accepted)}</td>'
+      if val.accepted == '1':
+        row += f'<td style="text-align: center">{dict(val._fields["mark"].selection).get(val.mark)}</td>'
+      else:
+        row += '<td></td>'
+      row += '</tr>'
+
+      table += row
+
+      val.state = '7'
+
+    table +='</tbody></table>'
+
+    feedback = body + table
+
+    return feedback
+
   @api.depends('correction_date')
   def _compute_correction_date_end(self):
     for record in self:
@@ -275,7 +306,7 @@ class Validation(models.Model):
     self.info = f'La convalidación se encuentra en estado de \'{dict(self._fields["state"].selection).get(self.state)}\' y no puede ser modificada'
 
     if (self.env.user.has_group('atenea.group_ROOT')) or \
-       (self.env.user.has_group('atenea.group_ADMIN') and int(self.state) != 13) or \
+       (self.env.user.has_group('atenea.group_ADMIN') and int(self.state) != 14) or \
        (self.env.user.has_group('atenea.group_MNGT_FP') and int(self.state) < 11) or \
        (self.env.user.has_group('atenea.group_VALID') and int(self.state) < 6):
       self.info = ''  
@@ -482,7 +513,6 @@ class Validation(models.Model):
         record.state = '14'
         continue
 
-
   def _compute_is_state_read_only(self):
     for record in self:
       record.is_state_read_only = False
@@ -490,4 +520,12 @@ class Validation(models.Model):
       if int(record.state) >= 6 and \
         self.env.user.has_group('atenea.group_VALID') and \
         not self.env.user.has_group('atenea.group_MNGT_FP'):
+          record.is_state_read_only = True
+
+      if int(record.state) == 14 and \
+        self.env.user.has_group('atenea.group_ADMIN'):
+          record.is_state_read_only = True
+
+      if int(record.state) >= 13 and \
+        self.env.user.has_group('atenea.group_MNGT_FP'):
           record.is_state_read_only = True

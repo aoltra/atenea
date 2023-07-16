@@ -595,7 +595,7 @@ class Classroom(models.Model):
           'situation': '0'  
         })
 
-       # está en estado de subsanación o subsanacion/instancia superior y el alumno había sido notificado de una subsanación
+      # está en estado de subsanación o subsanacion/instancia superior y el alumno había sido notificado de una subsanación
       if validation.state in('2','4') and validation.situation == '5':
         submission.save_grade(3, new_attempt = True, feedback = validation.create_correction('ERR2'))
         submission.set_extension_due_date(to = new_timestamp)
@@ -603,6 +603,11 @@ class Classroom(models.Model):
         validation.write({
           'situation': '2'  
         })
+
+      # está finalizada
+      if validation.state == '13':
+        submission.save_grade(4, new_attempt = False, feedback = validation.create_finished_notification_message())
+
 
   @api.model
   def cron_check_deadline_validations(self, course_id):
