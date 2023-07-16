@@ -191,7 +191,7 @@ class Validation(models.Model):
 
       self.write({ 
         'correction_reason': False,
-        'state': '1',
+        'state': '1', # Es posible que no sea necesario poner el estado. La propia convalidación lo calculará
         'correction_date': False
       })
 

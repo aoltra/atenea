@@ -458,11 +458,25 @@ class Classroom(models.Model):
 
       # añade nuevos registro, pero los mantiene en "el aire" hasta que se grabe el school_year 
       validation.validation_subjects_ids = validation_subjects
-      # ha pasado los filtros iniciales => cambio el estado a en proceso
-      submission.save_grade(2)
-  
-      if new_documentation:
+
+      ## llegados a este punto puden pasar varias cosas en función de la situaciíon de la convalidación
+      # Habia una subsanación debida a un error general: no firmada, faltan campos, etc
+      if validation.correction_reason != 'INT' and validation.correction_reason[:3] != 'ERR' and \
+        new_documentation:
+        submission.save_grade(2)
+        validation.write({ 
+          'correction_reason': False,
+          'state': '1',
+          'correction_date': False
+        })
+      # subsanación por falta de documentación de uno de los módulos
+      elif validation.correction_reason == 'INT' and new_documentation:
         validation.situation = '3'
+        submission.save_grade(2)
+      # ha pasado los filtros iniciales => cambio el estado a en proceso
+      else:
+        submission.save_grade(2)
+      
 
     return
    
