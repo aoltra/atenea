@@ -21,6 +21,10 @@
       <field name="name">Formación en Centros de Trabajo</field>
     </record>
 
+    <record model="atenea.departament" id="atenea.departament_FOL">
+      <field name="name">Formación y Orientación Laboral</field>
+    </record>
+
     <record model="atenea.departament" id="atenea.departament_SCRT">
       <field name="name">Secretaría</field>
     </record>
