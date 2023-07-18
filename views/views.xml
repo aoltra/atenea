@@ -8,6 +8,7 @@
         <tree>
           <field name="name"/>
           <field name="abbr"/>
+          <field name="code"/>
           <field name="subjects_ids"/>
         </tree>
       </field>
