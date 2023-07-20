@@ -5,7 +5,7 @@ import xmlrpc.client
 import csv
 import sys
 
-print('\033[1mAtena. Crea usuarios y empleados desde csv\033[0m')
+print('\033[1mAtenea. Crea usuarios y empleados desde csv\033[0m')
 
 url = "http://localhost:8069"
 db = "CEED"

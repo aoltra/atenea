@@ -51,10 +51,10 @@
         # datos de modelos
         'data/school.xml',
         'data/departament.xml',
-        'data/classroom.xml',
+        #'data/classroom.xml',
         'data/course.xml',
-        'data/subject.xml',
-        'data/task_moodle.xml',
+        'data/subjects/tic.xml',
+        # 'data/task_moodle.xml',
         'data/roles/headquarters.xml',
         'data/roles/tutors.xml',
         'data/roles/validations.xml',

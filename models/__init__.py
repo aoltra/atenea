@@ -15,3 +15,4 @@ from . import classroom
 from . import task_moodle
 from . import cron
 from . import subject_student_rel
+from . import subject_classroom_rel

@@ -22,7 +22,20 @@
           <field name="name"/>
           <field name="abbr"/>
           <field name="code"/>
-          <field name="courses_ids"/>
+          <field name="courses_ids" widget="many2many_tags"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="atenea.classroom_tree">
+      <field name="name">Lista de Aulas virtuales</field>
+      <field name="model">atenea.classroom</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="code"/>
+          <field name="description"/>
+          <field name="subjects_ids" string="Módulos (ciclo)" widget="many2many_tags"/>
+          <field name="lang_id"/>
         </tree>
       </field>
     </record>

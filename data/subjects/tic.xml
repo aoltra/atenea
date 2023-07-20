@@ -1,0 +1,341 @@
+<odoo>
+  <data>
+    <!-- Módulos DAW -->
+    <record model="atenea.subject" id="atenea.subject_DAW_TUT1">
+      <field name="abbr">TUT1</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 1º</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_TUT2">
+      <field name="abbr">TUT2</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 2º</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_FOL">
+      <field name="abbr">FOL</field>
+      <field name="code">0617</field>
+      <field name="name">Formación y Orientación Laboral</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_PROY">
+      <field name="abbr">PROY</field>
+      <field name="code">0616</field>
+      <field name="name">Proyecto de desarrollo de aplicaciones web</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_EIE">
+      <field name="abbr">EIE</field>
+      <field name="code">0618</field>
+      <field name="name">Empresa e iniciativa emprendedora</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_DWEC">
+      <field name="abbr">DWEC</field>
+      <field name="code">0612</field>
+      <field name="name">Desarrollo web en entorno cliente</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_DWES">
+        <field name="abbr">DWES</field>
+        <field name="code">0613</field>
+        <field name="name">Desarrollo web en entorno servidor</field>
+        <field name="year">2</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_DAW">
+        <field name="abbr">DAW</field>
+        <field name="code">0614</field>
+        <field name="name">Despliegue de aplicaciones web</field>
+        <field name="year">2</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAW_DIW">
+        <field name="abbr">DIW</field>
+        <field name="code">0615</field>
+        <field name="name">Diseño de interfaces web</field>
+        <field name="year">2</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <!-- Módulos DAM -->
+    <record model="atenea.subject" id="atenea.subject_DAM_TUT1">
+      <field name="abbr">TUT1</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 1º</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>    
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_TUT2">
+      <field name="abbr">TUT2</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 2º</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>    
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_FOL">
+      <field name="abbr">FOL</field>
+      <field name="code">0493</field>
+      <field name="name">Formación y Orientación Laboral</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_EIE">
+      <field name="abbr">EIE</field>
+      <field name="code">0494</field>
+      <field name="name">Empresa e iniciativa emprendedora</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_PROY">
+      <field name="abbr">PROY</field>
+      <field name="code">0492</field>
+      <field name="name">Proyecto de desarrollo de aplicaciones multiplataforma</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_AD">
+      <field name="abbr">AD</field>
+      <field name="code">0486</field>
+      <field name="name">Acceso a datos</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_DI">
+      <field name="abbr">DI</field>
+      <field name="code">0488</field>
+      <field name="name">Desarrollo de interfaces</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_PMDM">
+      <field name="abbr">PMDM</field>
+      <field name="code">0489</field>
+      <field name="name">Programación multimedia y dispositivos móviles</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_PSP">
+      <field name="abbr">PSP</field>
+      <field name="code">0490</field>
+      <field name="name">Programación de servicios y procesos</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_DAM_SGE">
+      <field name="abbr">SGE</field>
+      <field name="code">0491</field>
+      <field name="name">Sistemas de gestión empresarial</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
+    </record>
+
+    <!-- Módulos ASIR -->
+    <!-- <record model="atenea.subject" id="atenea.subject_ASIR_TUT1">
+      <field name="abbr">TUT1</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 1º</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_TUT12"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>    
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_TUT2">
+      <field name="abbr">TUT2</field>
+      <field name="code">0000</field>
+      <field name="name">Tutoría 2º</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_TUT12"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>    
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_PAR">
+      <field name="abbr">PAR</field>
+      <field name="code">0370</field>
+      <field name="name">Planificación y administración de redes</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_PAR"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_ASO">
+      <field name="abbr">ASO</field>
+      <field name="code">0374</field>
+      <field name="name">Administración de sistemas operativos</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_ASO"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_ISO">
+      <field name="abbr">ISO</field>
+      <field name="code">0369</field>
+      <field name="name">Implantación de sistemas operativos</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_ISO"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_SRI">
+      <field name="abbr">SRI</field>
+      <field name="code">0375</field>
+      <field name="name">Servicios de red e Internet</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_SRI"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_HW">
+      <field name="abbr">HW</field>
+      <field name="code">0371</field>
+      <field name="name">Fundamentos de hardware</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_HW"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_GBD">
+      <field name="abbr">GBD</field>
+      <field name="code">0372</field>
+      <field name="name">Gestión de bases de datos</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_GBD"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_SAD">
+      <field name="abbr">SAD</field>
+      <field name="code">0378</field>
+      <field name="name">Seguridad y alta disponibilidad</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_SAD"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_FOL">
+      <field name="abbr">FOL</field>
+      <field name="code">0380</field>
+      <field name="name">Formación y orientación laboral</field>
+      <field name="year">1</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_FOL"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_EIE">
+      <field name="abbr">EIE</field>
+      <field name="code">0381</field>
+      <field name="name">Empresa e iniciativa emprendedora</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_EIE"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_IAW">
+      <field name="abbr">IAW</field>
+      <field name="code">0376</field>
+      <field name="name">Implantación de aplicaciones web</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_IAW"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_SGBD">
+      <field name="abbr">SGBD</field>
+      <field name="code">0377</field>
+      <field name="name">Administración de sistemas gestores de bases de datos</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_SGBD"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_ASIR_PROY">
+      <field name="abbr">PROY</field>
+      <field name="code">0379</field>
+      <field name="name">Proyecto de administración de sistemas informáticos en red</field>
+      <field name="year">2</field>
+      <field name="classroom_id" ref="atenea.classroom_ASIR_PROY"/>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>                            
+    </record>
+ -->
+    <!-- Módulos MIX (Varios ciclos)-->
+    <record model="atenea.subject" id="atenea.subject_MIX_SIN">
+        <field name="abbr">SIN</field>
+        <field name="code">0483</field>
+        <field name="name">Sistemas Informáticos</field>
+        <field name="year">1</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM') ])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_LM">
+        <field name="abbr">LM</field>
+        <field name="code">0373</field>
+        <field name="name">Lenguajes de marcas y sistemas de gestión de información</field>
+        <field name="year">1</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_BD">
+        <field name="abbr">BD</field>
+        <field name="code">0484</field>
+        <field name="name">Bases de Datos</field>
+        <field name="year">1</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_PROG">
+      <field name="abbr">PRG</field>
+      <field name="code">0485</field>
+      <field name="name">Programación</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_ED">
+      <field name="abbr">ED</field>
+      <field name="code">0487</field>
+      <field name="name">Entornos de desarrollo</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM')])]"/>
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_INGI">
+        <field name="abbr">INGI</field>
+        <field name="code">CV0003</field>
+        <field name="name">Inglés Técnico I</field>
+        <field name="year">1</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record> 
+
+    <record model="atenea.subject" id="atenea.subject_MIX_INGII">
+        <field name="abbr">INGII</field>
+        <field name="code">CV0004</field>
+        <field name="name">Inglés Técnico II</field>
+        <field name="year">2</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record>
+  </data>
+</odoo>

@@ -31,18 +31,21 @@ class Classroom(models.Model):
   code = fields.Char('Código', required = True, help = 'Código del aula, por ejemplo SEG9_CEE_46025799_2022_854101_0498')
   description = fields.Char('Descripción')
 
-  subjects_ids = fields.One2many('atenea.subject', 'classroom_id', string = 'Módulos')
+  # lo que se busca es una relación many2many con los módulos (subject) pero que incluya un campo más, el ciclo
+  # ese campo lo quiero utilizar en las vistas además tratandolo (utilizando un compute para mostrar 
+  # otra informaciín. Para ello la solución más sencilla es dividir ese many2many es dos many2one
+  subjects_ids = fields.One2many('atenea.subject_classroom_rel', 'classroom_id')
+  
   tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que están conectadas con Atenea')
 
-  lang_id = fields.Many2one('res.lang', domain = [('active','=', True)])
+  lang_id = fields.Many2one('res.lang', domain = [('active','=', True)], string = 'Idioma')
 
   _sql_constraints = [ 
     ('unique_moodle_id', 'unique(moodle_id)', 'El identificador de moodle tiene que ser único.'),
   ]
 
-  """ Devuelve la tarea encargada de las convalidaciones """
   def get_task_id_by_key(self, key):
-    
+    """ Devuelve la tarea encargada de las convalidaciones """  
     tasks = list(filter(lambda item: item['key'] == key, self.tasks_moodle_ids))
     if not tasks:
       _logger.error("No hay tarea de convalidaciones en el aula")
@@ -50,7 +53,6 @@ class Classroom(models.Model):
 
     return tasks[0].moodle_id
   
-
   def _enrol_student(self, user, subject_id, course_id):
     """
     Matricula a un usuario atenea en un módulo
