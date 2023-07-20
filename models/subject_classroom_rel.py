@@ -19,6 +19,11 @@ class SubjectClassroomRel(models.Model):
 
   subject_and_course = fields.Char(compute = '_compute_subject_and_course', string = 'Módulo (Ciclo)')
 
+  _sql_constraints = [ 
+    ('unique_subject_classroom_rel', 'unique(classroom_id, subject_id, course_id)', 
+       'Sólo puede haber una relación por aula, ciclo y módulo.'),
+  ]
+
   @api.depends('course_id','subject_id')
   def _compute_subject_and_course(self):
     for record in self:
