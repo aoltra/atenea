@@ -6,7 +6,7 @@ Log In (admin) ->  u: moodle / p: secret
 
 ## Activación web services en Moodle
 
-Cómo ususario _administrador_:
+Cómo usuario _administrador_:
 
 Site administration / site administration / Moodle App / Mobile settings -> Enable web services =  True
    
@@ -16,7 +16,7 @@ Site administration / Courses / Courses / Restore course -> arrastrar _/tests/mo
   
   - Restore as a new course -> select category -> Miscellaneous 
   
-  - Perfomr restore
+  - Perform restore
 
 ## Acceso usuarios Moodle
 
@@ -36,7 +36,7 @@ Se accede a la configuración de cada uno de ellos y se elige un nuevo password,
 
 ## Creación del fichero de acceso desde Atenea
 
-Desde el contenedor odoodock-web-1 abrir un terminal y acceder a la carpeta /mnt/extra-addons/atenea/misc/scripts/save_token_moodle
+Desde el contenedor odoodock-web-1 abrir un terminal y acceder a la carpeta _/mnt/extra-addons/atenea/misc/scripts/save_token_moodle_
 
 ```
 $ docker exec -it odoodock-web-1 bash 
@@ -45,6 +45,7 @@ $ docker exec -it odoodock-web-1 bash
 ```
 
 Contestar a las preguntas con:
-  - atenea 
-  - atenea
-  - Atenea1;-)
+
+  1. atenea
+  2. atenea
+  3. Atenea1;-)
