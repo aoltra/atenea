@@ -96,15 +96,17 @@ for classroom in classrooms:
     classroom_exist = next((item for item in current_classrooms if item['code'] == classroom['code']), None)
     
     code_blocks = classroom['code'].split('_')
+    classroom['description'] = f'Aula de {classroom["description"]} ({courses[code_blocks[4]]["abbr"]})' 
 
     if classroom_exist == None: # no está ya en Atenea 
-      classroom['lang_id'] = classroom_lang
-      classroom['description'] = f'Aula de {classroom["description"]} ({courses[code_blocks[4]]["abbr"]})' 
+      classroom['lang_id'] = classroom_lang  
       classroom_id = models.execute_kw(db, uid, password, 'atenea.classroom', 'create', [classroom])
     else: # ya está en Atenea
       print(f'   \033[0;32m[INFO]\033[0m {classroom["code"]} ya existe en Atenea. Actualizándolo')
       
-      models.execute_kw(db, uid, password, 'atenea.classroom', 'write', [[classroom_exist['id']], {'description': classroom['description'], 'lang_id': classroom_lang , 'moodle_id': classroom['moodle_id']}])
+      models.execute_kw(db, uid, password, 'atenea.classroom', 'write', [[classroom_exist['id']], {'description': classroom['description'], 
+                                                                                                   'lang_id': classroom_lang , 
+                                                                                                   'moodle_id': classroom['moodle_id']}])
       classroom_id = classroom_exist['id']
     
     # relación con módulos

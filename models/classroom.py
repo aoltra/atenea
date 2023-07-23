@@ -33,7 +33,7 @@ class Classroom(models.Model):
 
   # lo que se busca es una relación many2many con los módulos (subject) pero que incluya un campo más, el ciclo
   # ese campo lo quiero utilizar en las vistas además tratandolo (utilizando un compute para mostrar 
-  # otra informaciín. Para ello la solución más sencilla es dividir ese many2many es dos many2one
+  # otra información). Para ello la solución más sencilla es dividir ese many2many es dos many2one
   subjects_ids = fields.One2many('atenea.subject_classroom_rel', 'classroom_id')
   
   tasks_moodle_ids = fields.One2many('atenea.task_moodle', 'classroom_id', string = 'Tareas que están conectadas con Atenea')
