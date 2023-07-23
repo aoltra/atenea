@@ -27,6 +27,18 @@
       </field>
     </record>
 
+    <record model="ir.ui.view" id="atenea.task_tree">
+      <field name="name">Lista de Tareas conectadas</field>
+      <field name="model">atenea.task_moodle</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="description"/>
+          <field name="key"/>
+          <field name="moodle_id"/>
+        </tree>
+      </field>
+    </record>
+
     <record model="ir.ui.view" id="atenea.classroom_tree">
       <field name="name">Lista de Aulas virtuales</field>
       <field name="model">atenea.classroom</field>
