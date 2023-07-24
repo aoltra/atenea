@@ -1,0 +1,36 @@
+<odoo>
+  <data>
+    <!-- Módulos comunes a todos los ciclos -->
+     <record model="atenea.subject" id="atenea.subject_MIX_TUT1">
+      <field name="abbr">TUT1</field>
+      <field name="code">TUT1</field>
+      <field name="name">Tutoría 1º</field>
+      <field name="year">1</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_TUT2">
+      <field name="abbr">TUT2</field>
+      <field name="code">TUT2</field>
+      <field name="name">Tutoría 2º</field>
+      <field name="year">2</field>
+      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>                            
+    </record>
+
+    <record model="atenea.subject" id="atenea.subject_MIX_INGI">
+        <field name="abbr">ING1</field>
+        <field name="code">CV0003</field>
+        <field name="name">Inglés Técnico I</field>
+        <field name="year">1</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record> 
+
+    <record model="atenea.subject" id="atenea.subject_MIX_INGII">
+        <field name="abbr">ING2</field>
+        <field name="code">CV0004</field>
+        <field name="name">Inglés Técnico II</field>
+        <field name="year">2</field>
+        <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW'), ref('atenea.course_DAM'), ref('atenea.course_ASIR')])]"/>
+    </record>
+  </data>
+</odoo>

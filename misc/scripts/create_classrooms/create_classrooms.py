@@ -5,6 +5,13 @@ import xmlrpc.client
 import csv
 import sys
 
+def link_subject_course_classroom(course, subject, classroom) -> int:
+  return models.execute_kw(db, uid, password, 'atenea.subject_classroom_rel', 'create', [{
+        'course_id': course,
+        'subject_id': subject,
+        'classroom_id': classroom
+        }])
+
 print('\033[1mAtenea. Crea los datos de las aulas virtuales desde un csv\033[0m')
 
 url = "http://localhost:8069"
@@ -92,7 +99,7 @@ for classroom in classrooms:
 
     classroom_lang = next((lang['id'] for lang in languages_output if lang['code'] == classroom['lang_id']),None)
 
-    # Está en Atenea
+    # Está en Atenea?
     classroom_exist = next((item for item in current_classrooms if item['code'] == classroom['code']), None)
     
     code_blocks = classroom['code'].split('_')
@@ -103,22 +110,27 @@ for classroom in classrooms:
       classroom_id = models.execute_kw(db, uid, password, 'atenea.classroom', 'create', [classroom])
     else: # ya está en Atenea
       print(f'   \033[0;32m[INFO]\033[0m {classroom["code"]} ya existe en Atenea. Actualizándolo')
+
+      models.execute_kw(db, uid, password, 'atenea.classroom',
+                                           'write', 
+                                           [[classroom_exist['id']],
+                                           {'description': classroom['description'], 
+                                            'lang_id': classroom_lang,
+                                            'moodle_id': classroom['moodle_id']}])
       
-      models.execute_kw(db, uid, password, 'atenea.classroom', 'write', [[classroom_exist['id']], {'description': classroom['description'], 
-                                                                                                   'lang_id': classroom_lang , 
-                                                                                                   'moodle_id': classroom['moodle_id']}])
       classroom_id = classroom_exist['id']
     
     # relación con módulos
-    
-    rel_id = models.execute_kw(db, uid, password, 'atenea.subject_classroom_rel', 'create', [{
-        'course_id': courses[code_blocks[4]]['id'],
-        'subject_id': subjects[code_blocks[5]]['id'],
-        'classroom_id': classroom_id
-        }])
-    
+    if code_blocks[5] == 'TUT0': # aula de tutoria común para primero y segundo 
+      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects['TUT1']['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT1"]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
+      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects['TUT2']['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT2"]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
+    else:
+      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects[code_blocks[5]]['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects[code_blocks[5]]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
+
     line_count_OK += 1
-    print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects[code_blocks[5]]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
 
   except (xmlrpc.client.Fault) as e:
     print('   \033[0;31m[ERROR]\033[0m ' + e.faultString)

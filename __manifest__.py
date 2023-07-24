@@ -54,6 +54,7 @@
         #'data/classroom.xml',
         'data/course.xml',
         'data/subjects/tic.xml',
+        'data/subjects/common.xml',
         # 'data/task_moodle.xml',
         'data/roles/headquarters.xml',
         'data/roles/tutors.xml',

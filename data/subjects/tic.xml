@@ -1,22 +1,6 @@
 <odoo>
   <data>
     <!-- Módulos DAW -->
-    <record model="atenea.subject" id="atenea.subject_DAW_TUT1">
-      <field name="abbr">TUT1</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 1º</field>
-      <field name="year">1</field>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
-    </record>
-
-    <record model="atenea.subject" id="atenea.subject_DAW_TUT2">
-      <field name="abbr">TUT2</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 2º</field>
-      <field name="year">2</field>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAW')])]"/>                            
-    </record>
-
     <record model="atenea.subject" id="atenea.subject_DAW_FOL">
       <field name="abbr">FOL</field>
       <field name="code">0617</field>
@@ -74,22 +58,6 @@
     </record>
 
     <!-- Módulos DAM -->
-    <record model="atenea.subject" id="atenea.subject_DAM_TUT1">
-      <field name="abbr">TUT1</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 1º</field>
-      <field name="year">1</field>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>    
-    </record>
-
-    <record model="atenea.subject" id="atenea.subject_DAM_TUT2">
-      <field name="abbr">TUT2</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 2º</field>
-      <field name="year">2</field>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_DAM')])]"/>    
-    </record>
-
     <record model="atenea.subject" id="atenea.subject_DAM_FOL">
       <field name="abbr">FOL</field>
       <field name="code">0493</field>
@@ -155,24 +123,7 @@
     </record>
 
     <!-- Módulos ASIR -->
-    <!-- <record model="atenea.subject" id="atenea.subject_ASIR_TUT1">
-      <field name="abbr">TUT1</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 1º</field>
-      <field name="year">1</field>
-      <field name="classroom_id" ref="atenea.classroom_ASIR_TUT12"/>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>    
-    </record>
-
-    <record model="atenea.subject" id="atenea.subject_ASIR_TUT2">
-      <field name="abbr">TUT2</field>
-      <field name="code">0000</field>
-      <field name="name">Tutoría 2º</field>
-      <field name="year">2</field>
-      <field name="classroom_id" ref="atenea.classroom_ASIR_TUT12"/>
-      <field name="courses_ids" eval="[(6, 0, [ref('atenea.course_ASIR')])]"/>    
-    </record>
-
+    <!--
     <record model="atenea.subject" id="atenea.subject_ASIR_PAR">
       <field name="abbr">PAR</field>
       <field name="code">0370</field>

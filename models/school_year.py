@@ -939,7 +939,7 @@ class SchoolYear(models.Model):
 
         # módulos de tutoria
         _logger.info(course.subjects_ids)
-        tut_subjects = [ subject for subject in course.subjects_ids if subject['code'] == '0000']
+        tut_subjects = [ subject for subject in course.subjects_ids if subject['code'][:3] == 'TUT']
 
         _logger.info(tut_subjects)
         if not tut_subjects:
@@ -947,9 +947,14 @@ class SchoolYear(models.Model):
           continue
 
         # únicamente módulos de tutoria que tengan aulas distintas
-        distinct_subject_tut = [subject for subject in list(toolz.unique(tut_subjects, key=lambda x: x.classroom_id))]
+        distinct_subject_tut = [subject for subject in list(toolz.unique(tut_subjects, key = lambda x: x.get_classroom_by_course_id(course)))]
     
         for subject in distinct_subject_tut:   
+
+          """ classroom_id = self.env['atenea.subject_classroom_rel'].search([
+            ('subject_id', '=', subject.id_), 
+            ('course_id', '=', course.id_)]) """
+          classroom_id = subject.get_classroom_by_course_id(course)
 
           ## MATRICULA 
           task = (0, 0, {
@@ -964,7 +969,7 @@ class SchoolYear(models.Model):
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
             'code': 'model.cron_enrol_students({}, {}, {})'
-              .format(subject.classroom_id.moodle_id,
+              .format(classroom_id.moodle_id,
                 subject.id,
                 course.id,
                 subject.id),
@@ -985,12 +990,10 @@ class SchoolYear(models.Model):
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
             'code': 'model.cron_download_validations({}, {}, {}, {})'
-              .format(subject.classroom_id.moodle_id,
+              .format(classroom_id.moodle_id,
                 subject.id,
-                subject.classroom_id.get_task_id_by_key('validation'),
+                classroom_id.get_task_id_by_key('validation'),
                 course.id),
-            #'code': 'model._cron_download_validations({},{},"{}")'
-            #  .format(2094,183989,course.abbr),
           }) 
 
           cron_ids.append(task)
@@ -1008,8 +1011,8 @@ class SchoolYear(models.Model):
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
             'code': 'model.cron_notify_validations({}, {}, {})'
-              .format(subject.classroom_id.moodle_id,
-                subject.classroom_id.get_task_id_by_key('validation'),
+              .format(classroom_id.moodle_id,
+                classroom_id.get_task_id_by_key('validation'),
                 course.id),
           })
 
@@ -1028,8 +1031,8 @@ class SchoolYear(models.Model):
             'nextcall': '2023-03-02 00:27:59',
             'state': 'code',
             'code': 'model.cron_notify_validations({}, {}, {}, correction_notification = True)'
-              .format(subject.classroom_id.moodle_id,
-                subject.classroom_id.get_task_id_by_key('validation'),
+              .format(classroom_id.moodle_id,
+                classroom_id.get_task_id_by_key('validation'),
                 course.id),
           })
 
