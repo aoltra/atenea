@@ -401,7 +401,8 @@ class SchoolYear(models.Model):
       if record.date_ord2_exam_ini == False:
         record.date_waiver_ord2 = ''      
       else:
-        record.date_waiver_ord2 = datetime.datetime(record.date_ord2_exam_ini.year, record.date_ord2_exam_ini.month - 1, record.date_ord2_exam_ini.day)
+        month = record.date_ord2_exam_ini.month - 1 if record.date_ord2_exam_ini.month > 1 else 12
+        record.date_waiver_ord2 = datetime.datetime(record.date_ord2_exam_ini.year, month , record.date_ord2_exam_ini.day)
 
   @api.depends('date_extraord2_exam_ini')
   def _compute_waiver_extraord2(self):
@@ -409,7 +410,8 @@ class SchoolYear(models.Model):
       if record.date_extraord2_exam_ini == False:
         record.date_waiver_extraord2 = ''      
       else:
-        record.date_waiver_extraord2 = datetime.datetime(record.date_extraord2_exam_ini.year, record.date_extraord2_exam_ini.month - 1, record.date_extraord2_exam_ini.day)
+        month = record.date_extraord2_exam_ini.month - 1 if record.date_extraord2_exam_ini.month > 1 else 12
+        record.date_waiver_extraord2 = datetime.datetime(record.date_extraord2_exam_ini.year, month, record.date_extraord2_exam_ini.day)
 
   # ###########
   # PRIMERO
