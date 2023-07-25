@@ -103,7 +103,7 @@ for classroom in classrooms:
     classroom_exist = next((item for item in current_classrooms if item['code'] == classroom['code']), None)
     
     code_blocks = classroom['code'].split('_')
-    classroom['description'] = f'Aula de {classroom["description"]} ({courses[code_blocks[4]]["abbr"]})' 
+    classroom['description'] = f'Aula de {classroom["description"]} ({courses[code_blocks[-2]]["abbr"]})' 
 
     if classroom_exist == None: # no está ya en Atenea 
       classroom['lang_id'] = classroom_lang  
@@ -121,14 +121,14 @@ for classroom in classrooms:
       classroom_id = classroom_exist['id']
     
     # relación con módulos
-    if code_blocks[5] == 'TUT0': # aula de tutoria común para primero y segundo 
-      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects['TUT1']['id'], classroom_id)
-      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT1"]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
-      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects['TUT2']['id'], classroom_id)
-      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT2"]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
+    if code_blocks[-1] == 'TUT0': # aula de tutoria común para primero y segundo 
+      link_subject_course_classroom(courses[code_blocks[-2]]['id'], subjects['TUT1']['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT1"]["abbr"]} en {courses[code_blocks[-2]]["abbr"]}')
+      link_subject_course_classroom(courses[code_blocks[-2]]['id'], subjects['TUT2']['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects["TUT2"]["abbr"]} en {courses[code_blocks[-2]]["abbr"]}')
     else:
-      link_subject_course_classroom(courses[code_blocks[4]]['id'], subjects[code_blocks[5]]['id'], classroom_id)
-      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects[code_blocks[5]]["abbr"]} en {courses[code_blocks[4]]["abbr"]}')
+      link_subject_course_classroom(courses[code_blocks[-2]]['id'], subjects[code_blocks[-1]]['id'], classroom_id)
+      print(f'   \033[0;32m[INFO]\033[0m Asociado {classroom["code"]} con el módulo {subjects[code_blocks[-1]]["abbr"]} en {courses[code_blocks[-2]]["abbr"]}')
 
     line_count_OK += 1
 
