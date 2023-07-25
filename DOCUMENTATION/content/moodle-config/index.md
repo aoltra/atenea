@@ -7,7 +7,7 @@ Para el correcto funcionamento de Maya con Moodle, es necesario:
 
     Como _administrador_:
 
-      Site administration / site administration / Moodle App / Mobile settings -> Enable web services =  True
+       Site administration / site administration / Moodle App / Mobile settings -> Enable web services =  True
 
 3. [ ] Disponer de todas las aulas virtuales asociadas a los módulos. 
 
